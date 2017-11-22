@@ -7,19 +7,24 @@
 <title>Project 1</title>
 
 <link rel="stylesheet" type="text/css" href="p1.css">
+<script type="text/javascript" src = "p1.js"></script>
 
 </head>
-
 <body>
 
-<h1 id = "alien_header" >My head is green!</h1>
+<div id = "strange_body">
+
+<h1 id = "alien_header"> My head is green! </h1>
 
 <img id = "stomach" src = "stomach.jpg">
 
-<script>
-var legs = document.createElement("img");
-legs.setAttribute('src', 'legs.jpg');
-</script>
+<div id = "legs_button" class="hidden">
+<button onclick="add_legs()">
+	CHECK MY LEGS OUT
+</button>
+</div>
+
+</div>
 
 </body>
 

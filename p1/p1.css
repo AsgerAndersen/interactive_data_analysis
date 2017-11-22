@@ -1,7 +1,18 @@
-#alien_header {
-	color: green;
+#strange_body {
+	width: 300px;
 }
 
 #stomach {
-	height: 210px;
+	width: 100%;
+}
+
+#alien_header {
+	color: green;
+	text-align: center;
+}
+
+#legs_button {
+    margin: auto;
+    padding: 10px 20px;
+    text-align: center;
 }
