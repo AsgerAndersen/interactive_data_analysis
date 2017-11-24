@@ -1,5 +1,9 @@
 #strange_body {
 	width: 300px;
+	text-align: center;
+	border-style: solid;
+	padding: 10px;
+
 }
 
 #stomach {
@@ -8,11 +12,8 @@
 
 #alien_header {
 	color: green;
-	text-align: center;
 }
 
 #legs_button {
-    margin: auto;
     padding: 10px 20px;
-    text-align: center;
 }
