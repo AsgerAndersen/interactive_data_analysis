@@ -39,7 +39,7 @@
 
 	<ul>
 		<li> <a href="http://metrocosm.com/map-international-trade/">Flow of international trade</a> </li>
-		<li> <a href="http://www.tracemedia.co.uk/projects/luminous/flickr/#date_from=2012-08-01&date_to=2016-07-31&map=id&path_alpha=0.5&path_length=0&place=copenhagen_malmo_01">Flickr Uploads</a> </li>
+		<li> <a href="https://research.google.com/bigpicture/music/">Music timeline</a> </li>
 	</ul>
 
 <p> <a href="http://metrocosm.com/map-international-trade/">Flow of international trade</a>: This visualization uses UN Data about international trade during the year 2015 to visualize the import and export of different goods between the countries of the world. This is done by representing 1 billion of goods being exported from country A to country B by a dot moving from country A to country B. The dot is colored according to what class the goods belonged to. The classes are:
@@ -57,6 +57,24 @@
 
 The visualization does make a striking illustration of how massive global trade is, and also how some, specific countries and regions are much more involved in the global trade system than others. If the trade between all countries are viewed at once, the viewer has a hard time focusing on individual countries (especially in Europe), but this is alright because if you do not wanna focus on the global scale, but on an individual country, then you can zoom in on the map and pick individual countries. However, if the goal of the visualization is to enlighten the viewer about international trade patterns, then it suffers from optimizing too much on appearing very cool and sophisticated, and too little about enlightening the viewer about its subject. First of all, it does not really make sense to seperate all the classes of goods, when you cannot select to view only the flow of a single class, since it is hard to seperate the colors of the dots and make meaningful judgements about them, when they are all flowing at the same time. Try for instance to single out Germany and then range the classes of goods according to what Germany is importing and exporting most. It is impossible. Second, it is not very easy to make accurate judgdements about the approximate number of dots between two countries. Look again at Germany and range the countries in world according to who trades the most with Germany. It is not easy. Third, it is also problematic that the exports from country A to country B, and the exports from country B to country A occupies the same visual space, meaning that it becomes impossible to distinguish them, if the countries trades a lot. Consider for instance the trading between Germany and China. Can you judge who trades what with who and how much? All in all, this visualization gives a quite cool, first impression and some superficial insights, but if the viewer want to use to dive deeper into its subject, it quickly fails to be useful.</p>
 
+	<p>
+		<a href="https://research.google.com/bigpicture/music/">Music timeline</a></br>
+		This interactive timeline shows different music genres, sub-genres, and artist's poluarity from 1950's to 2010.
+	It is made by Google, using their own Google Play service as a base for data collection, and then adding data from other sources 
+	for "pre-google-play" times.</br>
+	The colors in the graph do not signify anything; They are just there to make it easier for the viewer to distinguish bands (not musical "bands").</br>
+	The first thing that comes to mind is the "bad" example from the lecture, with the unaligned bands. It can be hard to really see how
+a genre has developed in popularity, when the bands are all skewed.</br>
+	And that's very google shows that they had also thought about this - If the viewer clicks on a specific band, 
+	the visualization will omit all other genres and show only subcategories of the selected genre;
+That way the viewer can easily see the developement of a single genre.</br>
+	So, looking at the visualization, the visible bands focus on showing their relative dominance, and less on showing their developement.
+Clicking on a band then focuses on the latter, whilst showing relative dominance of sub-categories - Smart!</br>
+	It's hard to criticize this visualization, but if one has to say something bad about it, then it would probably be that some bands
+	are too narrow to actually get anything meaningful from them, such as what genre they even represent; 
+	Although it is difficult to picture a solution to this, other that changing the visualization entirely to a column based graph. 
+	This, however, would just introduce new problems too, such as there being too many columns.
+	</p>
 </div>
 
 <div>
@@ -68,7 +86,12 @@ The visualization does make a striking illustration of how massive global trade 
 	 <p> At my work as a research 	assistent at the institute of economics, I have access to data from the <a href="http://socialfabric.ku.dk/sensible-dtu/">sensible dtu experiment</a>. Some of the researchers I am working with are using this data to study the formation and deveplopment of social networks among the students in the experiment, and they would like a visualization tool to better be able explore the data and make informed decisions based on this exploration. A basic measure they are working with is the distance between the students (approximately measured using bluetooth scanning of the phones of the students). This measure can be used to construct a graph of the students, where two students are linked, if they are within x meters of each other during the last n minutes. Then you get a sequence of graphs, one for each time bin of n minutes. The researchers would like a visualization tool that helps them explore questions like: How does this sequence of graphs depend on our choice of x and n? How does it look like, if we only look at female students, compared to if we only look at male students? What if we only look at the students with top 10% grades compared to students in the lower 10% quantile of grades? I would like to be able to build such a tool. I imagine that the main part of the visualization would be the graph of links between students, depending on choices of parameters being controled by different sliders. One of parameters is the timebin, which can slided continously or played by a "press-play-button" to see the evolution of the sequence of graphs through time. </p>
 
 	<h3>Christoffer:</h3>
-
+	<p>I I think it would be very interesting to dig into statistics that our politicians are throwing around,
+and try to see if one could come closer to telling "the true story" that lies in the data.<br>
+Example: Crime rates among non native danish people vs native danish people <br>
+Obviously, current many current politicians are trying to tell a story about higher crime rates among non native danes.</br>
+But maybe there is more to this tale, which could be visualilzed interactively. Visualizing it interactively, would let the "explorer" come closer to the actual truth, I beleive.<br>
+The "explorer" in this case would be more or less any danish people, who are interested in validating what our politicians are telling us.</p>
 
 </div>
 
