@@ -1,0 +1,21 @@
+Ideer til projektet:
+
+* Scatter plot. Evt med mulighed for at tilføje regressionslinje, samt hypotese test tal for, hvorvidt tiden har en signifikant effekt på temperaturen.
+
+* Ordning af årene efter temperatur. Farvning efter årti. Her vil det blive tydeligt, at selvom der er varians i dataen, så ligger der flere af de senere årtier i toppen.
+
+* Eventuel udvidelse: Liste med måneder, så man kan klikke på en måned og få de samme plots, kun med dataen for denne måned. På den måde kan man udforske i hvilken del af året temperatur stigningen er sket. Månedsknappen toggler månedsplottet on-off, hvilket gør, at man kan sætte flere månedsplot på samtidig og sammenligne dem. Også year-knap, der kan toggle års-plottet.
+
+* Eventuel udvidelse: Slider, der giver mulighed for at binne årene i 1, 5, 10, 25 og 50 års bins.
+
+
+
+Andre idéer:
+
+Ret klart fra scatterplottet (og evt regressionslinjen), at der umiddelbart er en opadgående tendens. Men scatterplottet plotter den samlede mean, hvilket vil sige, at vi ikke ved hvilke måneder/årstider der er styrende for temperatur stigningen. Løsning:
+
+* En slags heat map med månederne som vertikal og årene som horisontal kategori. Blå-grøn-rød farveskala indkoder temperaturen i den givne måned i det givne år. Hermed kan man læse på langs, og forhåbentligt få et overblik over i hvilke dele af året, at temperatur stigningen er sket (eventuel knap, der giver mulighed for at normalisere hvert månedsbånd med båndets gennemsnit, sådan at alle månedsbåndene kommer mere på samme skala og måske dermed bliver lettere at sammenligne. Når man trykker på knappen skal farve-skalaen dog skifte, så det er klart, at den ikke længere direkte repræsentere temperaturer).
+
+	* Eventuel udvidelse: Klik på et subset af månederne på heat mappen og få et scatterplot, der kun benytter mean fra disse måneder.
+
+* Residual plot for nul hypotesen, at temperaturene er normalfordelt omkring et konstant gennemsnit. Eventuelle plots af datasimuleringer, der viser, at residualerne er usandsynlige under nulhypotesen.
