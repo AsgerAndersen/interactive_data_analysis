@@ -16,7 +16,38 @@
 <body>
 
 The project.
-<div id="vis2"></div>
+<div id="visualisations">
+    <div id="global_options" class="floaty">
+        <table id="global_options_table">
+        </table>
+        <script>
+            var months = {jan: "JAN", feb: "FEB", mar: "MAR",
+                apr: "APR", may: "MAY", jun: "JUN",
+                jul: "JUL", aug: "AUG", sep: "SEP",
+                oct: "OCT", nov: "NOV", dec: "DEC"};
+            var table = document.getElementById("global_options_table");
+            for (var key in months){
+                var row = document.createElement("tr");
+                var text_cell = document.createElement("td");
+                var checkbox_Cell = document.createElement("td");
+                var checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.className = "month_checkbox";
+                checkbox.value = months[key];
+                checkbox.id = months[key];
+                checkbox.onchange = updateVisualisations;
+                checkbox_Cell.appendChild(checkbox);
+                text_cell.innerHTML = upperCaseFirst(key);
+                row.appendChild(text_cell);
+                row.appendChild(checkbox_Cell);
+                table.appendChild(row);
+            }
+
+        </script>
+    </div>
+    <div id="vis1" class="floaty visualisation"></div>
+    <div id="vis2" class="floaty visualisation"></div>
+</div>
 </body>
 
 </html>

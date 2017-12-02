@@ -1,25 +1,31 @@
 d3.select(window).on('load', init);
-
+var raw_data;
 
 function init() {
     d3.csv(
         'data.csv',
         function(error, data) {
             if (error) throw error;
-
-            //De valgte måneder udtrækkes fra data her
-            var selected_data = selectMonths(data, [])
-
-            //Udtrukket data sendes til Visualisering2
-            vis2(selected_data)
+            raw_data = data;
+            updateVisualisations()
         }
     );
+}
+
+function updateVisualisations(){
+
+    //De valgte måneder udtrækkes fra data her
+    var selected_data = selectMonths(raw_data)
+
+    //Udtrukket data sendes til Visualisering2
+    vis2(selected_data)
 }
 
 //Visualisering 2
 function vis2(data)
 {
-    data.sort(function(a, b){ return a["metANN"] - b["metANN"];});
+
+    data.sort(function(a, b){ return a["VAL"] - b["VAL"];});
     console.log(data.length);
 
     var data_domain = d3.extent(data,
@@ -45,6 +51,9 @@ function vis2(data)
 
 
 
+    d3.select('#vis2')
+        .selectAll("div")
+        .remove();
 
     d3.select('#vis2')
         .selectAll("div")
@@ -55,12 +64,44 @@ function vis2(data)
         .style("background-color", function(d){return year2color(d["YEAR"]);})
         //.style("background-color", "white")
         .attr("class", "vis2row")
+        .exit()
+        .remove()
 }
 
 
 //Funktion til at udtrække valgte måneder fra datasættet
-function selectMonths(data, months)
+function selectMonths(data)
 {
+    months = checkedMonths();
+    if (months.length == 0 || months.length == 12)
+    {
+        months = ["metANN"]
+    }
+    console.log(months)
+    data = data.map(function(row){
+        var val = d3.mean(months.map(function(key) {
+            return row[key];
+        }));
+        return {"YEAR": row["YEAR"], "VAL": val};
+    });
     return data
 }
 
+function checkedMonths()
+{
+    var status = [];
+    d3.select('#global_options_table').selectAll(".month_checkbox").each(
+        function(d, i) {
+            if (this.checked) {
+                status.push(this.getAttribute("id"));
+            }
+        });
+    console.log(status);
+    return status;
+}
+
+//Stort første bogstav
+function upperCaseFirst(string)
+{
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
