@@ -45,8 +45,14 @@ The project.
 
         </script>
     </div>
-    <div id="vis1" class="floaty visualisation"></div>
-    <div id="vis2" class="floaty visualisation"></div>
+    <div class="floaty visualisation">
+        <svg id="vis1"></svg>
+    </div>
+    <div class="floaty visualisation">
+        <div id="vis2options">Size of color groups (default 10): <input type="range" min="1" max="100" value="10" class="slider" id="groupsizeslider" onchange="updateGrouping(); updateVisualisations(); "></div>
+        <div id="vis2"></div>
+    </div>
+
 </div>
 </body>
 
