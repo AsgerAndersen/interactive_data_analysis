@@ -2,6 +2,9 @@ d3.select(window).on('load', init);
 var raw_data;
 var year_domain;
 var temperature_domain;
+var full_temperature_domain;
+
+var n_columns;
 
 var year2color;
 
@@ -12,6 +15,7 @@ function init() {
         'data.csv',
         function(error, data) {
             if (error) throw error;
+            var min=0, max=0;
             raw_data = data.map(function(row) {
                 var new_row = {};
                 for (var key in row) {
@@ -22,15 +26,20 @@ function init() {
                     }
                     else
                     {
+                        if (val < min && key != "YEAR"){min = val}
+                        else if (val > max && key != "YEAR"){max = val}
                         new_row[key] = val;
                     }
                 }
                 return new_row;
             });
+            console.log(max);
+            full_temperature_domain = [min, max];
 
 
             selectMonths(data);
             updateGrouping();
+            updateColumns();
             updateVisualisations();
         }
     );
@@ -44,40 +53,46 @@ function updateVisualisations(){
 
     //Udtrukket data sendes til visualiseringsfunktionerne
     vis1(selected_data);
-    vis2(selected_data);
+    vis2(selected_data, 2);
 }
 
 function vis1(data)
 {
     var canvas = d3.select('#vis1');
 
-    var margin = {top: 20, right: 5, bottom: 20, left: 20};
+    var margin = {top: 15, right: 5, bottom: 40, left: 50};
 
 
     var height = canvas.node().getBoundingClientRect().height;
     var width = canvas.node().getBoundingClientRect().width;
 
+    var domain_padding = [(year_domain[1]-year_domain[0])*0.05,
+        (full_temperature_domain[1]-full_temperature_domain[0])*0.05];
 
     var xScale = d3.scaleLinear()
-        .domain(year_domain)
+        .domain([year_domain[0]-domain_padding[0], year_domain[1]+domain_padding[0]])
         .range([margin.left, width - margin.right]);
 
     var yScale = d3.scaleLinear()
-        .domain(temperature_domain)
-        .range([height - margin.top, margin.bottom]);
+        .domain([full_temperature_domain[0]-domain_padding[1], full_temperature_domain[1]+domain_padding[1]])
+        .range([height - margin.bottom, margin.top]);
 
-    console.log(temperature_domain);
+    console.log(full_temperature_domain);
 
 
     //C/P - https://bl.ocks.org/HarryStevens/be559bed98d662f69e68fc8a7e0ad097
 
     var xAxis = d3.axisBottom(xScale);
 
-    var yAxis = d3.axisRight(yScale);
+    var yAxis = d3.axisLeft(yScale);
     //C/P - End
 
     canvas
         .selectAll("g")
+        .remove();
+
+    canvas
+        .selectAll("text")
         .remove();
 
     canvas
@@ -119,12 +134,30 @@ function vis1(data)
 
     //C/P - https://bl.ocks.org/HarryStevens/be559bed98d662f69e68fc8a7e0ad097
     canvas.append("g")
-        .attr("transform", "translate(0,0)")
+        .attr("transform", "translate(0," + (height-margin.bottom) + ")")
         .call(xAxis)
 
+    canvas.append("text")
+        .attr("x", margin.left + (width - margin.left - margin.right) / 2)
+        .attr("y", height - margin.bottom + 35)
+        .style("stroke", "black")
+        .html("Year");
+
     canvas.append("g")
-        .attr("transform", "translate(0,0)")
+        .attr("transform", "translate(" + (margin.left) + ",0)")
         .call(yAxis);
+
+    canvas.append("text")
+        .attr("x", margin.left - 45)
+        .attr("y", margin.top + (height - margin.top - margin.bottom) / 2)
+        .style("stroke", "black")
+        .html("C&#176; ");
+
+    canvas.append("text")
+        .attr("x", margin.left - 45)
+        .attr("y", height - margin.bottom + 35)
+        .style("stroke", "black")
+        .html("Slope = " + lreg.a);
     //C/P - End
 }
 
@@ -145,7 +178,10 @@ function vis2(data)
         .html(function(d){return d["YEAR"];})
         .style("background-color", function(d){return year2color(d["YEAR"]);})
         //.style("background-color", "white")
-        .attr("class", "vis2row")
+        .attr("class", function(d, i){
+            if ((i) % n_columns == 0){
+                return "vis2row sol"
+            } else {return "vis2row";}})
         .exit()
         .remove()
 }
@@ -171,6 +207,10 @@ function updateGrouping()
     year2decade = d3.scaleQuantize()
         .domain(year_domain)
         .range(groups);
+}
+
+function updateColumns() {
+    n_columns = document.getElementById("columnslider").value;
 }
 
 //Funktion til at udtrække valgte måneder fra datasættet
