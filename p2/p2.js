@@ -19,25 +19,52 @@ function init() {
             raw_data = data.map(function(row) {
                 var new_row = {};
                 for (var key in row) {
-                    var val = parseFloat(row[key]);
-                    if (key != "YEAR" && val > 900.0)
+                    if (key == "YEAR")
                     {
-                        new_row[key] = NaN;
+                        new_row[key] = parseInt(row[key]);
                     }
                     else
                     {
-                        if (val < min && key != "YEAR"){min = val}
-                        else if (val > max && key != "YEAR"){max = val}
-                        new_row[key] = val;
+                        var val = parseFloat(row[key]);
+                        if (val > 900.0)
+                        {
+                            new_row[key] = NaN;
+                        }
+                        else
+                        {
+                            if (val < min){min = val}
+                            else if (val > max){max = val}
+                            new_row[key] = val;
+                        }
                     }
+
                 }
                 return new_row;
             });
-            console.log(max);
+
             full_temperature_domain = [min, max];
 
+            year_domain = d3.extent(raw_data,
+                function(d){
+                    return d["YEAR"];});
 
-            selectMonths(data);
+            temperature_domain = d3.extent(raw_data,
+                function(d){
+                    return d["metANN"];});
+
+            //Initialize year range sliders
+            d3.select('#year_max_slider')
+                .attr("min", (year_domain[0]+1))
+                .attr("max", year_domain[1])
+                .attr("value", year_domain[1]);
+
+            d3.select('#year_min_slider')
+                .attr("min", year_domain[0])
+                .attr("max", year_domain[1]-1)
+                .attr("value", year_domain[0]);
+
+
+            //Initialize rest and produce visualisations
             updateGrouping();
             updateColumns();
             updateVisualisations();
@@ -49,7 +76,7 @@ function init() {
 function updateVisualisations(){
 
     //De valgte måneder udtrækkes fra data her
-    var selected_data = selectMonths(raw_data)
+    var selected_data = selectData(raw_data)
 
     //Udtrukket data sendes til visualiseringsfunktionerne
     vis1(selected_data);
@@ -77,7 +104,6 @@ function vis1(data)
         .domain([full_temperature_domain[0]-domain_padding[1], full_temperature_domain[1]+domain_padding[1]])
         .range([height - margin.bottom, margin.top]);
 
-    console.log(full_temperature_domain);
 
 
     //C/P - https://bl.ocks.org/HarryStevens/be559bed98d662f69e68fc8a7e0ad097
@@ -117,8 +143,6 @@ function vis1(data)
         })
 
     var lreg = linearRegression(data);
-    console.log(lreg.a);
-    console.log(lreg.b)
     var x1 = year_domain[0];
     var x2 = year_domain[1]
     var y1 = lreg.f(x1);
@@ -188,21 +212,28 @@ function vis2(data)
 
 function updateGrouping()
 {
-    var groupsize = document.getElementById("groupsizeslider").value;
-    var num_groups = Math.ceil((year_domain[1] - year_domain[0]) / groupsize)
+    var groupsize = parseInt(document.getElementById("groupsizeslider").value);
+    var num_groups = Math.ceil((year_domain[1] - year_domain[0] + 1) / groupsize);
 
-    var groups = d3.range(year_domain[0], year_domain[1], groupsize);
+    var groups = d3.range(year_domain[0]+groupsize, year_domain[1]+groupsize, groupsize);
 
-    var unit_groups = d3.range(0, 1, 1 / (num_groups+1));
+    var unit_groups = [0];
+    if (num_groups > 1){
+        unit_groups = d3.range(0, 1, 1 / (num_groups - 1));
+    }
+
+    var colors = unit_groups.map(function(d){ return d3.interpolateYlGnBu(d)});
+    colors.push(d3.interpolateYlGnBu(1))
 
 
     // var year2color = d3.scaleQuantize()
     //     .domain([groups[0], groups[groups.length-1]+10])
     //     .range(unit_groups.map(function(d){ return d3.interpolateYlGnBu(d)}));
 
+
     year2color = d3.scaleThreshold()
         .domain(groups)
-        .range(unit_groups.map(function(d){ return d3.interpolateYlGnBu(d)}));
+        .range(colors);
 
     year2decade = d3.scaleQuantize()
         .domain(year_domain)
@@ -214,13 +245,15 @@ function updateColumns() {
 }
 
 //Funktion til at udtrække valgte måneder fra datasættet
-function selectMonths(data)
+function selectData(data)
 {
     months = checkedMonths();
     if (months.length == 0 || months.length == 12)
     {
         months = ["metANN"]
     }
+
+    var year_range = selectedRange();
 
     var selected_data = [];
     data.forEach(function(row){
@@ -229,7 +262,7 @@ function selectMonths(data)
             mean += row[key];
         });
         mean = mean / months.length;
-        if (!isNaN(mean)) {
+        if (!isNaN(mean) && row["YEAR"] >= year_range[0] && row["YEAR"] <= year_range[1]) {
             selected_data.push({"YEAR": row["YEAR"], "VAL": mean});
         }
     });
@@ -243,6 +276,8 @@ function selectMonths(data)
     temperature_domain = d3.extent(selected_data,
         function(d){
             return d["VAL"];});
+
+    updateGrouping();
 
     return selected_data;
 }
@@ -260,6 +295,22 @@ function checkedMonths()
             }
         });
     return status;
+}
+
+function selectedRange()
+{
+    var max_slider = document.getElementById('year_max_slider');
+    var min_slider = document.getElementById('year_min_slider');
+    var max_span = document.getElementById('year_max');
+    var min_span = document.getElementById('year_min');
+    var max = parseInt(max_slider.value);
+    min_slider.setAttribute("max", max-1);
+    var min = parseInt(min_slider.value);
+    max_slider.setAttribute("min", min+1);
+
+    max_span.innerHTML = max;
+    min_span.innerHTML = min;
+    return [min, max];
 }
 
 //Stort første bogstav
@@ -299,3 +350,5 @@ function linearRegression(data)
 
     return {a: slope, b: intercept, f: function(x){return slope * x + intercept;}}
 }
+
+

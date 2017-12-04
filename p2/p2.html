@@ -50,6 +50,10 @@
             }
 
         </script>
+        From year: <span id="year_min"></span></br>
+        <input type="range" min="0" max="0" value="0" class="slider" id="year_min_slider" onchange="updateVisualisations()"/>
+        To year: <span id="year_max"></span></br>
+        <input type="range" min="0" max="0" value="0" class="slider" id="year_max_slider" onchange="updateVisualisations()"/>
     </div>
     <div class="floaty visualisation">
         <svg id="vis1"></svg>
@@ -62,7 +66,7 @@
                         Size of color groups (default 10):
                     </td>
                     <td>
-                        <input type="range" min="1" max="100" value="10" class="slider" id="groupsizeslider" onchange="updateGrouping(); updateVisualisations(); ">
+                        <input type="range" min="1" max="100" value="10" class="slider" id="groupsizeslider" onchange="updateVisualisations(); ">
                     </td>
                 </tr>
                 <tr>
@@ -92,7 +96,39 @@
     </div>
     <div class="floaty text_box">
         <h2>Part 3.3 by Christoffer Belhage</h2>
-        ---
+        The limit with regards to the size of the data-set depends on several factors:<br>
+        <ul>
+            <li>
+                How large a part must be in the user's RAM at any given time.<br>
+                if the user has a sloppy computer with almost no available RAM, then a data-set of more than 100 MB could be too much.<br>
+                Note that the size of our data-set was a mere 11.1KB.
+            </li>
+            <li>
+                How many calculations are performed on the data.<br>
+                If the computations performed are very intensive, then even a small data-set (Like ours) might be too much.<br>
+                This factor is often open for optimization, through well written code.
+            </li>
+            <li>
+                The visuals.<br>
+                So this is really a subcategory of the previous bullet; With computationally heavy (Or just semi-heavy)
+                visuals that scale with the size of the data-set (Maybe a 1:1 ratio of data-rows and HTML-elements?),
+                the users CPU and RAM can quickly become overloaded.<br>
+                Again, this should be flexible since there are few visuals that are simply <i>required</i> and can't be visualized differently.
+            </li>
+        </ul>
+
+        So this means that the type of visualisations that are most likely to be too intense, are those that require dynamic modelling of very many HTML-elements.<br>
+        Say for instance, that you somehow could model every person on the earth's current position;
+        First of all, all the HTML elements required to display that would consume an immense amount of RAM.
+        Secondly, if you were to continuously update all these elements, your processor would likely get some sort of cancer.<br>
+        <br>
+        The only way I could imagine dealing with this sort of visualisation, would be to only pick tiny bits at a time.
+        And if an overview was required, then I would sub-sample the visuals; I.e. maybe one HTML-element for every million or ten million people.<br>
+        <br>
+        With regards to the data-set used in this assignment, we could have used only the yearly averages, but then one part of the visualisation would be gone.<br>
+        We could also have sub-sampled the data-set, like pre-computing the averages of every five years.
+        However, this would means that a lot of the variability would disappear.
+
     </div>
 </div>
 </body>

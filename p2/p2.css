@@ -22,7 +22,7 @@ div {
 }
 
 #global_options {
-    width: 100px;
+    width: 130px;
     margin-left: 5px;
     margin-right: 5px;
 }
@@ -88,4 +88,16 @@ div {
 
 br{
     clear:both;
+}
+
+#year_max_slider, #year_min_slider
+{
+    width: 100%;
+}
+
+#year_max, #year_min {
+    width: 40px;
+}
+ul > li {
+    margin-bottom: 10px;
 }
