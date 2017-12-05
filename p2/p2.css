@@ -40,6 +40,17 @@ div {
     height: auto;
 }
 
+#groupcolor_table td {
+    white-space:pre;
+    font-family: "Arial Black";
+    color: white;
+    font-weight: bold;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+    padding: 5px;
+    border:1px solid black;
+}
+
 .vis2row {
     font-family: "Arial Black";
     display: inline-block;

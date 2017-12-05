@@ -213,14 +213,18 @@ function vis2(data)
 function updateGrouping()
 {
     var groupsize = parseInt(document.getElementById("groupsizeslider").value);
+    document.getElementById('groupsize').innerHTML = groupsize;
+
     var num_groups = Math.ceil((year_domain[1] - year_domain[0] + 1) / groupsize);
 
     var groups = d3.range(year_domain[0]+groupsize, year_domain[1]+groupsize, groupsize);
+    console.log(groups)
 
     var unit_groups = [0];
     if (num_groups > 1){
         unit_groups = d3.range(0, 1, 1 / (num_groups - 1));
     }
+    console.log(unit_groups)
 
     var colors = unit_groups.map(function(d){ return d3.interpolateYlGnBu(d)});
     colors.push(d3.interpolateYlGnBu(1))
@@ -235,6 +239,20 @@ function updateGrouping()
         .domain(groups)
         .range(colors);
 
+    //Idea: Make table and use d3 to dynamically input one entry for each color group.
+    d3.select("#groupcolor_table")
+      .selectAll("tr")
+      .remove()
+
+    d3.select("#groupcolor_table")
+      .append("tr")
+      .selectAll("td")
+      .data(groups)
+      .enter()
+      .append("td")
+      .text(function(d) {return String(d - groupsize) + " -\n" + String(d);})
+      .style("background-color", function(d){return year2color(d);})
+
     year2decade = d3.scaleQuantize()
         .domain(year_domain)
         .range(groups);
@@ -242,6 +260,7 @@ function updateGrouping()
 
 function updateColumns() {
     n_columns = document.getElementById("columnslider").value;
+    document.getElementById('columns').innerHTML = n_columns;
 }
 
 //Funktion til at udtrække valgte måneder fra datasættet

@@ -70,21 +70,22 @@
             <table>
                 <tr>
                     <td>
-                        Size of color groups (default 10):
+                        Size of color groups: <span id="groupsize"></span>
                     </td>
                     <td>
-                        <input type="range" min="1" max="100" value="10" class="slider" id="groupsizeslider" onchange="updateVisualisations(); ">
+                        <input type="range" min="10" max="100" value="10" class="slider" step = "5" id="groupsizeslider" onchange="updateVisualisations(); ">
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        Number of columns (default 5):
+                        Number of columns: <span id="columns"></span>
                     </td>
                     <td>
                         <input type="range" min="1" max="10" value="5" class="slider" id="columnslider" onchange="updateColumns(); updateVisualisations(); ">
                     </td>
                 </tr>
             </table>
+            <table id = "groupcolor_table"></table>
         </div>
         <div id="vis2"></div>
     </div>
