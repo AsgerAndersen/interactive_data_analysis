@@ -112,3 +112,7 @@ br{
 ul > li {
     margin-bottom: 10px;
 }
+
+#conclusions {
+    width: 850px;
+}

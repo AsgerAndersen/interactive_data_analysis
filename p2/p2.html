@@ -22,11 +22,10 @@
         <h3>Description of our visualizations</h3>
             <ul>
                 <li> <b>Data used in the visualizations:</b> In both of our visualizations, we have used <a href = "https://data.giss.nasa.gov/tmp/gistemp/STATIONS/tmp_612061860000_14_0/station.txt">this</a> dataset. The dataset consists of temperature measurements from the Copenhagen weather station. For each month since January 1880 and until October 2017, it has the mean of the monthly temperature measurements. The data set also contains the annual and seasonal means. We got the dataset from the website of <a href = "https://data.giss.nasa.gov/gistemp/station_data/">Goddard Instistute for Space Studies </a>, which is a part of NASA. A further description of the dataset can be found <a href = "https://data.giss.nasa.gov/gistemp/station_data/seas_ann_means.html">here</a>. </li>
-                <li> <b>Visualization 1: </b> Our first visualization is a scatter plot of the annual temperature means trough time. This means that we have used distance to the right to visually represent time and distance up to visually represent tempature. We have also added a regression line found by using linear regresssion with year as dependent and annual temperatur mean as independent variable.</li>
-                <li> <b>Visualization 2: </b> Our second visualization ranks all years by their annual temperature mean and display a list of the year number  </li>
-                <li> <b>Interactive subsetting of the data:</b> </li>
+                <li> <b>Interactive subsetting of the data:</b> We have allowed the user to determine, which subsets of the temperature dataset that our visualizations use. By default, they use the annual means, but the user can also choose to view only the seasonal means from a specific season or the monthly means from a specific month. If the user for instance tick the checkbox named Spring, then for each year only the temperature mean over the months March, April and May will be used. The user can also choose to view only a subset of the years from 1880 to 2017.</li>
+                <li> <b>Visualization 1: </b> Our first visualization is a scatter plot of the temperature means trough time. In the completely standard way, we have used distance to the right to visually represent one of the continuous variables (time) and distance up to visually represent the other continuous variable (tempature). We have also given the user the possibility to add a regression line found by using linear regresssion with year as dependent and annual temperatur mean as independent variable.</li>
+                <li> <b>Visualization 2: </b> Our second visualization ranks all years by their temperature means and display this ranking as a stream of blocks that should be read along the reading direction. The years are colored by decade, so the viewer for instance easily can see which decades the top ten hottest years are from. If the user wish to color the years in larger than 10 contiguous years, the group size can be controlled with a slider. The user can also control the number of columns in the visualization (first, we imagined the visualization with only one column to be read from top to bottom, but this does not fit very well in the browser window).</li>
             </ul>
-        <h3>How our visualizations can be used to explore the main question of the project</h3>
     </div>
     <br>
     <br>
@@ -97,9 +96,15 @@
             </table>
             <table id = "groupcolor_table"></table>
         </div>
+        <br>
         <div id="vis2"></div>
     </div>
-
+<br>
+<br>
+<div id="conclusions">
+<h3>How our visualizations can be used to explore the main question of the project</h3>
+From visualization 1, it can be seen that although there are quite a bit of variation in temperature means between contiguous years, then the means still tends to be rising as a function of time. If we subset the data by the seasons one after one and add the regression line, we see that the rising tendency is strongest in the spring and fall, and weakest in the summer. If we subset the data by the months one after one and add the regression line, we see that the rising tendency is strongest in March, and weakest in the June. From visualization 2, we also see that the hottest years between 1880 and 2017 tend to positioned in the recent decades. For instance, we see that all the 5 hottest years are from the last two decades, and 14 out of 15 of the hottest years are from the last three decades.
+</div>
 </div>
 
 <div class="section text_box">
@@ -110,7 +115,11 @@
 <div id="section">
     <div class="floaty text_box">
         <h2>Part 3.1 by Asger Andersen</h2>
-        ---
+        The data in our dataset is aggregrated by month. If we could get access to the daily temperature measurements, then we would be able to ask and visually explore new interesting questions, such as:
+        <ul>
+            <li>If we aggregate the temperature measurements by other methods than taking their mean, how does the evolvement of temperature then look as a function of time? For instance: How does a scatter plot of the mean of the 10 hottest days each year look?</li>
+            <li>How does the variability of temperature within each year/season/month change as a function of time? For instance: How does a scatter plot of the each year's variance in the daily temperature during January look? What about for the other months?</li>
+        </ul>
     </div>
     <div class="floaty text_box">
         <h2>Part 3.3 by Christoffer Belhage</h2>
