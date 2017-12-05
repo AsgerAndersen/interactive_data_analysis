@@ -31,23 +31,24 @@
     <br>
     <br>
     <div id="global_options" class="floaty">
+        <h2>Interactive data subsetting</h2>
         <table id="global_options_table">
         </table>
         <script>
-            var months = {jan: "JAN", feb: "FEB", mar: "MAR",
+            var options = {yearly: "metANN", spring: "M-A-M", summer: "J-J-A", fall: "S-O-N",winter: "D-J-F", jan: "JAN", feb: "FEB", mar: "MAR",
                 apr: "APR", may: "MAY", jun: "JUN",
                 jul: "JUL", aug: "AUG", sep: "SEP",
                 oct: "OCT", nov: "NOV", dec: "DEC"};
             var table = document.getElementById("global_options_table");
-            for (var key in months){
+            for (var key in options){
                 var row = document.createElement("tr");
                 var text_cell = document.createElement("td");
                 var checkbox_Cell = document.createElement("td");
                 var checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
                 checkbox.className = "month_checkbox";
-                checkbox.value = months[key];
-                checkbox.id = months[key];
+                checkbox.value = options[key];
+                checkbox.id = options[key];
                 checkbox.onchange = updateVisualisations;
                 checkbox_Cell.appendChild(checkbox);
                 text_cell.innerHTML = upperCaseFirst(key);
@@ -55,7 +56,6 @@
                 row.appendChild(checkbox_Cell);
                 table.appendChild(row);
             }
-
         </script>
         From year: <span id="year_min"></span></br>
         <input type="range" min="0" max="0" value="0" class="slider" id="year_min_slider" onchange="updateVisualisations()"/>
@@ -63,9 +63,19 @@
         <input type="range" min="0" max="0" value="0" class="slider" id="year_max_slider" onchange="updateVisualisations()"/>
     </div>
     <div class="floaty visualisation">
+        <h2>Visualization 1</h2>
+        <table>
+            <tr>
+                <td>Linear regression line:</td>
+                <td>
+                    <input id="reg_checkbox" type="checkbox" onchange="updateVisualisations()"/>
+                </td>
+            </tr>
+        </table>
         <svg id="vis1"></svg>
     </div>
     <div class="floaty visualisation">
+        <h2>Visualization 2</h2>
         <div id="vis2options">
             <table>
                 <tr>

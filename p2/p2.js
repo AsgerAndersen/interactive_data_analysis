@@ -80,7 +80,7 @@ function updateVisualisations(){
 
     //Udtrukket data sendes til visualiseringsfunktionerne
     vis1(selected_data);
-    vis2(selected_data, 2);
+    vis2(selected_data);
 }
 
 function vis1(data)
@@ -142,19 +142,27 @@ function vis1(data)
             return ""+yScale(d["VAL"])+"px";
         })
 
+
+
+    reg_checkbox = document.getElementById("reg_checkbox")
+    reg_on = reg_checkbox.checked 
+    console.log(reg_on)
+
     var lreg = linearRegression(data);
     var x1 = year_domain[0];
     var x2 = year_domain[1]
     var y1 = lreg.f(x1);
     var y2 = lreg.f(x2);
 
-    canvas.append("line")
-        .attr("x1", xScale(x1))
-        .attr("x2", xScale(x2))
-        .attr("y1", yScale(y1))
-        .attr("y2", yScale(y2))
-        .style("stroke", "red")
-        .style("stroke-width", "2")
+    if (reg_on) {
+        canvas.append("line")
+            .attr("x1", xScale(x1))
+            .attr("x2", xScale(x2))
+            .attr("y1", yScale(y1))
+            .attr("y2", yScale(y2))
+            .style("stroke", "red")
+            .style("stroke-width", "2")
+    }
 
     //C/P - https://bl.ocks.org/HarryStevens/be559bed98d662f69e68fc8a7e0ad097
     canvas.append("g")
@@ -177,11 +185,13 @@ function vis1(data)
         .style("stroke", "black")
         .html("C&#176; ");
 
-    canvas.append("text")
-        .attr("x", margin.left - 45)
-        .attr("y", height - margin.bottom + 35)
-        .style("stroke", "black")
-        .html("Slope = " + lreg.a);
+    if (reg_on) {
+        canvas.append("text")
+            .attr("x", margin.left - 45)
+            .attr("y", height - margin.bottom + 35)
+            .style("stroke", "black")
+            .html("Slope = " + lreg.a);
+    }
     //C/P - End
 }
 
@@ -218,13 +228,11 @@ function updateGrouping()
     var num_groups = Math.ceil((year_domain[1] - year_domain[0] + 1) / groupsize);
 
     var groups = d3.range(year_domain[0]+groupsize, year_domain[1]+groupsize, groupsize);
-    console.log(groups)
 
     var unit_groups = [0];
     if (num_groups > 1){
         unit_groups = d3.range(0, 1, 1 / (num_groups - 1));
     }
-    console.log(unit_groups)
 
     var colors = unit_groups.map(function(d){ return d3.interpolateYlGnBu(d)});
     colors.push(d3.interpolateYlGnBu(1))
@@ -369,5 +377,4 @@ function linearRegression(data)
 
     return {a: slope, b: intercept, f: function(x){return slope * x + intercept;}}
 }
-
 
