@@ -101,6 +101,7 @@ function makeTreeWithPartners(data) {
 
     nodes.append("a")
         .attr("href", function(d) {return d.data["link"]})
+        .attr("target", "_blank")
         .append('circle')
         .classed('node', true)
         .style("stroke", "steelblue")
