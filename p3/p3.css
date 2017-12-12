@@ -1,7 +1,9 @@
 .node {
   r: 8;
-  stroke: none;
   stroke: steelblue;
+  fill: white;
+  -webkit-transition: r .5s; /* For Safari 3.1 to 6.0 */
+    transition: r .5s;
 }
 
 .node.blood {
@@ -10,6 +12,7 @@
 
 .node:hover {
   fill: lightsteelblue;
+  r: 10;
 }
 
 .link {
