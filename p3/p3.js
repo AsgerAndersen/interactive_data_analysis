@@ -115,9 +115,9 @@ function makeTreeWithPartners(data) {
         .classed('nodetext', true)
         .attr("fill", "steelblue");
 
-    d3.select(".nodetext:nth-child(even)").attr("transform", "translate(0, -25)");
+    d3.select("g:nth-child(odd) > .nodetext").attr("transform", "translate(0, -25)");
 
-    d3.select(".nodetext:nth-child(odd)").attr("transform", "translate(0, 25)");
+    d3.select("g:nth-child(even) > .nodetext").attr("transform", "translate(0, 25)");
 
     d3.select('svg g.links')
         .selectAll('line.link')
