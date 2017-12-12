@@ -44,7 +44,7 @@ function makeTreeWithPartners(data) {
 
     var canvas = d3.select("#trump_tree")
 
-    var margin = {top: 30, right: 20, bottom: 30, left: 40};
+    var margin = {top: 30, right: 20, bottom: 60, left: 40};
     var width = +canvas.node().getBoundingClientRect().width - margin.left - margin.right;
     var height = +canvas.node().getBoundingClientRect().height - margin.top - margin.bottom;
 
@@ -109,7 +109,6 @@ function makeTreeWithPartners(data) {
     nodes.append("text")
         .text(function(d) {return d.data["name"]})
         .attr("text-anchor", "middle")
-        .attr("transform", "translate(0, -20)")
         .classed('nodetext', true);
 
 
