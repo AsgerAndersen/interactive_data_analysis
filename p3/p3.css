@@ -1,3 +1,16 @@
+body {
+  background-color: #ccc;
+  text-align: center;
+}
+
+#content {
+  background-color: white;
+  max-width: 800;
+  text-align: left;
+  display:inline-block;
+  padding:30px;
+}
+
 .node {
   r: 8;
   stroke: steelblue;
