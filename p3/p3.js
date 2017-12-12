@@ -107,14 +107,14 @@ function makeTreeWithPartners(data) {
         .classed('blood', function(d) {return d.data.TrumpBlood != 0;})
         .attr("r", 8)
         .attr("stroke", "steelblue")
-        .attr("fill", function(d) {return (d.data.TrumpBlood != 0 ? "steelblue" : "white");})
-        .attr("transform", function(d, i) {return (i % 2 == 0 ? "translate(0, -25)" : "translate(0, 25)");};
+        .attr("fill", function(d) {return (d.data.TrumpBlood != 0 ? "steelblue" : "white");});
 
     nodes.append("text")
         .text(function(d) {return d.data["name"]})
         .attr("text-anchor", "middle")
         .classed('nodetext', true)
-        .attr("fill", "steelblue");
+        .attr("fill", "steelblue")
+        .attr("transform", function(d, i) {return (i % 2 == 0 ? "translate(0, -25)" : "translate(0, 25)");});
 
     d3.select('svg g.links')
         .selectAll('line.link')
