@@ -41,6 +41,14 @@ body {
   
 }
 
+g:nth-child(odd) > .nodetext {
+  transform: translate(0px, -25px);
+}
+
+g:nth-child(even) > .nodetext {
+  transform: translate(0px, 25px);
+}
+
 .link {
   fill: none;
   stroke: #ccc;
