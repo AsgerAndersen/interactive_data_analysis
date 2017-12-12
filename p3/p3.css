@@ -13,7 +13,7 @@ body {
 
 #trump_tree {
   height: 600px;
-  max-width:1000px;
+  width:100%;
 }
 
 .node {
@@ -50,5 +50,5 @@ body {
 }
 
 .text_box {
-  max-width: 1000px;
+  width: 100%;
 }
