@@ -11,6 +11,11 @@ body {
   padding:30px;
 }
 
+#trump_tree {
+  height: 600px;
+  max-width:1000px;
+}
+
 .node {
   r: 8;
   stroke: steelblue;
