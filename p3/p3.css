@@ -16,7 +16,8 @@
 }
 
 .nodetext {
-  color: steelblue;
+  fill: steelblue;
+  weight: bold;
 }
 
 .link {
