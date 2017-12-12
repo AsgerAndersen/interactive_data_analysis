@@ -1,6 +1,15 @@
 .node {
-  fill: steelblue;
+  r: 8;
   stroke: none;
+  stroke: steelblue;
+}
+
+.node.blood {
+  fill: steelblue;
+}
+
+.node:hover {
+  fill: lightsteelblue;
 }
 
 .link {
