@@ -9,6 +9,7 @@ body {
   text-align: left;
   display:inline-block;
   padding:30px;
+  box-shadow: -5px 0px 10px #333, 5px 0px 10px #333;
 }
 
 #trump_tree {
