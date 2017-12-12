@@ -8,3 +8,8 @@
   stroke: #ccc;
   stroke-width: 1px;
 }
+
+#visualisation {
+  width: 100%;
+  overflow-x: scroll;
+}
