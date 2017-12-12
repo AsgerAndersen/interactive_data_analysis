@@ -110,7 +110,7 @@ function makeTreeWithPartners(data) {
         .text(function(d) {return d.data["name"]})
         .attr("text-anchor", "middle")
         .attr("transform", "translate(0, -20)")
-        .classed('node', true);
+        .classed('node', false);
 
 
     d3.select('svg g.links')
