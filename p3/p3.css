@@ -17,13 +17,13 @@
 
 .nodetext {
   fill: steelblue;
-  weight: bold;
+  font-weight: bold;
 }
 
 .link {
   fill: none;
   stroke: #ccc;
-  stroke-width: 1px;
+  stroke-width: 2px;
 }
 
 #visualisation {
