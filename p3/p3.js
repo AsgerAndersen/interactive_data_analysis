@@ -104,9 +104,7 @@ function makeTreeWithPartners(data) {
         .attr("target", "_blank")
         .append('circle')
         .classed('node', true)
-        .style("stroke", "steelblue")
-        .style("fill", function(d) {return (d.data.TrumpBlood == 0 ? "white" : "steelblue");})
-        .attr('r', 8);
+        .classed('blood', function(d) {return d.data.TrumpBlood != 0;});
 
     nodes.append("text")
         .text(function(d) {return d.data["name"]})
