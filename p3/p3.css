@@ -37,6 +37,8 @@ body {
 .nodetext {
   fill: steelblue;
   font-weight: bold;
+  max-width: 50px;
+  
 }
 
 .link {
