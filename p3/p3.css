@@ -1,10 +1,64 @@
+body {
+  background-color: #ccc;
+  text-align: center;
+}
+
+#content {
+  background-color: white;
+  width: 800px;
+  text-align: left;
+  display:inline-block;
+  padding:30px;
+  box-shadow: -5px 0px 10px #333, 5px 0px 10px #333;
+}
+
+#trump_tree {
+  height: 600px;
+  width:100%;
+}
+
 .node {
+  r: 8;
+  stroke: steelblue;
+  fill: white;
+  -webkit-transition: r .5s, fill 0.5s;
+    transition: r .5s, fill 0.5s;
+}
+
+.node.blood {
   fill: steelblue;
-  stroke: none;
+}
+
+.node:hover {
+  fill: lightskyblue;
+  r: 10;
+}
+
+.nodetext {
+  fill: steelblue;
+  font-weight: bold;
+  max-width: 50px;
+  
+}
+
+g:nth-child(odd) > .nodetext {
+  transform: translate(0px, -25px);
+}
+
+g:nth-child(even) > .nodetext {
+  transform: translate(0px, 25px);
 }
 
 .link {
   fill: none;
   stroke: #ccc;
-  stroke-width: 1px;
+  stroke-width: 2px;
+}
+
+#visualisation {
+  width: 100%;
+}
+
+.text_box {
+  width: 100%;
 }

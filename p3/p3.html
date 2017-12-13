@@ -13,10 +13,12 @@
 </head>
 
 <body>
+<div id="content">    
+    
 <h1>Assignment 3: Trees</h1>
 <h2>The Trump Family</h2>
 <div id="visualisation" class="section">
-  <svg id = "trump_tree" width = "1600" height = "600">
+  <svg id = "trump_tree">
     <g transform="translate(5, 40)">
       <g class="links"></g>
       <g class="nodes"></g>
@@ -24,15 +26,40 @@
   </svg>
 </div>
 <div class="section">
+    <div class="floaty text_box">
+        Note: Links do not seem to work in safari, for some reason. For best viewing experience, use chrome.
+    </div>
+</div>
+
+<div class="section">
     <h2>1)</h2>
     <div class="floaty text_box">
-
+        The layout turned out as it did because we didn't have time to implement it as we would have liked to;
+        Preferably, all partners would be horizontal and on same level as the Trump descendant,
+        with bracket-style lines connecting them, and then a line coming down fra the bracket-line to the child/children.
+        This would have been the typical style of a family tree, but we would probably have to implement most of it ourselves,
+        without much help from the d3 tree library.<br>
+        So, we have made some workarounds in order to illustrate which nodes are Trump-descendant, and which ones are married into the family.
+        <br>
+        First of all, the nodes without filling, are the married in husbands/wives (even if later divorced).
+        Secondly, the lines connecting the Trump descendant with his/her partner(s) is a dashed line,
+        in order to indicate a relationship that is not child / parent.<br>
+        Conveniently, rows alternate between partners and children. Alternating colors could have been used
+        to further illustrate the non-child relationships, but it would not add additional data, and might just end up confusing the viewer.
     </div>
     <h2>2)</h2>
     <div class="floaty text_box">
-
+        We see at least one very attractive interactive feature that could be implemented;
+        If the data-set was larger, i.e. containing information about the partners families,
+        and also data about Donald Trump's ancestors, then being able to toggle parts of the tree would be great.
+        This way the user could go exploring in the ancestry without having to see the entire data-set in one view,
+        while not being constrained to only parts of the data.<br>
+        We have seen examples of this kind of functionality, when looking for inspiration,
+        but it seems that none of them allowed to completely "wander around" in the tree;
+        Most were sort of based in one node, and then with toggleable branches.
     </div>
-
+</div>
+    
 </div>
 
 </body>

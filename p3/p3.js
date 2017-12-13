@@ -39,7 +39,7 @@ function makeTreeWithPartners(data) {
 
     var canvas = d3.select("#trump_tree")
 
-    var margin = {top: 30, right: 20, bottom: 30, left: 40};
+    var margin = {top: 30, right: 20, bottom: 60, left: 40};
     var width = +canvas.node().getBoundingClientRect().width - margin.left - margin.right;
     var height = +canvas.node().getBoundingClientRect().height - margin.top - margin.bottom;
 
@@ -96,18 +96,20 @@ function makeTreeWithPartners(data) {
 
     nodes.append("a")
         .attr("href", function(d) {return d.data["link"]})
+        .attr("target", "_blank")
         .append('circle')
         .classed('node', true)
-        .style("stroke", "steelblue")
-        .style("fill", function(d) {return (d.data.TrumpBlood == 0 ? "white" : "steelblue");})
-        .attr('r', 8);
+        .classed('blood', function(d) {return d.data.TrumpBlood != 0;})
+        .attr("r", 8)
+        .attr("stroke", "steelblue")
+        .attr("fill", function(d) {return (d.data.TrumpBlood != 0 ? "steelblue" : "white");});
 
     nodes.append("text")
         .text(function(d) {return d.data["name"]})
         .attr("text-anchor", "middle")
-        .attr("transform", "translate(0, -20)")
-        .classed('node', true);
-
+        .classed('nodetext', true)
+        .attr("fill", "steelblue")
+        .attr("transform", function(d, i) {return (i % 2 == 0 ? "translate(0, -25)" : "translate(0, 25)");});
 
     d3.select('svg g.links')
         .selectAll('line.link')
