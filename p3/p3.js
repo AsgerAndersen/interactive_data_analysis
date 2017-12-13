@@ -29,12 +29,7 @@ function addLinks(node, links) {
 
 function addLink(node, links) {
     for (i = 0; i < links.length; i++) {
-        //console.log("-----------------")
-        //console.log(links[i]["name"])
         if (links[i]["name"] == node["name"]) {
-            //console.log(links[i]["name"])
-            //console.log(links[i]["link"])
-            //console.log(node["name"])
             node["link"] = links[i]["link"]
         }
     }
