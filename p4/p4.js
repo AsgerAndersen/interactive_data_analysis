@@ -3,9 +3,9 @@ var hands = {};
 var hands_pca = {};
 
 function init() {
-    loadHands("hands.csv", hands, function(data) {scatter(data, '#hand1', true, true)});
+    loadHands("hands.csv", hands, function(data) {plot(data, '#hand1', true, true, true)});
 
-    loadPCA("hands_pca.csv", hands_pca, function(data) {scatter(data, '#hand2', false, false)});
+    loadPCA("hands_pca.csv", hands_pca, function(data) {plot(data, '#hand2', false, false, false)});
 
     //loadHands("hands_pca.csv");
 
@@ -84,7 +84,7 @@ function loadPCA(filename, storage, callback) {
     );
 }
 
-function scatter(data, target, axis_equal, multiple)
+function plot(data, target, axis_equal, multiple, drawline)
 {
 
     var domainx = data["domainx"];
@@ -138,38 +138,29 @@ function scatter(data, target, axis_equal, multiple)
     canvas
         .selectAll("line")
         .remove();
+
     if (multiple) {
         for (var n = 0; n < data.length; n++) {
             var hand = data[n];
-            canvas
-                .selectAll("g")
-                .data(hand)
-                .enter()
-                .append("circle")
-                .attr("r", "2px")
-                .attr("cx", function(d){
-                    return ""+xScale(d[0])+"px";
-                })
-                .attr("cy", function(d){
-                    return ""+yScale(d[1])+"px";
-                })
-                .attr("fill", d3.interpolateSpectral(n / data.length));
+            if (drawline) {
+                outline(hand, canvas, xScale, yScale)
+                    .attr("stroke", d3.interpolateSpectral(n / data.length));
+            }
+            else {
+                scatter(hand, canvas, xScale, yScale)
+                    .attr("fill", d3.interpolateSpectral(n / data.length));
+            }
         }
     }
     else {
-        canvas
-            .selectAll("g")
-            .data(data)
-            .enter()
-            .append("circle")
-            .attr("r", "2px")
-            .attr("cx", function(d){
-                return ""+xScale(d[0])+"px";
-            })
-            .attr("cy", function(d){
-                return ""+yScale(d[1])+"px";
-            })
-            .attr("fill", "darkred");
+        if (drawline) {
+            outline(data, canvas, xScale, yScale)
+                .attr("stroke", "darkred");
+        }
+        else {
+            scatter(data, canvas, xScale, yScale)
+                .attr("fill", "darkred");
+        }
     }
 
     canvas.append("g")
@@ -194,3 +185,34 @@ function scatter(data, target, axis_equal, multiple)
     //C/P - End
 }
 
+
+function outline(data, target, xScale, yScale) {
+    var lineFunction = d3.line()
+        .x(function (d) {
+            return xScale(d[0]);
+        })
+        .y(function (d) {
+            return yScale(d[1]);
+        });
+
+    return target
+        .append("path")
+        .data([data])
+        .attr("d", lineFunction)
+        .attr("stroke-width","2")
+        .attr("fill", "none");
+}
+
+function scatter(data, target, xScale, yScale) {
+    return target.selectAll("g")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("r", "2px")
+        .attr("cx", function(d){
+            return ""+xScale(d[0])+"px";
+        })
+        .attr("cy", function(d){
+            return ""+yScale(d[1])+"px";
+        });
+}
