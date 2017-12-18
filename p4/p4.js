@@ -3,11 +3,15 @@ var hands = {};
 var hands_pca = {};
 
 function init() {
-    loadHands("hands.csv", hands, function(data) {plot(data, '#hand1', true, true, true)});
+    loadHands("hands.csv", hands, function(data) {plot(data, -1, '#hand1', true, true, true)});
 
-    loadPCA("hands_pca.csv", hands_pca, function(data) {plot(data, '#hand2', false, false, false)});
-
-    //loadHands("hands_pca.csv");
+    loadPCA("hands_pca.csv", hands_pca, function(data) {
+        plot(data, -1, '#hand2', false, false, false);
+        d3.selectAll("#hand2 circle")
+            .on("click", function(d, i) {
+                plot(hands, i, '#hand1', true, true, true);
+            });
+    });
 
 }
 
@@ -46,7 +50,11 @@ function loadHands(filename, storage, callback) {
                 var coords = x.map(function (v, i) { return [v, y[i]]; });
                 hand_data[i] = coords;
             });
-            storage = {"domainx": [min_x, max_x], "domainy":  [min_y, max_y], "data": hand_data};
+
+            //storage = {"domainx": [min_x, max_x], "domainy":  [min_y, max_y], "data": hand_data};
+            storage["data"] = hand_data;
+            storage["domainx"] = [min_x, max_x];
+            storage["domainy"] = [min_y, max_y];
             callback(storage);
         }
     );
@@ -78,13 +86,16 @@ function loadPCA(filename, storage, callback) {
 
                 pca_data[i] = [x, y];
             });
-            storage = {"domainx": [min_x, max_x], "domainy":  [min_y, max_y], "data": pca_data};
+            //storage = {"domainx": [min_x, max_x], "domainy":  [min_y, max_y], "data": pca_data};
+            storage["data"] = pca_data;
+            storage["domainx"] = [min_x, max_x];
+            storage["domainy"] = [min_y, max_y];
             callback(storage);
         }
     );
 }
 
-function plot(data, target, axis_equal, multiple, drawline)
+function plot(data, i, target, axis_equal, multiple, drawline)
 {
 
     var domainx = data["domainx"];
@@ -124,22 +135,11 @@ function plot(data, target, axis_equal, multiple, drawline)
 
 
     canvas
-        .selectAll("g")
+        .selectAll("*")
         .remove();
 
-    canvas
-        .selectAll("text")
-        .remove();
 
-    canvas
-        .selectAll("circle")
-        .remove();
-
-    canvas
-        .selectAll("line")
-        .remove();
-
-    if (multiple) {
+    if (i < 0 && multiple) {
         for (var n = 0; n < data.length; n++) {
             var hand = data[n];
             if (drawline) {
@@ -150,6 +150,17 @@ function plot(data, target, axis_equal, multiple, drawline)
                 scatter(hand, canvas, xScale, yScale)
                     .attr("fill", d3.interpolateSpectral(n / data.length));
             }
+        }
+    }
+    else if (i >= 0 && multiple) {
+        var hand = data[i];
+        if (drawline) {
+            outline(hand, canvas, xScale, yScale)
+                .attr("stroke", "darkred");
+        }
+        else {
+            scatter(hand, canvas, xScale, yScale)
+                .attr("fill", "darkred");
         }
     }
     else {
@@ -208,7 +219,7 @@ function scatter(data, target, xScale, yScale) {
         .data(data)
         .enter()
         .append("circle")
-        .attr("r", "2px")
+        .attr("r", "3px")
         .attr("cx", function(d){
             return ""+xScale(d[0])+"px";
         })
