@@ -4,7 +4,7 @@
 
 <head>
 
-    <title>Project 3</title>
+    <title>Project 4</title>
 
     <link rel="stylesheet" type="text/css" href="p4.css">
     <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -19,7 +19,7 @@
 <div id="content">    
     
 <h1>Assignment 4: Show of hands</h1>
-<h2>1)</h2>
+<h2>Visualization:</h2>
 <div id="visualisation" class="section">
     <svg id = "hand1">
     </svg>
@@ -46,14 +46,14 @@
 
 
 <div class="section">
-    <h2>2)</h2>
-    <div class="floaty text_box">
+<h2>Text to visualization:</h2>
+<div class="floaty text_box">
+<p>PCA works by projecting each datapoint in a feature space of m dimensions onto a linear subspace of k dimensions, where k is less than or equal to m. In our case, we start by representing each hand by 112 numbers, which means that each hand is a point in a 112 dimensional feature space. Since we only consider the two first principal components, we hereby represent each hand by only 2 numbers, each of which is a linear transformation of the 112 numbers representing the hand in the original feature space. Thus, each hand is projected from a 112 dimensional feature onto a 2 dimensional linear subspace. The subspace is chosen among all 2 dimensional linear subspaces such that the projection of the datapoints have as much variance as possible. Intuitively, pca transforms the datapoints with exactly that linear projection of rank k, which enables us as much as possible to distinguish between the transformed data points.</p>
 
-    </div>
-    <h2>3)</h2>
-    <div class="floaty text_box">
+<p>We use two scatterplots to visualize the relation between the original datapoints and the transformed datapoints. In the right scatterplot, we visualize the transformed datapoints in the 2-dimensional feature subspace. Each circle represents exactly one hand: The circle's x-value and y-value correspond to the value of the first and second principal component of the hand, respectively. When the user hovers over a circle, the scatter plot on the left shows a visualization of the original 112 dimensional represention of the hand corresponding to the circle in the 2-dimensional transformed represention. This visualization simply takes the first 56 of the 112 numbers as x-values, and the 56 next numbers as corresponding y-values, and connects the resulting circles by a line. Hereby, we see how the original outline of the given hand looked. By running the mouse over different points in the pca scatter plot, the user can explore the connection between the outlines of the hands and the corresponding values of first and second principal components of the hands. If the user wants to focus on only the first or the second principal component, he/she can press a check box to ignore the other one, whereby the datapoints are visualized in the 1-dimensional feature space of only the first or second principal component (this extra interactive feature was made by Asger). If the user wants to see a visualization of all the hands at the same time in the right scatterplot, he/she can hover over the right scatterplot (this interactive feature was made by Christoffer).</p>
 
-    </div>
+<p>Exploring the data like this, we conclude that the first principal component has managed to represent something about the outlines, which is also quite intuitive to humans, namely how spread out the fingers of the hand are. Hands with very spread out fingers get a low value in the first principal component, whereas hands with very collected fingers get a high value. The second principal component seems to capture how spread out the fingers close to the thumb are, compared to the fingers close to the pinky finger. The lower the value, the more the spread out fingers tend to be the fingers close to the thumb.</p>
+</div>
 </div>
     
 </div>
