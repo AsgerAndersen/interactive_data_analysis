@@ -15,6 +15,10 @@ function updateVisualisations() {
             .on("mouseover", function(d, i) {
                 plot(hands, i, '#hand1', false, true, true, true, 'x', 'y');
             });
+        d3.select("#hand1")
+            .on("mouseover", function() {
+                plot(hands, -1, '#hand1', false, true, true, true, 'x', 'y')
+            });
     });
 }
 
@@ -98,13 +102,17 @@ function loadPCA(filename, storage, callback) {
     );
 }
 
-loadPCA("hands_pca.csv", hands_pca, function(data) {
-        plot(data, -1, '#hand2', false, false, false);
-        d3.selectAll("#hand2 circle")
-            .on("mouseover", function(d, i) {
-                plot(hands, i, '#hand1', true, true, true);
-            });
-    });
+// loadPCA("hands_pca.csv", hands_pca, function(data) {
+//         plot(data, -1, '#hand2', false, false, false);
+//         d3.selectAll("#hand2 circle")
+//             .on("mouseover", function(d, i) {
+//                 plot(hands, i, '#hand1', true, false, false, false, 'p1', 'p2');
+//             });
+//         d3.select("#hand2")
+//             .on("mouseout", function() {
+//                 plot(hands, -1, '#hand1', false, true, true, true, 'x', 'y')
+//             });
+//     });
 
 function plot(data, i, target, pca, axis_equal, multiple, drawline, x_name, y_name)
 {
