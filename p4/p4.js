@@ -3,16 +3,19 @@ var hands = {};
 var hands_pca = {};
 
 function init() {
-    loadHands("hands.csv", hands, function(data) {plot(data, -1, '#hand1', true, true, true)});
+    updateVisualisations();
+}
+
+function updateVisualisations() {
+    loadHands("hands.csv", hands, function(data) {plot(data, -1, '#hand1', false, true, true, true, 'x', 'y')});
 
     loadPCA("hands_pca.csv", hands_pca, function(data) {
-        plot(data, -1, '#hand2', false, false, false);
+        plot(data, -1, '#hand2', true, false, false, false, 'p1', 'p2');
         d3.selectAll("#hand2 circle")
             .on("mouseover", function(d, i) {
-                plot(hands, i, '#hand1', true, true, true);
+                plot(hands, i, '#hand1', false, true, true, true, 'x', 'y');
             });
     });
-
 }
 
 function loadHands(filename, storage, callback) {
@@ -95,7 +98,15 @@ function loadPCA(filename, storage, callback) {
     );
 }
 
-function plot(data, i, target, axis_equal, multiple, drawline)
+loadPCA("hands_pca.csv", hands_pca, function(data) {
+        plot(data, -1, '#hand2', false, false, false);
+        d3.selectAll("#hand2 circle")
+            .on("mouseover", function(d, i) {
+                plot(hands, i, '#hand1', true, true, true);
+            });
+    });
+
+function plot(data, i, target, pca, axis_equal, multiple, drawline, x_name, y_name)
 {
 
     var domainx = data["domainx"];
@@ -108,6 +119,9 @@ function plot(data, i, target, axis_equal, multiple, drawline)
 
     var height = canvas.node().getBoundingClientRect().height;
     var width = canvas.node().getBoundingClientRect().width;
+
+    ignore_p1 = document.getElementById("ignore_p1").checked
+    ignore_p2 = document.getElementById("ignore_p2").checked
 
 
     if (axis_equal) {
@@ -147,7 +161,7 @@ function plot(data, i, target, axis_equal, multiple, drawline)
                     .attr("stroke", d3.interpolateSpectral(n / data.length));
             }
             else {
-                scatter(hand, canvas, xScale, yScale)
+                scatter(hand, canvas, xScale, yScale, false, false)
                     .attr("fill", d3.interpolateSpectral(n / data.length));
             }
         }
@@ -159,7 +173,7 @@ function plot(data, i, target, axis_equal, multiple, drawline)
                 .attr("stroke", "darkred");
         }
         else {
-            scatter(hand, canvas, xScale, yScale)
+            scatter(hand, canvas, xScale, yScale, false, false)
                 .attr("fill", "darkred");
         }
     }
@@ -169,30 +183,34 @@ function plot(data, i, target, axis_equal, multiple, drawline)
                 .attr("stroke", "darkred");
         }
         else {
-            scatter(data, canvas, xScale, yScale)
+            scatter(data, canvas, xScale, yScale, ignore_p1, ignore_p2)
                 .attr("fill", "darkred");
         }
     }
+    
+    if (!ignore_p1 || !pca) {
+        canvas.append("g")
+            .attr("transform", "translate(0," + (height-margin.bottom) + ")")
+            .call(xAxis);
+        
+        canvas.append("text")
+            .attr("x", margin.left + (width - margin.left - margin.right) / 2)
+            .attr("y", height - margin.bottom + 35)
+            .style("stroke", "black")
+            .html(x_name);
+    }
 
-    canvas.append("g")
-        .attr("transform", "translate(0," + (height-margin.bottom) + ")")
-        .call(xAxis);
+    if (!ignore_p2 || !pca) {
+        canvas.append("g")
+            .attr("transform", "translate(" + (margin.left) + ",0)")
+            .call(yAxis);
 
-    canvas.append("text")
-        .attr("x", margin.left + (width - margin.left - margin.right) / 2)
-        .attr("y", height - margin.bottom + 35)
-        .style("stroke", "black")
-        .html("x");
-
-    canvas.append("g")
-        .attr("transform", "translate(" + (margin.left) + ",0)")
-        .call(yAxis);
-
-    canvas.append("text")
-        .attr("x", margin.left - 45)
-        .attr("y", margin.top + (height - margin.top - margin.bottom) / 2)
-        .style("stroke", "black")
-        .html("y");
+        canvas.append("text")
+            .attr("x", margin.left - 45)
+            .attr("y", margin.top + (height - margin.top - margin.bottom) / 2)
+            .style("stroke", "black")
+            .html(y_name);
+    }
     //C/P - End
 }
 
@@ -214,16 +232,25 @@ function outline(data, target, xScale, yScale) {
         .attr("fill", "none");
 }
 
-function scatter(data, target, xScale, yScale) {
+function scatter(data, target, xScale, yScale, no_x, no_y) {
     return target.selectAll("g")
         .data(data)
         .enter()
         .append("circle")
         .attr("r", "3px")
         .attr("cx", function(d){
-            return ""+xScale(d[0])+"px";
+            if (no_x) {
+                return xScale(0);
+            } 
+            else {
+                return ""+xScale(d[0])+"px";
+            }
         })
         .attr("cy", function(d){
-            return ""+yScale(d[1])+"px";
+            if (no_y) {
+                return yScale(0);
+            } else {
+                return ""+yScale(d[1])+"px";
+            }
         });
 }
