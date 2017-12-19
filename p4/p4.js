@@ -8,7 +8,7 @@ function init() {
     loadPCA("hands_pca.csv", hands_pca, function(data) {
         plot(data, -1, '#hand2', false, false, false);
         d3.selectAll("#hand2 circle")
-            .on("click", function(d, i) {
+            .on("mouseover", function(d, i) {
                 plot(hands, i, '#hand1', true, true, true);
             });
     });

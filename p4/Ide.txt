@@ -1,0 +1,8 @@
+Ide: 
+
+Lav 3 knapper:
+* Både pca1 og pca2 (default).
+* Kun pca1:
+  * Alle pca2 værdier sættes til 0 (implementering: vælg søjle med nuller pca2).
+* Kun pca2:
+  * Alle pca1 værdier sættes til 0 (implementering: vælg søjle med nuller i stedet for pca1).
