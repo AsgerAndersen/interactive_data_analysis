@@ -3,9 +3,11 @@ d3.select(window).on('load', init);
 function init() {
 
     var svg = d3.select('svg')
-    var margin = {top: 50, right: 50, bottom: 200, left: 50};
+    var margin = {top: 50, right: 50, bottom: 50, left: 50};
     var width = +svg.node().getBoundingClientRect().width - margin.left - margin.right;
     var height = +svg.node().getBoundingClientRect().height - margin.top - margin.bottom;
+
+    console.log(width + " : " + height);
 
     var g = svg.append("g")
         .attr("transform",
@@ -13,14 +15,14 @@ function init() {
 
     // Choose projection
     var projection = d3.geoKavrayskiy7()
-        .scale(width/5)
+        .scale(width)
         .translate([width / 2, height / 2]);
 
     // Setup path generator
     var path = d3.geoPath()
         .projection(projection);
 
-    d3.json("https://raw.githubusercontent.com/d3/d3-geo/master/test/data/world-50m.json",
+    d3.json("sf_crime.geojson",
         function(error, data) {
 
             if (error) throw error;
@@ -28,7 +30,7 @@ function init() {
             g.append("g")
                 .attr("class", "counties")
                 .selectAll("path")
-                .data(topojson.feature(data, data.objects.countries).features)
+                .data(data.features)
                 .enter()
                 .append("path")
                 .attr("d", path)
