@@ -1,0 +1,23 @@
+body {
+  background-color: #ccc;
+  text-align: center;
+}
+
+#content {
+  background-color: white;
+  width: 900px;
+  text-align: left;
+  display:inline-block;
+  padding:30px;
+  box-shadow: -5px 0px 10px #333, 5px 0px 10px #333;
+  border-radius: 10px;
+}
+
+#visualisation {
+  width: 100%;
+  text-align: center;
+}
+
+.text_box {
+  width: 100%;
+}
