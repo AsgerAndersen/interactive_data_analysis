@@ -22,6 +22,7 @@ function init() {
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
 
+    /*
     d3.csv(
         'data/sodas_data.csv',
         function (error, dat) {
@@ -63,8 +64,10 @@ function init() {
 
         }
     )
+    */
 }
 
+/*
 function calculateGraphs()
 {
     var i = 0;
@@ -168,4 +171,4 @@ function simulation(width, height) {
         .force("charge", d3.forceManyBody().strength(-5))
         .force("center", d3.forceCenter(width / 2, height / 2));
 }
-
+*/
