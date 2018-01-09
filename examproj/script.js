@@ -4,14 +4,16 @@ var data, sim, svg, g;
 var nodes = [], links = [];
 
 var params = {
-    "bin size": 300,
+    "bin_size": 300,
     "offset": 0,
     "bins": 10,
     "threshold": -300
 };
 
-function init() {
+color = 'black'
+radius = 3
 
+function init() {
 
     svg = d3.select('svg');
     var margin = {top: 50, right: 50, bottom: 50, left: 50};
@@ -21,6 +23,87 @@ function init() {
     g = svg.append("g")
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
+
+    d3.csv(
+        'data/step_testdata.csv',
+        function(d) {
+            d.t = parseInt(d.t);
+            d.value = parseFloat(d.value);
+            d.jump = parseFloat(d.jump);
+            d.left = (d.left == 'True');
+            return d;
+        },
+        function (error, data) {
+            if (error) throw error;
+            drawStepChart(data);
+        }
+    )
+
+    function drawStepChart(data) {
+
+        var x = d3.scaleLinear()
+            .domain(d3.extent(data,
+                function(d){
+                    return d.t;
+                }))
+            .range([0,width]);
+
+        var y = d3.scaleLinear()
+            .domain(d3.extent(data,
+                function(d){
+                    return d.value;
+                }))
+            .range([height,0]);
+
+        g.selectAll(".stepgraph-hline")
+         .data(data.filter(function(d){
+                return (d.left)
+             }))
+         .enter()
+         .append("line")
+         .classed("stepgraph-hline", true)
+         .style("stroke", color)
+         .attr("x1", function(d) {return x(d.t)})
+         .attr("y1", function(d) {return y(d.value)})
+         .attr("x2", function(d) {
+               return (x(d.t + params.bin_size))
+            })
+         .attr("y2", function(d) {return y(d.value)})
+        
+        g.selectAll(".stepgraph-vline")
+         .data(data.filter(function(d, i){
+                return (d.left && (i != 0))
+             }))
+         .enter()
+         .append("line")
+         .classed("stepgraph-vline", true)
+         .attr("stroke", "grey")
+         .attr("stroke-dasharray", 4)
+         .attr("x1", function(d) {return x(d.t)})
+         .attr("y1", function(d) {return y(d.value)})
+         .attr("x2", function(d) {return x(d.t)})
+         .attr("y2", function(d) {
+            return (y(d.value - d.jump))
+          })
+
+        g.selectAll(".stepgraph-circle")
+            .data(data)
+            .enter()
+            .append("circle")
+            .classed("stepgraph-circle", true)
+            .attr("cx", function(d) {
+                return x(d.t) + "px";
+            })
+            .attr("cy", function(d) {
+                return y(d.value) + "px";
+            })
+            .attr("r", radius)
+            .attr("fill", function(d) {
+                if (d.left) {return color;}
+                else {return "white";}
+            })
+            .attr("stroke", color)
+    } 
 
     /*
     d3.csv(
@@ -64,9 +147,8 @@ function init() {
 
         }
     )
-    */
+*/
 }
-
 /*
 function calculateGraphs()
 {
