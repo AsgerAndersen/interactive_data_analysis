@@ -27,7 +27,6 @@ function init() {
         function (error, dat) {
             if (error) throw error;
 
-
             sim = simulation(width, height);
             data = dat;
             calculateGraphs()

@@ -1,36 +1,37 @@
 d3.select(window).on('load', init);
-var data, sim, svg, g;
-
-var nodes = [], links = [];
-
-var params = {
-    "bin size": 300,
-    "offset": 0,
-    "bins": 10,
-    "threshold": -300
-};
 
 function init() {
 
-
-    svg = d3.select('svg');
+    var svg = d3.select('svg');
     var margin = {top: 50, right: 50, bottom: 50, left: 50};
     var width = +svg.node().getBoundingClientRect().width - margin.left - margin.right;
     var height = +svg.node().getBoundingClientRect().height - margin.top - margin.bottom;
 
-    g = svg.append("g")
+    var g = svg.append("g")
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
 
     d3.csv(
         'data/sodas_data.csv',
-        function (error, dat) {
+        function (error, data) {
             if (error) throw error;
+            var part = [];
+            for (var n = 0; n < 200; n++) {
+                part[n] = data[n];
+            }
 
+            data = part;
 
-            sim = simulation(width, height);
-            data = dat;
-            calculateGraphs()
+            var sim = simulation(width, height);
+
+            var links = calculateLinks(data, "user", "user2", function(row){
+                return row["rssi"] > -95 ;//&& row["ts"] > 0 && row["ts"] < 300;
+            });
+            console.log(links);
+            var nodes = simulateNodes(data);
+            console.log(nodes);
+
+            drawGraph(g, sim, nodes, links);
 
             // // Temp
             // var x = d3.scaleLinear()
@@ -65,37 +66,6 @@ function init() {
     )
 }
 
-function calculateGraphs()
-{
-    var i = 0;
-    for (var n = 0; n < 1; n++) {
-        var bin = [];
-        var looping = true;
-        while (looping) {
-            var row = data[i];
-            if (row["ts"] < (n+1) * params["bin size"]) {
-                bin.push(data[i]);
-            } else {
-                looping = false;
-            }
-            i++;
-
-        }
-        console.log(i);
-        links[n] = calculateLinks(bin, "user", "user2", function(row){
-            return row["rssi"] > params['threshold'];//&& row["ts"] > 0 && row["ts"] < 300;
-        });
-        nodes[n] = simulateNodes(bin);
-        if (n == 0){
-            drawGraph(g, nodes[n], links[n]);
-        }
-        n++;
-    }
-
-
-
-}
-
 function calculateLinks(data, node1key, node2key, filter) {
     var links = [];
     for (var key in data) {
@@ -112,15 +82,13 @@ function simulateNodes(data) {
     var nodes = [];
     for (var key in data) {
         var row = data[key];
-        //---- BUUUUUUGGGGG HERE ----
         if (nodes.indexOf(row["user"]) < 0) { nodes.push({"id": row["user"]})}
         if (nodes.indexOf(row["user1"]) < 0) { nodes.push({"id": row["user2"]})}
-        //---- BUUUUUUGGGGG HERE ----
     }
     return nodes;
 }
 
-function drawGraph(canvas, nodes, links) {
+function drawGraph(canvas, sim, nodes, links) {
 
     //COPY PASTE FROM https://bl.ocks.org/mbostock/4062045
     var link = canvas.append("g")

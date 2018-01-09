@@ -26,11 +26,31 @@ function init() {
         'data/sodas_data.csv',
         function (error, dat) {
             if (error) throw error;
+<<<<<<< HEAD
+            var part = [];
+            /*
+            for (var n = 0; n < 200; n++) {
+                part[n] = data[n];
+            }
+			*/
+            //data = part;
 
+            var sim = simulation(width, height);
+
+            var links = calculateLinks(data, "user", "user2", function(row){
+                return row["rssi"] > -95 // && row["ts"] > 0 && row["ts"] < 60*60*24;
+            });
+            console.log(links);
+            var nodes = simulateNodes(data);
+            console.log(nodes);
+
+            drawGraph(g, sim, nodes, links);
+=======
 
             sim = simulation(width, height);
             data = dat;
             calculateGraphs()
+>>>>>>> c0fe41c7b2d5e73e3403cee6292a067167c4720b
 
             // // Temp
             // var x = d3.scaleLinear()
