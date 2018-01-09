@@ -1,0 +1,6 @@
+Possible descriptive graph statistics to turn into time series:
+* (Average) degree.
+* Density.
+* Cluster coefficient.
+* Number of components.
+* (Average) centrality.
