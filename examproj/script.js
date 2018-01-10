@@ -1,15 +1,22 @@
 d3.select(window).on('load', init);
-var data, sim, svg, g;
+var data, sim, svg, g, width, height;
 
-var nodes = [], links = [];
+var nodes = [], links = [], all_node_names = [];
 
-var n_nodes = 811
+var data_props = {
+    "nodes": 0,
+    "links": 0,
+    "rows": 0,
+    "current_bin": 0
+};
 
 var params = {
     "bin_size": 900,
     "offset": 0,
     "bins": 96,
-    "threshold": -80,
+    "threshold": -95,
+    "source": "user",
+    "target": "user2",
     "statistics": [
         {name: "Average Degree", method: function(links, nodes) { return averageDegree(links);}}/*,
         {name: "Network Density", method: function(links, nodes) {return networkDensity(links);}},
@@ -49,23 +56,48 @@ function init() {
 
     svg = d3.select("#vis");
     var margin = {top: 50, right: 50, bottom: 50, left: 50};
-    var width = +svg.node().getBoundingClientRect().width - margin.left - margin.right;
-    var height = +svg.node().getBoundingClientRect().height - margin.top - margin.bottom;
+    width = +svg.node().getBoundingClientRect().width - margin.left - margin.right;
+    height = +svg.node().getBoundingClientRect().height - margin.top - margin.bottom;
 
     g = svg.append("g")
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
-    
+
     d3.csv(
         'data/sodas_data.csv',
         function (error, dat) {
             if (error) throw error;
 
+            //all_node_names = uniqueNodes(dat);
+            data_props.nodes = 811;//Object.keys(all_node_names).length;
             sim = simulation(width, height);
             data = dat;
             calculateGraphs()
+
+            d3.select("body")
+                .on("keydown", function() {
+                    if (d3.event.keyCode == 39) {
+                        viewBin(1)
+                    }
+                    else if (d3.event.keyCode == 37) {
+                        viewBin(-1)
+                    }
+                });
         }
     )
+}
+
+//Loops through data returns list of all unique node IDs
+function uniqueNodes(data) {
+    var node1key = params["source"];
+    var node2key = params["target"];
+    var nodes = [];
+    for (var n = 0; n < data.length; n++) {
+        var row = data[n];
+        nodes[row[node1key]] = true;
+        nodes[row[node2key]] = true;
+    }
+    return nodes;
 }
 
 
@@ -73,6 +105,7 @@ function calculateGraphs()
 {
     var i = 0;
     for (var n = 0; n < params.bins; n++) {
+        console.log("Bin: " + n);
         var bin = [];
         var looping = true;
         while (looping) {
@@ -80,13 +113,12 @@ function calculateGraphs()
             if (row["ts"] < (n+1) * params["bin_size"]) {
                 bin.push(row);
             } else {
-                console.log("Loop done at:" + i);
                 looping = false;
             }
             i++;
         }
-        graphdata = calculateLinksNodes(bin, "user", "user2", function(row){
-            return row["rssi"] > params['threshold'];//&& row["ts"] > 0 && row["ts"] < 300;
+        var graphdata = calculateLinksNodes(bin, function(row){
+            return row["rssi"] > params['threshold'];
         });
         links[n] = graphdata["links"]
         //links[n] = simulateNodes()
@@ -114,7 +146,7 @@ function calculateGraphs()
         }
 
         /*
-        //Update stats progressively
+        //Update stats progressively --- Use if it is a slow process
         for (var j = 0; j < params["statistics"].length; j++) {
             var canvas = d3.select("#stat" + j);
             var steps = calcGraphStatistics(links, nodes, params["statistics"][j].method);
@@ -130,80 +162,112 @@ function calculateGraphs()
     }
 }
 
-function calculateLinksNodes(data, node1key, node2key, filter) {
-    var links = [];
-    var nodes = [];
+
+
+//TODO: Add directed option, and options for minimum number of occurrences, etc.
+function calculateLinksNodes(data, filter, count = false, directed = false) {
+    var node1key = params["source"];
+    var node2key = params["target"];
+
+    var link_map = {};
+    var node_map = {}
+
     for (var key in data) {
         var row = data[key];
         if (filter(row)) {
-            include_link = true
-            for (i = 0; i < links.length; i++) {
-                s1 = links[i]["source"]
-                s2 = row[node1key]
-                t1 = links[i]["target"]
-                t2 = row[node2key]
-                condition = (s1 == s2 && t1 == t2) || (s1 == t2 && t1 == s2)
-                if (condition) {
-                    include_link = false
-                    break
-                }
+            var source = row[node1key];
+            var target = row[node2key];
+            node_map[source] = true;
+            node_map[target] = true;
+            if (!link_map[source]) {
+                link_map[source] = {};
             }
-            if (include_link) {
-                links.push({"source": row[node1key], "target": row[node2key], "value": 0});
-                //nodes.push({"id": row[node1key]})
-                //nodes.push({"id": row[node2key]})
-                include_source = true
-                include_target = true
-                for (i=0; i < nodes.length; i++) {
-                    if (row[node1key] == nodes[i]["id"]) {
-                        include_source = false
-                    }
-                    if (row[node2key] == nodes[i]["id"]) {
-                        include_target = false
-                    }
-                }
-                if (include_source) {
-                    nodes.push({"id": row[node1key]})
-                }
-                if (include_target) {
-                    nodes.push({"id": row[node2key]})
-                }
+            link_map[source][target] = true;
+
+            if(link_map[target]) {
+                delete link_map[target][source]; //Not good if target == source
             }
         }
     }
+
+    var links = [];
+    for (var source in link_map) {
+        for (var target in link_map[source]) {
+            links.push({"source": source, "target": target, "value": 0});
+        }
+    }
+
+    var nodes = [];
+    for (var key in node_map) {
+        nodes.push({"id": key});
+    }
+
+
+    // var links = [];
+    // var nodes = [];
+    // for (var key in data) {
+    //     var row = data[key];
+    //     if (filter(row)) {
+    //         var include_link = true;
+    //         for (i = 0; i < links.length; i++) {
+    //             var s1 = links[i]["source"];
+    //             var s2 = row[node1key];
+    //             var t1 = links[i]["target"];
+    //             var t2 = row[node2key];
+    //             var condition = (s1 == s2 && t1 == t2) || (s1 == t2 && t1 == s2);
+    //             if (condition) {
+    //                 include_link = false;
+    //                 break
+    //             }
+    //         }
+    //         if (include_link) {
+    //             links.push({"source": row[node1key], "target": row[node2key], "value": 0});
+    //             //nodes.push({"id": row[node1key]})
+    //             //nodes.push({"id": row[node2key]})
+    //             var include_source = true;
+    //             var include_target = true;
+    //             for (var i=0; i < nodes.length && (include_source || include_target); i++) {
+    //                 if (row[node1key] == nodes[i]["id"]) {
+    //                     include_source = false
+    //                 }
+    //                 if (row[node2key] == nodes[i]["id"]) {
+    //                     include_target = false
+    //                 }
+    //             }
+    //             if (include_source) {
+    //                 nodes.push({"id": row[node1key]})
+    //             }
+    //             if (include_target) {
+    //                 nodes.push({"id": row[node2key]})
+    //             }
+    //         }
+    //     }
+    // }
     return {"links": links, "nodes": nodes};
 }
 
-function simulateNodes(data) {
-    var nodes = [];
-    var users = [];
-    for (var key in data) {
-        var row = data[key];
-        //---- BUUUUUUGGGGG HERE ----
-        console.log(nodes.indexOf(row["user"]));
-        if (users.indexOf(row["user"]) < 0) {
-            nodes.push({"id": row["user"]});
-            users.push(row["user"]);
-        }
-        if (users.indexOf(row["user2"]) < 0) {
-            nodes.push({"id": row["user2"]});
-            users.push(row["user2"]);
-        }
-        //---- BUUUUUUGGGGG HERE ----
-    }
-    return nodes;
-}
-
+//Draws the main visualisation
 function drawGraph(canvas, nodes, links) {
 
     //COPY PASTE FROM https://bl.ocks.org/mbostock/4062045
+
+    canvas.selectAll("*")
+        .remove();
+
+    var cx = width / 2;
+    var cy = height / 2;
+
     var link = canvas.append("g")
         .attr("class", "links")
         .selectAll("line")
         .data(links)
         .enter().append("line")
         .style("stroke-width", "2")
-        .style("stroke", "#888");
+        .style("stroke", "#888")
+        .attr("x1", cx)
+        .attr("x2", cx)
+        .attr("y1", cy)
+        .attr("y2", cy);
 
     var node = canvas.append("g")
         .attr("class", "nodes")
@@ -211,7 +275,9 @@ function drawGraph(canvas, nodes, links) {
         .data(nodes)
         .enter().append("circle")
         .attr("r", 5)
-        .attr("fill", "darkred");
+        .attr("fill", "darkred")
+        .attr("x", cx)
+        .attr("y", cy);
 
     node.append("title")
         .text(function(d) { return d.id; });
@@ -220,6 +286,8 @@ function drawGraph(canvas, nodes, links) {
         .on("tick", ticked);
 
     sim.force("link").links(links);
+
+    sim.alpha(1).restart();
 
     function ticked() {
         link
@@ -233,7 +301,27 @@ function drawGraph(canvas, nodes, links) {
             .attr("cy", function(d) { return d.y; });
     }
 
+}
 
+function viewBin(n, abs = false) {
+    if (!abs) {
+        n = data_props.current_bin + n;
+    }
+    if (n < 0 || n > links.length) {return;}
+    data_props.current_bin = n;
+    nodes[n].forEach(function(d){
+        delete d.x;
+        delete d.y;
+        return d;
+    });
+    links[n].forEach(function(d){
+        delete d.x1;
+        delete d.x2;
+        delete d.y1;
+        delete d.y2;
+        return d;
+    });
+    drawGraph(g, nodes[n], links[n]);
 }
 
 function simulation(width, height) {
@@ -274,10 +362,13 @@ function calcGraphStatistics(links, nodes, statistic) {
 }
 
 function averageDegree(links) {
+    var n_nodes = data_props.nodes;
+    console.log(n_nodes);
     return 2*links.length / n_nodes;
 }
 
 function networkDensity(links) {
+    var n_nodes = data_props.nodes;
     return 2*(links.length - n_nodes + 1) / (n_nodes * (n_nodes - 3) + 2);
 }
 //---------------------------------------------------------------------
@@ -299,10 +390,6 @@ function drawStepChart(steps, canvas) {
             "translate(" + margin.left + "," + margin.top + ")");
 
     var x = d3.scaleLinear()
-        /*.domain(d3.extent(steps,
-            function(d){
-                return d.t;
-            }))*/
         .domain([params.offset, (params.bins - 1) * params.bin_size])
         .range([0,width]);
 
