@@ -8,7 +8,7 @@ var n_nodes = 811
 var params = {
     "bin_size": 900,
     "offset": 0,
-    "bins": 96,
+    "bins": 2,
     "threshold": -80,
     "statistics": [
         {name: "Average Degree", method: function(links, nodes) { return averageDegree(links);}}/*,
@@ -92,6 +92,7 @@ function calculateGraphs()
         //links[n] = simulateNodes()
         nodes[n] = graphdata["nodes"]
         if (n === 0){
+            drawNoLinksBar(811 - nodes[n].length)
             drawGraph(g, nodes[n], links[n]);
             for (var k = 0; k < params["statistics"].length; k++) {
                 var divs = d3.select("#stats")
@@ -243,6 +244,39 @@ function simulation(width, height) {
         .force("center", d3.forceCenter(width / 2, height / 2));
 }
 
+//---------------------------------------------------------------------
+//Draw bar with number of nodes without any links
+function drawNoLinksBar(n) {
+    
+    //d3.select("#n_nolinks")
+    //  .html(n.toString())
+
+    var canvas = d3.select("#nolinksbar")
+
+    var margin = {top: 0, right: 0, bottom: 0, left: 0};
+    var width = +canvas.node().getBoundingClientRect().width - margin.left - margin.right;
+
+    var g = canvas.append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+    var x = d3.scaleLinear()
+        .domain([0,n_nodes])
+        .range([0,width]);
+
+    g.append("rect")
+     .attr("height", 25)
+     .attr("width", x(n))
+     .attr("fill", "brown")
+
+    g.append("text")
+     .attr("x", 0)
+     .attr("y", 0)
+     .text(n.toString())
+     .attr("font-family", "sans-serif")
+     .attr("font-size", "20px")
+     .attr("fill", "black")
+}
 
 //---------------------------------------------------------------------
 //Calculate the descriptive graph statistics, which should be visualized in the step charts
