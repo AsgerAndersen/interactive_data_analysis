@@ -308,7 +308,7 @@ function drawNoLinksBar(n) {
             "translate(" + margin.left + "," + margin.top + ")");
 
     var x = d3.scaleLinear()
-        .domain([0,n_nodes])
+        .domain([0,data_props.nodes])
         .range([0,width]);
 
     g.append("rect")
