@@ -202,47 +202,6 @@ function calculateLinksNodes(data, filter, count = false, directed = false) {
         nodes.push({"id": key});
     }
 
-
-    // var links = [];
-    // var nodes = [];
-    // for (var key in data) {
-    //     var row = data[key];
-    //     if (filter(row)) {
-    //         var include_link = true;
-    //         for (i = 0; i < links.length; i++) {
-    //             var s1 = links[i]["source"];
-    //             var s2 = row[node1key];
-    //             var t1 = links[i]["target"];
-    //             var t2 = row[node2key];
-    //             var condition = (s1 == s2 && t1 == t2) || (s1 == t2 && t1 == s2);
-    //             if (condition) {
-    //                 include_link = false;
-    //                 break
-    //             }
-    //         }
-    //         if (include_link) {
-    //             links.push({"source": row[node1key], "target": row[node2key], "value": 0});
-    //             //nodes.push({"id": row[node1key]})
-    //             //nodes.push({"id": row[node2key]})
-    //             var include_source = true;
-    //             var include_target = true;
-    //             for (var i=0; i < nodes.length && (include_source || include_target); i++) {
-    //                 if (row[node1key] == nodes[i]["id"]) {
-    //                     include_source = false
-    //                 }
-    //                 if (row[node2key] == nodes[i]["id"]) {
-    //                     include_target = false
-    //                 }
-    //             }
-    //             if (include_source) {
-    //                 nodes.push({"id": row[node1key]})
-    //             }
-    //             if (include_target) {
-    //                 nodes.push({"id": row[node2key]})
-    //             }
-    //         }
-    //     }
-    // }
     return {"links": links, "nodes": nodes};
 }
 
