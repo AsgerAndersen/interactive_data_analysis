@@ -1,0 +1,6 @@
+Bugs in the current implementation?
+
+* When we calculate the average degree statistics, we do not consider all the nodes, which have no edges.
+* When we include rows in a bin, do we then take all rows, which are before the end point of the bin?
+
+* Efter min mening, så skal vi kun vise de nodes, der har minimum en edge, og så skal vi også vise en bar eller sådan noget, der angiver hvor mange nodes, der ingen edges har i den givne timebin.

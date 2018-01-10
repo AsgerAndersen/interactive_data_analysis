@@ -3,15 +3,18 @@ var data, sim, svg, g;
 
 var nodes = [], links = [];
 
+var n_nodes = 811
+
 var params = {
-    "bin_size": 300,
+    "bin_size": 900,
     "offset": 0,
-    "bins": 10,
-    "threshold": -300,
+    "bins": 96,
+    "threshold": -80,
     "statistics": [
-        {name: "Average Degree", method: function(links, nodes) { return averageDegree(links, nodes);}},
+        {name: "Average Degree", method: function(links, nodes) { return averageDegree(links);}}/*,
+        {name: "Network Density", method: function(links, nodes) {return networkDensity(links);}},
         {name: "Number of links", method: function(links, nodes) { return links.length; }},
-        {name: "Number of nodes", method: function(links, nodes) { return nodes.length; }}
+        {name: "Number of nodes", method: function(links, nodes) { return nodes.length; }}*/
     ]
 };
 
@@ -53,165 +56,17 @@ function init() {
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
     
-
     d3.csv(
         'data/sodas_data.csv',
         function (error, dat) {
             if (error) throw error;
 
-
             sim = simulation(width, height);
             data = dat;
             calculateGraphs()
-
-            // // Temp
-            // var x = d3.scaleLinear()
-            //     .domain(d3.extent(data,
-            //         function(d){
-            //             return d['user'];
-            //         }))
-            //     .range([0,width]);
-            // var y = d3.scaleLinear()
-            //     .domain(d3.extent(data,
-            //         function(d){
-            //             return d['user2'];
-            //         }))
-            //     .range([0,height]);
-            //
-            //
-            // g.selectAll("circle")
-            //     .data(data)
-            //     .enter()
-            //     .append("circle")
-            //     .attr("cx", function(d) {
-            //         return x(d['user']) + "px";
-            //     })
-            //     .attr("cy", function(d) {
-            //         return y(d['user2']) + "px";
-            //     })
-            //     .attr("r", "3")
-            //     .attr("fill", "#ccc")
-            //     .attr("stroke", "#aaa")
-
         }
     )
 }
-
-//---------------------------------------------------------------------
-//Calculate the descriptive graph statistics, which should be visualized in the step charts
-
-function calcGraphStatistics(links, nodes, statistic) {
-    var statistics = [];
-    for (var i=0; i<links.length; i++) {
-        var value = statistic(links[i], nodes[i]);
-        var t = i*params.bin_size;
-        if (i === 0) {
-            statistics.push({t: t,
-                             value: value,
-                             left: true})
-        }
-        else {
-            var last_value = statistics[2*i-2].value;
-            var jump = value - last_value;
-            statistics.push({t: t,
-                             value: last_value,
-                             left: false});
-            statistics.push({t: t,
-                             value: value,
-                             left: true,
-                             jump: jump})
-        }
-    }
-    statistics.pop();
-    return statistics
-}
-
-function averageDegree(links, nodes) {
-    return 2*links.length / nodes.length;
-}
-//---------------------------------------------------------------------
-
-//---------------------------------------------------------------------
-//Visualize the descriptive graph statistics in a step chart
-
-function drawStepChart(steps, canvas) {
-
-    var margin = {top: 50, right: 50, bottom: 50, left: 50};
-    var width = +canvas.node().getBoundingClientRect().width - margin.left - margin.right;
-    var height = +canvas.node().getBoundingClientRect().height - margin.top - margin.bottom;
-
-    canvas.selectAll("*")
-        .remove();
-
-    var g = canvas.append("g")
-        .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
-
-    var x = d3.scaleLinear()
-        /*.domain(d3.extent(steps,
-            function(d){
-                return d.t;
-            }))*/
-        .domain([params.offset, (params.bins - 1) * params.bin_size])
-        .range([0,width]);
-
-    var y = d3.scaleLinear()
-        .domain(d3.extent(steps,
-            function(d){
-                return d.value;
-            }))
-        .range([height,0]);
-
-    g.selectAll(".stepgraph-hline")
-     .data(steps.filter(function(d){
-            return (d.left)
-         }))
-     .enter()
-     .append("line")
-     .classed("stepgraph-hline", true)
-     .style("stroke", "black")
-     .attr("x1", function(d) {return x(d.t)})
-     .attr("y1", function(d) {return y(d.value)})
-     .attr("x2", function(d) {
-           return (x(d.t + params.bin_size))
-        })
-     .attr("y2", function(d) {return y(d.value)});
-    
-    g.selectAll(".stepgraph-vline")
-     .data(steps.filter(function(d, i){
-            return (d.left && (i !== 0))
-         }))
-     .enter()
-     .append("line")
-     .classed("stepgraph-vline", true)
-     .attr("stroke", "grey")
-     .attr("stroke-dasharray", 4)
-     .attr("x1", function(d) {return x(d.t)})
-     .attr("y1", function(d) {return y(d.value)})
-     .attr("x2", function(d) {return x(d.t)})
-     .attr("y2", function(d) {
-        return (y(d.value - d.jump))
-      });
-
-    g.selectAll(".stepgraph-circle")
-        .data(steps)
-        .enter()
-        .append("circle")
-        .classed("stepgraph-circle", true)
-        .attr("cx", function(d) {
-            return x(d.t) + "px";
-        })
-        .attr("cy", function(d) {
-            return y(d.value) + "px";
-        })
-        .attr("r", "3")
-        .attr("fill", function(d) {
-            if (d.left) {return "black";}
-            else {return "white";}
-        })
-        .attr("stroke", "black")
-} 
-//---------------------------------------------------------------------
 
 
 function calculateGraphs()
@@ -230,10 +85,12 @@ function calculateGraphs()
             }
             i++;
         }
-        links[n] = calculateLinks(bin, "user", "user2", function(row){
+        graphdata = calculateLinksNodes(bin, "user", "user2", function(row){
             return row["rssi"] > params['threshold'];//&& row["ts"] > 0 && row["ts"] < 300;
         });
-        nodes[n] = simulateNodes(bin);
+        links[n] = graphdata["links"]
+        //links[n] = simulateNodes()
+        nodes[n] = graphdata["nodes"]
         if (n === 0){
             drawGraph(g, nodes[n], links[n]);
             for (var k = 0; k < params["statistics"].length; k++) {
@@ -256,28 +113,65 @@ function calculateGraphs()
             }
         }
 
+        /*
         //Update stats progressively
         for (var j = 0; j < params["statistics"].length; j++) {
             var canvas = d3.select("#stat" + j);
             var steps = calcGraphStatistics(links, nodes, params["statistics"][j].method);
             drawStepChart(steps, canvas)
         }
+        */
     }
 
-
-
+    for (var j = 0; j < params["statistics"].length; j++) {
+        var canvas = d3.select("#stat" + j);
+        var steps = calcGraphStatistics(links, nodes, params["statistics"][j].method);
+        drawStepChart(steps, canvas)
+    }
 }
 
-function calculateLinks(data, node1key, node2key, filter) {
+function calculateLinksNodes(data, node1key, node2key, filter) {
     var links = [];
+    var nodes = [];
     for (var key in data) {
         var row = data[key];
         if (filter(row)) {
-            links.push({"source": row[node1key], "target": row[node2key], "value": 0});
+            include_link = true
+            for (i = 0; i < links.length; i++) {
+                s1 = links[i]["source"]
+                s2 = row[node1key]
+                t1 = links[i]["target"]
+                t2 = row[node2key]
+                condition = (s1 == s2 && t1 == t2) || (s1 == t2 && t1 == s2)
+                if (condition) {
+                    include_link = false
+                    break
+                }
+            }
+            if (include_link) {
+                links.push({"source": row[node1key], "target": row[node2key], "value": 0});
+                //nodes.push({"id": row[node1key]})
+                //nodes.push({"id": row[node2key]})
+                include_source = true
+                include_target = true
+                for (i=0; i < nodes.length; i++) {
+                    if (row[node1key] == nodes[i]["id"]) {
+                        include_source = false
+                    }
+                    if (row[node2key] == nodes[i]["id"]) {
+                        include_target = false
+                    }
+                }
+                if (include_source) {
+                    nodes.push({"id": row[node1key]})
+                }
+                if (include_target) {
+                    nodes.push({"id": row[node2key]})
+                }
+            }
         }
     }
-
-    return links;
+    return {"links": links, "nodes": nodes};
 }
 
 function simulateNodes(data) {
@@ -348,4 +242,127 @@ function simulation(width, height) {
         .force("charge", d3.forceManyBody().strength(-5))
         .force("center", d3.forceCenter(width / 2, height / 2));
 }
+
+
+//---------------------------------------------------------------------
+//Calculate the descriptive graph statistics, which should be visualized in the step charts
+
+function calcGraphStatistics(links, nodes, statistic) {
+    var statistics = [];
+    for (var i=0; i<links.length; i++) {
+        var value = statistic(links[i], nodes[i]);
+        var t = i*params.bin_size;
+        if (i === 0) {
+            statistics.push({t: t,
+                             value: value,
+                             left: true})
+        }
+        else {
+            var last_value = statistics[2*i-2].value;
+            var jump = value - last_value;
+            statistics.push({t: t,
+                             value: last_value,
+                             left: false});
+            statistics.push({t: t,
+                             value: value,
+                             left: true,
+                             jump: jump})
+        }
+    }
+    statistics.pop();
+    return statistics
+}
+
+function averageDegree(links) {
+    return 2*links.length / n_nodes;
+}
+
+function networkDensity(links) {
+    return 2*(links.length - n_nodes + 1) / (n_nodes * (n_nodes - 3) + 2);
+}
+//---------------------------------------------------------------------
+
+//---------------------------------------------------------------------
+//Visualize the descriptive graph statistics in a step chart
+
+function drawStepChart(steps, canvas) {
+
+    var margin = {top: 50, right: 50, bottom: 50, left: 50};
+    var width = +canvas.node().getBoundingClientRect().width - margin.left - margin.right;
+    var height = +canvas.node().getBoundingClientRect().height - margin.top - margin.bottom;
+
+    canvas.selectAll("*")
+        .remove();
+
+    var g = canvas.append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+    var x = d3.scaleLinear()
+        /*.domain(d3.extent(steps,
+            function(d){
+                return d.t;
+            }))*/
+        .domain([params.offset, (params.bins - 1) * params.bin_size])
+        .range([0,width]);
+
+    var y = d3.scaleLinear()
+        .domain(d3.extent(steps,
+            function(d){
+                return d.value;
+            }))
+        .range([height,0]);
+
+    g.selectAll(".stepgraph-hline")
+     .data(steps.filter(function(d){
+            return (d.left)
+         }))
+     .enter()
+     .append("line")
+     .classed("stepgraph-hline", true)
+     .style("stroke", "black")
+     .attr("x1", function(d) {return x(d.t)})
+     .attr("y1", function(d) {return y(d.value)})
+     .attr("x2", function(d) {
+           return (x(d.t + params.bin_size))
+        })
+     .attr("y2", function(d) {return y(d.value)});
+    
+    g.selectAll(".stepgraph-vline")
+     .data(steps.filter(function(d, i){
+            return (d.left && (i !== 0))
+         }))
+     .enter()
+     .append("line")
+     .classed("stepgraph-vline", true)
+     .attr("stroke", "grey")
+     //.attr("stroke-dasharray", 4)
+     .attr("x1", function(d) {return x(d.t)})
+     .attr("y1", function(d) {return y(d.value)})
+     .attr("x2", function(d) {return x(d.t)})
+     .attr("y2", function(d) {
+        return (y(d.value - d.jump))
+      });
+
+    /*
+    g.selectAll(".stepgraph-circle")
+        .data(steps)
+        .enter()
+        .append("circle")
+        .classed("stepgraph-circle", true)
+        .attr("cx", function(d) {
+            return x(d.t) + "px";
+        })
+        .attr("cy", function(d) {
+            return y(d.value) + "px";
+        })
+        .attr("r", "3")
+        .attr("fill", function(d) {
+            if (d.left) {return "black";}
+            else {return "white";}
+        })
+        .attr("stroke", "black")
+    */
+} 
+//---------------------------------------------------------------------
 
