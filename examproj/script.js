@@ -124,7 +124,6 @@ function calculateGraphs()
         //links[n] = simulateNodes()
         nodes[n] = graphdata["nodes"]
         if (n === 0){
-            drawNoLinksBar(811 - nodes[n].length)
             drawGraph(g, nodes[n], links[n]);
             for (var k = 0; k < params["statistics"].length; k++) {
                 var divs = d3.select("#stats")
@@ -261,6 +260,7 @@ function drawGraph(canvas, nodes, links) {
             .attr("cy", function(d) { return d.y; });
     }
 
+    drawNoLinksBar(data_props.nodes - nodes.length)
 }
 
 function viewBin(n, abs = false) {
