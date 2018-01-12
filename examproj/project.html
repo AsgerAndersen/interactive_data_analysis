@@ -20,13 +20,31 @@
 <h1>Project</h1>
 <h2>Visualization:</h2>
 <div id="visualisation" class="section">
-	<div>
+	<div id="parametres_div">
 		<table>
 			<tr>
-				<td>Number of nodes without any links:</td>
+				<td>Threshold:</td>
+				<td>
+					<input type="range" class="slider" min="-100" max="-50" value="-100" id="threshold_slider"/>
+				</td>
+			</tr>
+			<tr>
+				<td>Update parametres:</td>
+				<td>
+					<input id="updatePars_checkbox" type="button" onclick="updatePars()"/>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="n_isolated_nodes_div">
+		<table>
+			<tr>
+				<td>Number of isolated nodes:</td>
 				<td id="n_nolinks">
+					<!--
 					<svg id="nolinksbar" height="25" width="400">
-					</svg>	
+					</svg>
+					-->	
 				</td>
 			</tr>
 		</table>

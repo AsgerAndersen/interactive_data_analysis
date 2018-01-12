@@ -4,7 +4,7 @@ var data, sim, svg, g, width, height, xStatScale, leftStatMargin, statWidth;
 var nodes = [], links = [], all_node_names = [];
 
 var data_props = {
-    "nodes": 0,
+    "nodes": 811,
     "links": 0,
     "rows": 0,
     "current_bin": 0
@@ -14,43 +14,16 @@ var params = {
     "bin_size": 900,
     "offset": 0,
     "bins": 100,
-    "threshold": -95,
+    "threshold": -90,
     "source": "user",
     "target": "user2",
     "statistics": [
         {name: "Average Degree", method: function(links, nodes) { return averageDegree(links);}},
-        {name: "Network Density", method: function(links, nodes) {return networkDensity(links);}},
-        {name: "Number of links", method: function(links, nodes) { return links.length; }},
-        {name: "Number of nodes", method: function(links, nodes) { return nodes.length; }}
+        {name: "Number of isolated nodes", method: function(links, nodes) { return (data_props.nodes - nodes.length); }}//,
+        //{name: "Network Density", method: function(links, nodes) {return networkDensity(links);}},
+        //{name: "Number of links", method: function(links, nodes) { return links.length; }},
     ]
 };
-
-/*function getRandomInt(max) {
-  return Math.floor(Math.random() * max);
-}
-
-function simulateStepChartData(N) {
-    data = []
-    for (j=0; j<N; j++) {
-        this_round = []
-        m = getRandomInt(max_edges)
-        for (i=0; i<m; i++) {
-            //Note that this simulation is slightly wrong, 
-            //since the real data should be an unweighted 
-            //graph, meaning that each {source, target} map 
-            //in the list should be unique, and that the 
-            //corresponding {target, source} should not be
-            //able to be part of the list.
-            this_round.push({source: getRandomInt(n_nodes),
-                             target: getRandomInt(n_nodes)})
-        }
-        data.push(this_round)
-    }
-    return data
-}
-
-var input = simulateStepChartData(n_bins)*/
-//------------------------------------------------------------------------------
 
 function init() {
 
@@ -69,22 +42,31 @@ function init() {
             if (error) throw error;
 
             //all_node_names = uniqueNodes(dat);
-            data_props.nodes = 811;//Object.keys(all_node_names).length;
+            //data_props.nodes = 811;//Object.keys(all_node_names).length;
             sim = simulation(width, height);
             data = dat;
-            calculateGraphs()
 
-            d3.select("body")
-                .on("keydown", function() {
-                    if (d3.event.keyCode == 39) {
-                        viewBin(1)
-                    }
-                    else if (d3.event.keyCode == 37) {
-                        viewBin(-1)
-                    }
-                });
+            updatePars()
         }
     )
+}
+
+function updatePars() {
+
+    params["threshold"] = parseInt(document.getElementById("threshold_slider").value);
+    console.log(params["threshold"])
+
+    calculateGraphs()
+
+    d3.select("body")
+        .on("keydown", function() {
+            if (d3.event.keyCode == 39) {
+                viewBin(1)
+            }
+            else if (d3.event.keyCode == 37) {
+                viewBin(-1)
+            }
+        });
 }
 
 //Loops through data returns list of all unique node IDs
@@ -105,7 +87,6 @@ function calculateGraphs()
 {
     var i = 0;
     for (var n = 0; n < params.bins; n++) {
-        console.log("Bin: " + n);
         var bin = [];
         var looping = true;
         while (looping) {
@@ -259,7 +240,6 @@ function drawGraph(canvas, nodes, links) {
             .attr("cx", function(d) { return d.x; })
             .attr("cy", function(d) { return d.y; });
     }
-
     drawNoLinksBar(data_props.nodes - nodes.length)
 }
 
@@ -305,10 +285,13 @@ function simulation(width, height) {
 //Draw bar with number of nodes without any links
 function drawNoLinksBar(n) {
 
-    //d3.select("#n_nolinks")
-    //  .html(n.toString())
+    d3.select("#n_nolinks")
+      .html(n.toString())
 
+    /*
     var canvas = d3.select("#nolinksbar")
+
+    canvas.selectAll("*").remove();
 
     var margin = {top: 0, right: 0, bottom: 0, left: 0};
     var width = +canvas.node().getBoundingClientRect().width - margin.left - margin.right;
@@ -325,7 +308,11 @@ function drawNoLinksBar(n) {
      .attr("height", 25)
      .attr("width", x(n))
      .attr("fill", "brown")
+     console.log(n)
+     console.log(x(n))
 
+
+    //Why is this not working?
     g.append("text")
      .attr("x", 0)
      .attr("y", 0)
@@ -333,6 +320,7 @@ function drawNoLinksBar(n) {
      .attr("font-family", "sans-serif")
      .attr("font-size", "20px")
      .attr("fill", "black")
+    */
 }
 
 //---------------------------------------------------------------------
@@ -366,7 +354,6 @@ function calcGraphStatistics(links, nodes, statistic) {
 
 function averageDegree(links) {
     var n_nodes = data_props.nodes;
-    console.log(n_nodes);
     return 2*links.length / n_nodes;
 }
 
