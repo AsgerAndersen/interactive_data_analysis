@@ -23,15 +23,21 @@
 	<div id="parametres_div">
 		<table>
 			<tr>
-				<td>Threshold:</td>
-				<td>
-					<input type="range" class="slider" min="-100" max="-50" value="-100" id="threshold_slider"/>
+				<td>Threshold: 
+					<span id="threshold_value"></span>
+				    <input type="range" min="-100" max="-50" value="-100" id="threshold_slider" onchange="updatePars()"/>
 				</td>
 			</tr>
 			<tr>
-				<td>Update parametres:</td>
-				<td>
-					<input id="updatePars_checkbox" type="button" onclick="updatePars()"/>
+				<td>Length of timebins: 
+					<span id="binsize_value"></span>
+				    <input type="range" min="300" max="86400" step="300" value="900" id="binsize_slider" onchange="updatePars()"/>
+				</td>
+			</tr>
+			<tr>
+				<td>Number of timebins: 
+					<span id="n_bins_value"></span>
+				    <input type="range" min="1" max="288" value="96" id="n_bins_slider" onchange="updatePars()"/>
 				</td>
 			</tr>
 		</table>

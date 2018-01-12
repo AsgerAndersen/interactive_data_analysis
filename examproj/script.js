@@ -53,8 +53,21 @@ function init() {
 
 function updatePars() {
 
-    params["threshold"] = parseInt(document.getElementById("threshold_slider").value);
-    console.log(params["threshold"])
+    var threshold = document.getElementById("threshold_slider").valueAsNumber;
+    var binsize = document.getElementById("binsize_slider").valueAsNumber;
+    var n_bins = document.getElementById("n_bins_slider").valueAsNumber;
+
+    d3.select("#threshold_value")
+      .html(threshold)
+    d3.select("#binsize_value")
+      .html(binsize)
+    d3.select("#n_bins_value")
+      .html(n_bins)
+    
+    params["threshold"] = threshold
+    params["bin_size"] = binsize
+    params["bins"] = n_bins 
+    console.log(params)
 
     calculateGraphs()
 
@@ -125,21 +138,13 @@ function calculateGraphs()
                     .attr("id", "stat" + k);
             }
         }
-
-        /*
-        //Update stats progressively --- Use if it is a slow process
-        for (var j = 0; j < params["statistics"].length; j++) {
-            var canvas = d3.select("#stat" + j);
-            var steps = calcGraphStatistics(links, nodes, params["statistics"][j].method);
-            drawStepChart(steps, canvas)
-        }
-        */
     }
 
     for (var j = 0; j < params["statistics"].length; j++) {
         var canvas = d3.select("#stat" + j);
         var steps = calcGraphStatistics(links, nodes, params["statistics"][j].method);
         drawStepChart(steps, canvas)
+
     }
 }
 
