@@ -1,5 +1,5 @@
 d3.select(window).on('load', init);
-var data, sim, svg, g, width, height;
+var data, sim, svg, g, width, height, xStatScale, leftStatMargin, statWidth;
 
 var nodes = [], links = [], all_node_names = [];
 
@@ -13,15 +13,15 @@ var data_props = {
 var params = {
     "bin_size": 900,
     "offset": 0,
-    "bins": 96,
+    "bins": 100,
     "threshold": -95,
     "source": "user",
     "target": "user2",
     "statistics": [
-        {name: "Average Degree", method: function(links, nodes) { return averageDegree(links);}}/*,
+        {name: "Average Degree", method: function(links, nodes) { return averageDegree(links);}},
         {name: "Network Density", method: function(links, nodes) {return networkDensity(links);}},
         {name: "Number of links", method: function(links, nodes) { return links.length; }},
-        {name: "Number of nodes", method: function(links, nodes) { return nodes.length; }}*/
+        {name: "Number of nodes", method: function(links, nodes) { return nodes.length; }}
     ]
 };
 
@@ -281,6 +281,16 @@ function viewBin(n, abs = false) {
         delete d.y2;
         return d;
     });
+    var x = xStatScale(n * params.bin_size);
+    if (abs) {
+        d3.selectAll(".statistic_svg g .vTimeLine")
+            .transition()
+            .attr("duration", 1000)
+            .attr("x", x);
+    } else {
+        d3.selectAll(".statistic_svg g .vTimeLine")
+            .attr("x", x);
+    }
     drawGraph(g, nodes[n], links[n]);
 }
 
@@ -380,11 +390,31 @@ function drawStepChart(steps, canvas) {
 
     var g = canvas.append("g")
         .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
+            "translate(" + margin.left + "," + margin.top + ")")
+        .on("click", handleStatClick)
+        .on("mousemove", handleStatHover);
 
     var x = d3.scaleLinear()
-        .domain([params.offset, (params.bins - 1) * params.bin_size])
+        .domain([params.offset, params.bins * params.bin_size])
         .range([0,width]);
+
+    g.append("rect")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("fill", "white");
+
+    var line_size = x(params.bin_size);
+    g.append("rect")
+        .classed("vTimeLine", true)
+        .attr("y", 0)
+        .attr("x", 0)
+        .attr("height", height)
+        .attr("width", line_size);
+
+    //Quick n' dirty. Used in function "getStatX"
+    xStatScale = x;
+    leftStatMargin = margin.left;
+    statWidth = width;
 
     var y = d3.scaleLinear()
         .domain(d3.extent(steps,
@@ -392,6 +422,11 @@ function drawStepChart(steps, canvas) {
                 return d.value;
             }))
         .range([height,0]);
+
+    var xAxis = d3.axisBottom(x)
+        .tickValues(d3.range(params.offset, params.bin_size * params.bins, params.bin_size));
+
+    var yAxis = d3.axisLeft(y);
 
     g.selectAll(".stepgraph-hline")
      .data(steps.filter(function(d){
@@ -424,6 +459,41 @@ function drawStepChart(steps, canvas) {
         return (y(d.value - d.jump))
       });
 
+    canvas.append("g")
+        .attr("transform", "translate(" + margin.left + "," + (height+margin.top) + ")")
+        .call(xAxis)
+        .selectAll("text")
+        .classed("xTick", true);
+
+    canvas.append("text")
+        .attr("x", margin.left + width / 2)
+        .attr("y", margin.top + height + 35)
+        .style("stroke", "black")
+        .html("Time");
+
+    canvas.append("g")
+        .attr("transform", "translate(" + (margin.left) + "," + margin.top + ")")
+        .call(yAxis);
+
+    /*canvas.append("text")
+        .attr("x", margin.left - 50)
+        .attr("y", margin.top + height / 2)
+        .style("stroke", "black")
+        .html("f(x)");*/
+
+    g.append("rect")
+        .classed("vTimeLineGhost", true)
+        .attr("y", 0)
+        .attr("x", 0)
+        .attr("height", height)
+        .attr("width", line_size);
+
+    g.append("text")
+        .classed("movingTickText", true)
+        .attr("text-anchor", "middle")
+        .attr("y", height+20)
+        .attr("x", 0);
+
     /*
     g.selectAll(".stepgraph-circle")
         .data(steps)
@@ -446,3 +516,35 @@ function drawStepChart(steps, canvas) {
 } 
 //---------------------------------------------------------------------
 
+
+function handleStatClick(d, i) {
+    var x = d3.mouse(this)[0];
+
+    var n = Math.floor(xStatScale.invert(x) / params.bin_size);
+
+    viewBin(n, true);
+}
+
+function handleStatHover(d, i) {
+    var x = d3.mouse(this)[0];
+
+    var g = d3.select(this);
+    var line = g.select(".vTimeLineGhost");
+
+    if (x > 0 && x < statWidth - 1) {
+
+        var bin_width = xStatScale(params.bin_size);
+        var n = Math.floor(x / bin_width);
+        line.attr("x", n * bin_width);
+        g.select(".movingTickText")
+            .attr("x", (n+0.5) * bin_width)
+            .text((n * params.bin_size) + " - " + ((n+1) * params.bin_size));
+
+    }
+
+    //console.log(getStatX(d3.mouse(this)[0]));
+}
+
+function getStatX(x) {
+    return xStatScale.invert(x);
+}

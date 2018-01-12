@@ -34,11 +34,48 @@ body {
 
 .statistic_svg {
     display: inline-block;
-    border: 1px solid red;
 }
 
 .statistic_span {
     display: inline-block;
     font-size: 20px;
     font-weight: bold;
+}
+
+.xTick {
+    visibility: hidden;
+}
+
+.xTick:active {
+    visibility: visible;
+}
+
+.vTimeLine {
+    fill: red;
+}
+
+.vTimeLineGhost {
+    visibility: visible;
+    opacity: 0;
+    fill: transparent;
+    stroke: black;
+    stroke-dasharray: 5;
+    transition: opacity 0.5s;
+    transition-delay: 0.5s;
+}
+
+.vTimeLineGhost:hover {
+    opacity: 1;
+    transition: opacity 0.5s;
+}
+
+.movingTickText {
+    opacity: 0;
+    transition: opacity 0.5s;
+    transition-delay: 0.5s;
+}
+
+.vTimeLineGhost:hover ~ .movingTickText {
+    opacity: 1;
+    transition: opacity 0.5s;
 }
