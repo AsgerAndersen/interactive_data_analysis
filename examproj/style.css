@@ -22,6 +22,17 @@ body {
     border: 1px solid black;
 }
 
+.link {
+    stroke-width: 1px;
+    stroke: grey;
+
+}
+
+.node {
+    r: 5;
+    fill: darkred;
+}
+
 .text_box {
     width: 100%;
 }

@@ -1,7 +1,7 @@
 d3.select(window).on('load', init);
-var data, sim, svg, g, width, height, xStatScale, leftStatMargin, statWidth;
+var data, sim, svg, g, width, height, xStatScale, leftStatMargin, statWidth, link, node;
 
-var nodes = [], links = [], all_node_names = [];
+var nodes = [], links = [], all_nodes = [];
 
 var data_props = {
     "nodes": 811,
@@ -45,6 +45,10 @@ function init() {
             //data_props.nodes = 811;//Object.keys(all_node_names).length;
             sim = simulation(width, height);
             data = dat;
+            initGraph(g);
+
+            all_nodes = uniqueNodes(dat);
+            console.log(Object.keys(all_nodes).length);
 
             updatePars()
         }
@@ -91,6 +95,9 @@ function uniqueNodes(data) {
         var row = data[n];
         nodes[row[node1key]] = true;
         nodes[row[node2key]] = true;
+    }
+    for (var key in nodes) {
+        nodes[key] = {id: key};
     }
     return nodes;
 }
@@ -159,7 +166,7 @@ function calculateLinksNodes(data, filter, count = false, directed = false) {
     var node2key = params["target"];
 
     var link_map = {};
-    var node_map = {}
+    var node_map = {};
 
     for (var key in data) {
         var row = data[key];
@@ -188,66 +195,80 @@ function calculateLinksNodes(data, filter, count = false, directed = false) {
 
     var nodes = [];
     for (var key in node_map) {
-        nodes.push({"id": key});
+        nodes.push(all_nodes[key]); //Uses references instead of new node objects
     }
 
     return {"links": links, "nodes": nodes};
 }
 
-//Draws the main visualisation
-function drawGraph(canvas, nodes, links) {
+function initGraph(canvas) {
+
+    link = canvas
+        .append("g")
+        .selectAll(".link");
+
+    node = canvas
+        .append("g")
+        .selectAll(".node");
+}
+
+function drawGraphNew(canvas, nodes, links, shuffle = true) {
 
     //COPY PASTE FROM https://bl.ocks.org/mbostock/4062045
 
-    canvas.selectAll("*")
-        .remove();
+    a_link = a_link.data(links);
+    a_node = a_node.data(nodes);
 
-    var cx = width / 2;
-    var cy = height / 2;
+    a_link.exit().remove();
+    a_node.exit().remove();
 
-    var link = canvas.append("g")
-        .attr("class", "links")
-        .selectAll("line")
-        .data(links)
-        .enter().append("line")
-        .style("stroke-width", "2")
-        .style("stroke", "#888")
-        .attr("x1", cx)
-        .attr("x2", cx)
-        .attr("y1", cy)
-        .attr("y2", cy);
+    a_node = a_node.enter().append("circle").attr("fill", "darkred").attr("r", 5).merge(a_node);
+    a_link = a_link.enter().append("line").merge(a_link);
 
-    var node = canvas.append("g")
-        .attr("class", "nodes")
-        .selectAll("circle")
-        .data(nodes)
-        .enter().append("circle")
-        .attr("r", 5)
-        .attr("fill", "darkred")
-        .attr("x", cx)
-        .attr("y", cy);
 
-    node.append("title")
-        .text(function(d) { return d.id; });
 
-    sim.nodes(nodes)
-        .on("tick", ticked);
+    sim.nodes(nodes);
 
     sim.force("link").links(links);
 
     sim.alpha(1).restart();
 
-    function ticked() {
-        link
-            .attr("x1", function(d) { return d.source.x; })
-            .attr("y1", function(d) { return d.source.y; })
-            .attr("x2", function(d) { return d.target.x; })
-            .attr("y2", function(d) { return d.target.y; });
+    //drawNoLinksBar(data_props.nodes - nodes.length)
+}
 
-        node
-            .attr("cx", function(d) { return d.x; })
-            .attr("cy", function(d) { return d.y; });
-    }
+//Draws the main visualisation
+function drawGraph(canvas, nodes, links, shuffle = true) {
+
+    //https://bl.ocks.org/mbostock/1095795
+
+    link = link.data(links, function(d) { return d.source.id + "-" + d.target.id; });
+    link.exit().remove();
+    link = link.enter()
+        .append("line")
+        .classed("link", true)
+        .merge(link);
+
+
+    node = node.data(nodes, function(d) { return d.id;});
+    node.exit().remove();
+    node = node.enter()
+        .append("circle")
+        .attr("fill", "darkred")
+        .attr("r", 5)
+        .attr("cx", width/2)
+        .attr("cy", height/2)
+        .classed("node", true)
+        .merge(node);
+
+    node.append("title")
+        .text(function(d) { return d.id; });
+
+    sim.nodes(nodes);
+
+    sim.force("link").links(links);
+
+    sim.alpha(1).restart();
+
     drawNoLinksBar(data_props.nodes - nodes.length)
 }
 
@@ -257,7 +278,7 @@ function viewBin(n, abs = false) {
     }
     if (n < 0 || n > links.length) {return;}
     data_props.current_bin = n;
-    nodes[n].forEach(function(d){
+    /*nodes[n].forEach(function(d){
         delete d.x;
         delete d.y;
         return d;
@@ -268,25 +289,42 @@ function viewBin(n, abs = false) {
         delete d.y1;
         delete d.y2;
         return d;
-    });
+    });*/
     var x = xStatScale(n * params.bin_size);
     if (abs) {
         d3.selectAll(".statistic_svg g .vTimeLine")
             .transition()
             .attr("duration", 1000)
             .attr("x", x);
+        drawGraph(g, nodes[n], links[n]);
     } else {
         d3.selectAll(".statistic_svg g .vTimeLine")
             .attr("x", x);
+        drawGraph(g, nodes[n], links[n], false);
     }
-    drawGraph(g, nodes[n], links[n]);
+
 }
 
 function simulation(width, height) {
     return d3.forceSimulation()
         .force("link", d3.forceLink().id(function(d) { return d.id; }))
-        .force("charge", d3.forceManyBody().strength(-5))
-        .force("center", d3.forceCenter(width / 2, height / 2));
+        .force("charge", d3.forceManyBody().strength(-100))
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .force("x", d3.forceX())
+        .force("y", d3.forceY())
+        .on("tick", ticked);
+}
+
+function ticked() {
+    link
+        .attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+    node
+        .attr("cx", function(d) { return d.x; })
+        .attr("cy", function(d) { return d.y; });
 }
 
 //---------------------------------------------------------------------
