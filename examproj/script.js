@@ -69,7 +69,7 @@ function updatePars() {
     params["bins"] = n_bins 
     console.log(params)
 
-    calculateGraphs()
+    calculateGraphs();
 
     d3.select("body")
         .on("keydown", function() {
@@ -118,6 +118,9 @@ function calculateGraphs()
         //links[n] = simulateNodes()
         nodes[n] = graphdata["nodes"]
         if (n === 0){
+            d3.select("#stats")
+                .selectAll("*")
+                .remove();
             drawGraph(g, nodes[n], links[n]);
             for (var k = 0; k < params["statistics"].length; k++) {
                 var divs = d3.select("#stats")
