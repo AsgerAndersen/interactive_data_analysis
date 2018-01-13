@@ -23,7 +23,8 @@ var params = {
         {name: "Number of isolated nodes", method: function(links, nodes) { return (data_props.nodes - nodes.length); }},
         //{name: "Network Density", method: function(links, nodes) {return networkDensity(links);}},
         {name: "Number of links", method: function(links, nodes) { return links.length; }}
-    ]
+    ],
+    "old_bin_size": null
 };
 
 function init() {
@@ -68,15 +69,20 @@ function updatePars() {
       .html(binsize)
     d3.select("#n_bins_value")
       .html(n_bins)
-    
-    params["threshold"] = threshold
-    params["bin_size"] = binsize
-    params["bins"] = n_bins 
+
+    params.old_bin_size = params.bin_size;
+    params.threshold = threshold;
+    params.bin_size = binsize;
+    params.bins = n_bins;
 
     calculateGraphs();
 
     d3.select("body")
         .on("keydown", function() {
+            var sliderFocus = d3.select(document.activeElement).classed("parameterSlider");
+            if (sliderFocus) {
+                return;
+            }
             if (d3.event.keyCode == 39) {
                 viewBin(1)
             }
@@ -107,6 +113,7 @@ function calculateGraphs()
 {
     defineTimeFormat()
 
+    var n_to_draw = 0;
     var i = 0;
     nodes = [];
     links = [];
@@ -125,14 +132,19 @@ function calculateGraphs()
         var graphdata = calculateLinksNodes(bin, function(row){
             return row["rssi"] > params['threshold'];
         });
-        links[n] = graphdata["links"]
+        links[n] = graphdata["links"];
         //links[n] = simulateNodes()
-        nodes[n] = graphdata["nodes"]
+        nodes[n] = graphdata["nodes"];
+        if (n === data_props.current_bin && params.old_bin_size === params.bin_size ||
+            n === 0 && params.old_bin_size !== params.bin_size){
+            n_to_draw = n;
+            drawGraph(g, nodes[n], links[n]);
+        }
+
         if (n === 0){
             d3.select("#stats")
                 .selectAll("*")
                 .remove();
-            drawGraph(g, nodes[n], links[n]);
             for (var k = 0; k < params["statistics"].length; k++) {
                 var divs = d3.select("#stats")
                     .append("div")
@@ -161,6 +173,8 @@ function calculateGraphs()
         drawStepChart(steps, canvas)
 
     }
+
+    viewBin(n_to_draw, true, false);
 }
 
 
@@ -254,7 +268,7 @@ function drawGraph(canvas, nodes, links, shuffle = true) {
     detectCommunities(nodes, links)
 }
 
-function viewBin(n, abs = false) {
+function viewBin(n, abs = false, trans = true) {
     if (!abs) {
         n = data_props.current_bin + n;
     }
@@ -273,7 +287,7 @@ function viewBin(n, abs = false) {
         return d;
     });*/
     var x = xStatScale(n * params.bin_size);
-    if (abs) {
+    if (abs && trans) {
         d3.selectAll(".statistic_svg g .vTimeLine")
             .transition()
             .attr("duration", 1000)
