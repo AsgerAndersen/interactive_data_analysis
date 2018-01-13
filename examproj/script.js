@@ -62,9 +62,9 @@ function updatePars() {
 
     var threshold = document.getElementById("threshold_slider").valueAsNumber;
     var binsize = document.getElementById("binsize_slider").valueAsNumber;
-    var n_bins = Math.floor((params["end_time"] - params["start_time"])/ (binsize * 60));
-    //var n_bins = document.getElementById("n_bins_slider").valueAsNumber;
-    console.log("n_bins", n_bins)
+    //var n_bins = Math.floor((params["end_time"] - params["start_time"])/ (binsize * 60));
+    var n_bins = document.getElementById("n_bins_slider").valueAsNumber;
+    //console.log("n_bins", n_bins)
 
     /*
     d3.select("#threshold_value")
@@ -91,7 +91,7 @@ function updatePars() {
 
     params.old_bin_size = params.bin_size;
     params.threshold = threshold;
-    params.bin_size = binsize * 60;
+    params.bin_size = binsize;
     params.bins = n_bins;
 
     calculateGraphs();
