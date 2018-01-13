@@ -5,12 +5,20 @@
 <head>
 
     <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="jquery-ui/jquery-ui.min.css">
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="jquery-ui/external/jquery/jquery.js"></script>
+	<script src="jquery-ui/jquery-ui.min.js"></script>
+    
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://d3js.org/d3-color.v1.min.js"></script>
     <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
     <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 	<script src="https://d3js.org/d3-time.v1.min.js"></script>
+	
 	<script type="text/javascript" src="jLouvain-master/jLouvain.js"></script>
+    
     <script type="text/javascript" src = "script.js"></script>
 
 </head>
@@ -24,58 +32,41 @@
 	<div id="visdiv">
 		<svg id = "vis" width="800" height="800"/>
 		<div id="toggle_communities_div">
-			<table>
-				<tr>
-					<td>Detect communities: </td>
-					<td>
-						<input type="checkbox" id="communities_checkbox" onchange="updatePars()">
-					</td>
-				</tr>
-			</table>
+			Detect communities: <input type="checkbox" id="communities_checkbox" onchange="updatePars()">
 		</div>
 		<div id="n_communities_div">
-			<table>
-				<tr>
-					<td>Number of communities:</td>
-					<td id="n_communities">
-					</td>
-				</tr>
-			</table>
+			Number of communities: <span id="n_communities"></span>
 		</div>
 		<div id="n_isolated_nodes_div">
-			<table>
-				<tr>
-					<td>Number of isolated nodes:</td>
-					<td id="n_nolinks">
-						<!--
-                        <svg id="nolinksbar" height="25" width="400">
-                        </svg>
-                        -->
-					</td>
-				</tr>
-			</table>
+			Number of isolated nodes: <span id="n_nolinks"></span>
 		</div>
 		<div id="parametres_div">
-			<table>
-				<tr>
-					<td>Threshold:
-						<span id="threshold_value"></span>
-						<input type="range" min="-100" max="-50" value="-100" id="threshold_slider" onchange="updatePars()"/>
-					</td>
-				</tr>
-				<tr>
-					<td>Length of timebins:
-						<span id="binsize_value"></span>
-						<input type="range" min="5" max="240" step="5" value="15" id="binsize_slider" onchange="updatePars()"/>
-					</td>
-				</tr>
-				<tr>
-					<td>Number of timebins:
-						<span id="n_bins_value"></span>
-						<input type="range" min="1" max="288" value="96" id="n_bins_slider" onchange="updatePars()"/>
-					</td>
-				</tr>
-			</table>
+
+			<div class="range-slider"> 
+				Threshold:
+				<input type="range" min="-100" max="-50" value="-100" id="threshold_slider" class="range-slider__range" onchange="updatePars()"/>
+				<span id="threshold_value" class="range-slider__value"></span> dBm
+			</div>
+			<div class="range-slider">
+				Length of timebins:
+				<input type="range" min="5" max="240" step="5" value="15" id="binsize_slider" class="range-slider__range" onchange="updatePars()"/>
+				<span id="binsize_value" class="range-slider__value"></span> minutes
+			</div>
+			<div class="range-slider">
+				Start time:
+				<input type="range" min="0" max="119" value="0" id="start_time_slider" class="range-slider__range" onchange="updatePars()"/>
+				<span id="n_bins_value" class="range-slider__value"></span> hours
+			</div>
+			<div class="range-slider">
+				End time:
+				<input type="range" min="1" max="120" value="24" id="end_time_slider" class="range-slider__range" onchange="updatePars()"/>
+				<span id="n_bins_value" class="range-slider__value"></span> hours
+			</div>			
+			<div class="range-slider">
+				Number of timebins:
+				<input type="range" min="1" max="288" value="96" id="n_bins_slider" class="range-slider__range" onchange="updatePars()"/>
+				<span id="n_bins_value" class="range-slider__value"></span>
+			</div>
 		</div>
 	</div>
     <!--</svg>-->
