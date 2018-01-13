@@ -3,11 +3,14 @@ body {
     text-align: center;
 }
 
+div {
+    text-align: left;
+}
+
 #content {
     background-color: white;
-    width: 900px;
     text-align: left;
-    display:inline-block;
+    display:block;
     padding:30px;
     box-shadow: -5px 0px 10px #333, 5px 0px 10px #333;
     border-radius: 10px;
@@ -16,6 +19,12 @@ body {
 #visualisation {
     width: 100%;
     text-align: center;
+}
+
+#visdiv, #stats{
+    display: inline-block;
+    width: 850px;
+    vertical-align: top;
 }
 
 #vis {
@@ -40,6 +49,12 @@ body {
 .statistic_div {
     border-top: 1px solid black;
     margin-top: 10px;
+    padding: 10px;
+}
+
+.statistic_div:first-child {
+    border-top: 0px solid black;
+    margin-top: 0px;
     padding: 10px;
 }
 
@@ -75,7 +90,7 @@ body {
     transition-delay: 0.5s;
 }
 
-.vTimeLineGhost:hover {
+rect:hover ~ .vTimeLineGhost, .vTimeLineGhost:hover  {
     opacity: 1;
     transition: opacity 0.5s;
 }
@@ -86,7 +101,7 @@ body {
     transition-delay: 0.5s;
 }
 
-.vTimeLineGhost:hover ~ .movingTickText {
+rect:hover ~ .movingTickText {
     opacity: 1;
     transition: opacity 0.5s;
 }

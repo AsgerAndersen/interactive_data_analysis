@@ -20,16 +20,16 @@ var params = {
     "target": "user2",
     "statistics": [
         {name: "Average Degree", method: function(links, nodes) { return averageDegree(links);}},
-        {name: "Number of isolated nodes", method: function(links, nodes) { return (data_props.nodes - nodes.length); }}//,
+        {name: "Number of isolated nodes", method: function(links, nodes) { return (data_props.nodes - nodes.length); }},
         //{name: "Network Density", method: function(links, nodes) {return networkDensity(links);}},
-        //{name: "Number of links", method: function(links, nodes) { return links.length; }},
+        {name: "Number of links", method: function(links, nodes) { return links.length; }}
     ]
 };
 
 function init() {
 
     svg = d3.select("#vis");
-    var margin = {top: 50, right: 50, bottom: 50, left: 50};
+    var margin = {top: 0, right: 0, bottom: 0, left: 0};
     width = +svg.node().getBoundingClientRect().width - margin.left - margin.right;
     height = +svg.node().getBoundingClientRect().height - margin.top - margin.bottom;
 
@@ -105,7 +105,11 @@ function uniqueNodes(data) {
 
 function calculateGraphs()
 {
+    defineTimeFormat()
+
     var i = 0;
+    nodes = [];
+    links = [];
     for (var n = 0; n < params.bins; n++) {
         var bin = [];
         var looping = true;
@@ -153,6 +157,7 @@ function calculateGraphs()
     for (var j = 0; j < params["statistics"].length; j++) {
         var canvas = d3.select("#stat" + j);
         var steps = calcGraphStatistics(links, nodes, params["statistics"][j].method);
+        console.log(steps.length);
         drawStepChart(steps, canvas)
 
     }
@@ -211,28 +216,6 @@ function initGraph(canvas) {
         .selectAll(".node");
 }
 
-function drawGraphNew(canvas, nodes, links, shuffle = true) {
-
-    //COPY PASTE FROM https://bl.ocks.org/mbostock/4062045
-
-    a_link = a_link.data(links);
-    a_node = a_node.data(nodes);
-
-    a_link.exit().remove();
-    a_node.exit().remove();
-
-    a_node = a_node.enter().append("circle").attr("fill", "darkred").attr("r", 5).merge(a_node);
-    a_link = a_link.enter().append("line").merge(a_link);
-
-
-
-    sim.nodes(nodes);
-
-    sim.force("link").links(links);
-
-    sim.alpha(1).restart();
-}
-
 //Draws the main visualisation
 function drawGraph(canvas, nodes, links, shuffle = true) {
 
@@ -275,7 +258,7 @@ function viewBin(n, abs = false) {
     if (!abs) {
         n = data_props.current_bin + n;
     }
-    if (n < 0 || n > links.length) {return;}
+    if (n < 0 || n >= links.length) {return;}
     data_props.current_bin = n;
     /*nodes[n].forEach(function(d){
         delete d.x;
@@ -391,7 +374,7 @@ function calcGraphStatistics(links, nodes, statistic) {
                              jump: jump})
         }
     }
-    statistics.pop();
+    //statistics.pop();
     return statistics
 }
 
@@ -547,6 +530,37 @@ function drawStepChart(steps, canvas) {
 //---------------------------------------------------------------------
 
 
+var formatTime;
+
+function defineTimeFormat() {
+
+    var orders = [" Day %e at ", " %H:%M", ":%S"];
+    var maxCount = [365, 24, 60];
+    var values = [24*60*60, 60*60, 1];
+
+    for (var n = orders.length - 1; n >= 0; n--) {
+        if (params.bin_size % (maxCount[n] * values[n]) === 0) {
+            orders[n] = "";
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    for (n = 0; n < orders.length; n++) {
+        if (Math.floor((params.bin_size * params.bins - 1) / values[n]) === 0) {
+            orders[n] = "";
+        }
+        else
+        {
+            break;
+        }
+    }
+    var formatString = orders.join("").substr(1);
+    formatTime = d3.utcFormat(formatString);
+}
+
 function handleStatClick(d, i) {
     var x = d3.mouse(this)[0];
 
@@ -566,9 +580,10 @@ function handleStatHover(d, i) {
         var bin_width = xStatScale(params.bin_size);
         var n = Math.floor(x / bin_width);
         line.attr("x", n * bin_width);
+
         g.select(".movingTickText")
             .attr("x", (n+0.5) * bin_width)
-            .text((n * params.bin_size) + " - " + ((n+1) * params.bin_size));
+            .text(formatTime(n * params.bin_size * 1000) + " - " + formatTime((n+1) * params.bin_size * 1000));
 
     }
 }
