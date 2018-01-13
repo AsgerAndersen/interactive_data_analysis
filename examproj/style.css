@@ -48,8 +48,7 @@ div {
 
 .statistic_div {
     border-top: 1px solid black;
-    margin-top: 10px;
-    padding: 10px;
+    padding: 20px;
 }
 
 .statistic_div:first-child {
@@ -78,6 +77,7 @@ div {
 
 .vTimeLine {
     fill: red;
+    opacity: 0.5
 }
 
 .vTimeLineGhost {
@@ -95,13 +95,24 @@ rect:hover ~ .vTimeLineGhost, .vTimeLineGhost:hover  {
     transition: opacity 0.5s;
 }
 
-.movingTickText {
+.movingTickText{
     opacity: 0;
     transition: opacity 0.5s;
-    transition-delay: 0.5s;
+    /*transition-delay: 0.5s;*/
+}
+
+.tickText{
+    opacity: 1;
+    transition: opacity 0.5s;
+    /*transition-delay: 0.5s;*/
 }
 
 rect:hover ~ .movingTickText {
     opacity: 1;
+    transition: opacity 0.5s;
+}
+
+rect:hover ~ .tickText {
+    opacity: 0;
     transition: opacity 0.5s;
 }
