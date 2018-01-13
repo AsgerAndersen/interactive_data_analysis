@@ -1,79 +1,74 @@
-d3.select(window).on('load', init);
-var data, sim, svg, g, width, height, xStatScale, leftStatMargin, statWidth, link, node;
+function Visualisation() {
 
-var nodes = [], links = [], all_nodes = [];
+    this.data;
+    this.sim;
+    this.svg;
+    this.g;
+    this.width;
+    this.height;
+    this.xStatScale;
+    this.leftStatMargin;
+    this.statWidth;
+    this.link;
+    this.node;
 
-var data_props = {
-    "nodes": 811,
-    "links": 0,
-    "rows": 0,
-    "current_bin": 0
-};
+    this.nodes = [];
+    this.links = [];
+    this.all_nodes = [];
 
-var params = {
-    "bin_size": 900,
-    "offset": 0,
-    "bins": 100,
-    "threshold": -90,
-    "source": "user",
-    "target": "user2",
-    "statistics": [
-        {name: "Average Degree", method: function(links, nodes) { return averageDegree(links);}},
-        {name: "Number of isolated nodes", method: function(links, nodes) { return (data_props.nodes - nodes.length); }},
-        //{name: "Network Density", method: function(links, nodes) {return networkDensity(links);}},
-        {name: "Number of links", method: function(links, nodes) { return links.length; }}
-    ]
-};
+    this.data_props = {
+        "nodes": 811,
+        "links": 0,
+        "rows": 0,
+        "current_bin": 0
+    };
 
-function init() {
-
-    svg = d3.select("#vis");
-    var margin = {top: 0, right: 0, bottom: 0, left: 0};
-    width = +svg.node().getBoundingClientRect().width - margin.left - margin.right;
-    height = +svg.node().getBoundingClientRect().height - margin.top - margin.bottom;
-
-    g = svg.append("g")
-        .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
-
-    d3.csv(
-        'data/sodas_data.csv',
-        function (error, dat) {
-            if (error) throw error;
-
-            //all_node_names = uniqueNodes(dat);
-            //data_props.nodes = 811;//Object.keys(all_node_names).length;
-            sim = simulation(width, height);
-            data = dat;
-            initGraph(g);
-
-            all_nodes = uniqueNodes(dat);
-            console.log(Object.keys(all_nodes).length);
-
-            updatePars()
-        }
-    )
+    this.params = {
+        "bin_size": 900,
+        "offset": 0,
+        "bins": 100,
+        "threshold": -90,
+        "source": "user",
+        "target": "user2",
+        "statistics": [
+            {name: "Average Degree", method: function(links, nodes) { return averageDegree(links);}},
+            {name: "Number of isolated nodes", method: function(links, nodes) { return (data_props.nodes - nodes.length); }},
+            //{name: "Network Density", method: function(links, nodes) {return networkDensity(links);}},
+            {name: "Number of links", method: function(links, nodes) { return links.length; }}
+        ]
+    };
 }
 
-function updatePars() {
+Visualisation.prototype.initGraph = function(canvas) {
+
+    link = canvas
+        .append("g")
+        .selectAll(".link");
+
+    node = canvas
+        .append("g")
+        .selectAll(".node");
+}
+
+Visualisation.prototype.updatePars = function() {
 
     var threshold = document.getElementById("threshold_slider").valueAsNumber;
     var binsize = document.getElementById("binsize_slider").valueAsNumber;
     var n_bins = document.getElementById("n_bins_slider").valueAsNumber;
 
     d3.select("#threshold_value")
-      .html(threshold)
+        .html(threshold);
     d3.select("#binsize_value")
-      .html(binsize)
+        .html(binsize);
     d3.select("#n_bins_value")
-      .html(n_bins)
-    
+        .html(n_bins);
+
     params["threshold"] = threshold
     params["bin_size"] = binsize
-    params["bins"] = n_bins 
+    params["bins"] = n_bins
     console.log(params)
 
-    calculateGraphs();
+    this.calculateGraphs();
 
     d3.select("body")
         .on("keydown", function() {
@@ -84,26 +79,9 @@ function updatePars() {
                 viewBin(-1)
             }
         });
-}
+};
 
-//Loops through data returns list of all unique node IDs
-function uniqueNodes(data) {
-    var node1key = params["source"];
-    var node2key = params["target"];
-    var nodes = [];
-    for (var n = 0; n < data.length; n++) {
-        var row = data[n];
-        nodes[row[node1key]] = true;
-        nodes[row[node2key]] = true;
-    }
-    for (var key in nodes) {
-        nodes[key] = {id: key};
-    }
-    return nodes;
-}
-
-
-function calculateGraphs()
+Visualisation.prototype.calculateGraphs = function()
 {
     defineTimeFormat()
 
@@ -161,12 +139,9 @@ function calculateGraphs()
         drawStepChart(steps, canvas)
 
     }
-}
+};
 
-
-
-//TODO: Add directed option, and options for minimum number of occurrences, etc.
-function calculateLinksNodes(data, filter, count = false, directed = false) {
+Visualisation.prototype.calculateLinksNodes = function(data, filter, count = false, directed = false) {
     var node1key = params["source"];
     var node2key = params["target"];
 
@@ -204,73 +179,15 @@ function calculateLinksNodes(data, filter, count = false, directed = false) {
     }
 
     return {"links": links, "nodes": nodes};
-}
+};
 
-function initGraph(canvas) {
-
-    link = canvas
-        .append("g")
-        .selectAll(".link");
-
-    node = canvas
-        .append("g")
-        .selectAll(".node");
-}
-
-//Draws the main visualisation
-function drawGraph(canvas, nodes, links, shuffle = true) {
-
-    //https://bl.ocks.org/mbostock/1095795
-
-    link = link.data(links, function(d) { return d.source.id + "-" + d.target.id; });
-    link.exit().remove();
-    link = link.enter()
-        .append("line")
-        .classed("link", true)
-        .merge(link);
-
-
-    node = node.data(nodes, function(d) { return d.id;});
-    node.exit().remove();
-    node = node.enter()
-        .append("circle")
-        .attr("fill", "darkred")
-        .attr("r", 5)
-        .attr("cx", width/2)
-        .attr("cy", height/2)
-        .classed("node", true)
-        .merge(node);
-
-    node.append("title")
-        .text(function(d) { return d.id; });
-
-    sim.nodes(nodes);
-
-    sim.force("link").links(links);
-
-    sim.alpha(1).restart();
-
-    drawNoLinksBar(data_props.nodes - nodes.length)
-}
-
-function viewBin(n, abs = false) {
+Visualisation.prototype.viewBin = function(n, abs = false) {
     if (!abs) {
         n = data_props.current_bin + n;
     }
     if (n < 0 || n >= links.length) {return;}
     data_props.current_bin = n;
-    /*nodes[n].forEach(function(d){
-        delete d.x;
-        delete d.y;
-        return d;
-    });
-    links[n].forEach(function(d){
-        delete d.x1;
-        delete d.x2;
-        delete d.y1;
-        delete d.y2;
-        return d;
-    });*/
+
     var x = xStatScale(n * params.bin_size);
     if (abs) {
         d3.selectAll(".statistic_svg g .vTimeLine")
@@ -294,10 +211,9 @@ function viewBin(n, abs = false) {
             .attr("x", x);
         drawGraph(g, nodes[n], links[n], false);
     }
+};
 
-}
-
-function simulation(width, height) {
+Visualisation.prototype.simulation = function(width, height) {
     return d3.forceSimulation()
         .force("link", d3.forceLink().id(function(d) { return d.id; }))
         .force("charge", d3.forceManyBody().strength(-100))
@@ -305,9 +221,9 @@ function simulation(width, height) {
         .force("x", d3.forceX())
         .force("y", d3.forceY())
         .on("tick", ticked);
-}
+};
 
-function ticked() {
+Visualisation.prototype.ticked = function() {
     link
         .attr("x1", function(d) { return d.source.x; })
         .attr("y1", function(d) { return d.source.y; })
@@ -317,14 +233,12 @@ function ticked() {
     node
         .attr("cx", function(d) { return d.x; })
         .attr("cy", function(d) { return d.y; });
-}
+};
 
-//---------------------------------------------------------------------
-//Draw bar with number of nodes without any links
-function drawNoLinksBar(n) {
+Visualisation.prototype.drawNoLinksBar = function(n) {
 
     d3.select("#n_nolinks")
-      .html(n.toString())
+        .html(n.toString())
 
     /*
     var canvas = d3.select("#nolinksbar")
@@ -359,38 +273,35 @@ function drawNoLinksBar(n) {
      .attr("font-size", "20px")
      .attr("fill", "black")
     */
-}
+};
 
-//---------------------------------------------------------------------
-//Calculate the descriptive graph statistics, which should be visualized in the step charts
-
-function calcGraphStatistics(links, nodes, statistic) {
+Visualisation.prototype.calcGraphStatistics = function(links, nodes, statistic) {
     var statistics = [];
     for (var i=0; i<links.length; i++) {
         var value = statistic(links[i], nodes[i]);
         var t = i*params.bin_size;
         if (i === 0) {
             statistics.push({t: t,
-                             value: value,
-                             left: true})
+                value: value,
+                left: true})
         }
         else {
             var last_value = statistics[2*i-2].value;
             var jump = value - last_value;
             statistics.push({t: t,
-                             value: last_value,
-                             left: false});
+                value: last_value,
+                left: false});
             statistics.push({t: t,
-                             value: value,
-                             left: true,
-                             jump: jump})
+                value: value,
+                left: true,
+                jump: jump})
         }
     }
     //statistics.pop();
     return statistics
-}
+};
 
-function averageDegree(links) {
+Visualisation.prototype.averageDegree = function(links) {
     var n_nodes = data_props.nodes;
     return 2*links.length / n_nodes;
 }
@@ -446,35 +357,35 @@ function drawStepChart(steps, canvas) {
     var yAxis = d3.axisLeft(y);
 
     g.selectAll(".stepgraph-hline")
-     .data(steps.filter(function(d){
+        .data(steps.filter(function(d){
             return (d.left)
-         }))
-     .enter()
-     .append("line")
-     .classed("stepgraph-hline", true)
-     .style("stroke", "black")
-     .attr("x1", function(d) {return x(d.t)})
-     .attr("y1", function(d) {return y(d.value)})
-     .attr("x2", function(d) {
-           return (x(d.t + params.bin_size))
+        }))
+        .enter()
+        .append("line")
+        .classed("stepgraph-hline", true)
+        .style("stroke", "black")
+        .attr("x1", function(d) {return x(d.t)})
+        .attr("y1", function(d) {return y(d.value)})
+        .attr("x2", function(d) {
+            return (x(d.t + params.bin_size))
         })
-     .attr("y2", function(d) {return y(d.value)});
-    
+        .attr("y2", function(d) {return y(d.value)});
+
     g.selectAll(".stepgraph-vline")
-     .data(steps.filter(function(d, i){
+        .data(steps.filter(function(d, i){
             return (d.left && (i !== 0))
-         }))
-     .enter()
-     .append("line")
-     .classed("stepgraph-vline", true)
-     .attr("stroke", "grey")
-     //.attr("stroke-dasharray", 4)
-     .attr("x1", function(d) {return x(d.t)})
-     .attr("y1", function(d) {return y(d.value)})
-     .attr("x2", function(d) {return x(d.t)})
-     .attr("y2", function(d) {
-        return (y(d.value - d.jump))
-      });
+        }))
+        .enter()
+        .append("line")
+        .classed("stepgraph-vline", true)
+        .attr("stroke", "grey")
+        //.attr("stroke-dasharray", 4)
+        .attr("x1", function(d) {return x(d.t)})
+        .attr("y1", function(d) {return y(d.value)})
+        .attr("x2", function(d) {return x(d.t)})
+        .attr("y2", function(d) {
+            return (y(d.value - d.jump))
+        });
 
     canvas.append("g")
         .attr("transform", "translate(" + margin.left + "," + (height+margin.top) + ")")
@@ -547,7 +458,7 @@ function drawStepChart(steps, canvas) {
         })
         .attr("stroke", "black")
     */
-} 
+}
 //---------------------------------------------------------------------
 
 
