@@ -10,6 +10,7 @@
     <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
     <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 	<script src="https://d3js.org/d3-time.v1.min.js"></script>
+	<script type="text/javascript" src="jLouvain-master/jLouvain.js"></script>
     <script type="text/javascript" src = "script.js"></script>
 
 </head>
@@ -20,6 +21,16 @@
 <h1>Project</h1>
 <h2>Visualization:</h2>
 <div id="visualisation" class="section">
+	<div id="toggle_communities_div">
+		<table>
+			<tr>
+				<td>Detect communities: </td>
+				<td>
+					<input type="checkbox" id="communities_checkbox" onchange="updatePars()">
+				</td>
+			</tr>
+		</table>
+	</div>
 	<div id="parametres_div">
 		<table>
 			<tr>
@@ -51,6 +62,15 @@
 					<svg id="nolinksbar" height="25" width="400">
 					</svg>
 					-->	
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div id="n_communities_div">
+		<table>
+			<tr>
+				<td>Number of communities:</td>
+				<td id="n_communities">
 				</td>
 			</tr>
 		</table>

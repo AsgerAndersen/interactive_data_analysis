@@ -1,10 +1,11 @@
 d3.select(window).on('load', init);
 var data, sim, svg, g, width, height, xStatScale, leftStatMargin, statWidth, link, node;
 
-var nodes = [], links = [], all_nodes = [];
+//var n_init_communities = 2;
+var nodes = [], links = [], all_nodes = [];//, community_init = {};
 
 var data_props = {
-    "nodes": 811,
+    "nodes": 589,
     "links": 0,
     "rows": 0,
     "current_bin": 0
@@ -37,18 +38,18 @@ function init() {
             "translate(" + margin.left + "," + margin.top + ")");
 
     d3.csv(
-        'data/sodas_data.csv',
+        'data/sodas_data_cleaned.csv',
         function (error, dat) {
             if (error) throw error;
-
-            //all_node_names = uniqueNodes(dat);
-            //data_props.nodes = 811;//Object.keys(all_node_names).length;
+         
             sim = simulation(width, height);
             data = dat;
             initGraph(g);
 
-            all_nodes = uniqueNodes(dat);
-            console.log(Object.keys(all_nodes).length);
+            all_nodes = uniqueNodes(dat);         
+            //all_nodes.forEach(function(node) {
+            //	community_init[String(node.id)]=getRandomInt(0,n_init_communities);
+            //})            
 
             updatePars()
         }
@@ -71,7 +72,6 @@ function updatePars() {
     params["threshold"] = threshold
     params["bin_size"] = binsize
     params["bins"] = n_bins 
-    console.log(params)
 
     calculateGraphs();
 
@@ -197,7 +197,6 @@ function calculateLinksNodes(data, filter, count = false, directed = false) {
     for (var key in node_map) {
         nodes.push(all_nodes[key]); //Uses references instead of new node objects
     }
-
     return {"links": links, "nodes": nodes};
 }
 
@@ -232,8 +231,6 @@ function drawGraphNew(canvas, nodes, links, shuffle = true) {
     sim.force("link").links(links);
 
     sim.alpha(1).restart();
-
-    //drawNoLinksBar(data_props.nodes - nodes.length)
 }
 
 //Draws the main visualisation
@@ -270,6 +267,8 @@ function drawGraph(canvas, nodes, links, shuffle = true) {
     sim.alpha(1).restart();
 
     drawNoLinksBar(data_props.nodes - nodes.length)
+
+    detectCommunities(nodes, links)
 }
 
 function viewBin(n, abs = false) {
@@ -354,8 +353,6 @@ function drawNoLinksBar(n) {
      .attr("height", 25)
      .attr("width", x(n))
      .attr("fill", "brown")
-     console.log(n)
-     console.log(x(n))
 
 
     //Why is this not working?
@@ -574,10 +571,60 @@ function handleStatHover(d, i) {
             .text((n * params.bin_size) + " - " + ((n+1) * params.bin_size));
 
     }
-
-    //console.log(getStatX(d3.mouse(this)[0]));
 }
 
 function getStatX(x) {
     return xStatScale.invert(x);
+}
+
+//----------------------------------------------------------------------
+//Detect and visualize communities
+
+function detectCommunities(nodes, links) {
+	
+    if (document.getElementById("communities_checkbox").checked) {
+        var nodes_id_list = [], links_list = [], init_part = {};
+
+    	for (i=0; i<nodes.length; i++) {
+    		nodes_id_list.push(nodes[i].id)
+    		//init_part[nodes[i].id] = community_init[nodes[i].id]
+    	}
+
+        for (i=0; i<links.length; i++) {
+            links_list.push({source: links[i].source.id, target: links[i].target.id, weight: 1.})
+        }
+
+    	var community = jLouvain().nodes(nodes_id_list)
+                                  .edges(links_list)
+                                  //.partition_init(init_part);
+    	
+        var community_assignment = community();
+
+        var max_community_number = 0;
+
+        nodes.forEach(function(node) {        
+            node.community = community_assignment[node.id]
+            max_community_number = max_community_number < community_assignment[node.id] ? community_assignment[node.id]: max_community_number;
+        })
+        
+        var color = d3.scaleOrdinal(d3.schemeCategory10).domain(d3.range([0, max_community_number]));
+
+        d3.selectAll('.node')
+          .data(nodes)
+          .style('fill', function(d){ return color(d.community);})
+
+        d3.select("#n_communities")
+          .html((max_community_number + 1))
+    }
+    else {
+        d3.selectAll('.node')
+          .data(nodes)
+          .style('fill', 'darkred')
+    }
+}
+
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
 }
