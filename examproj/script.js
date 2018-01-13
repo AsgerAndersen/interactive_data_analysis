@@ -64,13 +64,27 @@ function updatePars() {
 
     d3.select("#threshold_value")
       .html(threshold)
+    if (binsize<60) {
+        s = String(binsize) + " minutes"
+    }
+    else {
+        h = Math.floor(binsize / 60)
+        m = Math.floor(binsize % 60)
+        if (m < 10) {
+            m = "0"+String(m)
+        }
+        else {
+            m = String(m)
+        }
+        s = String(h) + ":" + m + " hours"    
+    }
     d3.select("#binsize_value")
-      .html(binsize)
+      .html(s)
     d3.select("#n_bins_value")
       .html(n_bins)
     
     params["threshold"] = threshold
-    params["bin_size"] = binsize
+    params["bin_size"] = binsize * 60
     params["bins"] = n_bins 
 
     calculateGraphs();
