@@ -36,7 +36,7 @@ function init() {
 
     g = svg.append("g")
         .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
+            "translate(" + width / 2+ "," + height / 2 + ")");
 
     d3.csv(
         'data/sodas_data_cleaned.csv',
@@ -235,7 +235,7 @@ function drawGraph(canvas, nodes, links, shuffle = true) {
 
     //https://bl.ocks.org/mbostock/1095795
 
-    link = link.data(links, function(d) { return d.source.id + "-" + d.target.id; });
+    link = link.data(links);
     link.exit().remove();
     link = link.enter()
         .append("line")
@@ -243,7 +243,7 @@ function drawGraph(canvas, nodes, links, shuffle = true) {
         .merge(link);
 
 
-    node = node.data(nodes, function(d) { return d.id;});
+    node = node.data(nodes);
     node.exit().remove();
     node = node.enter()
         .append("circle")
@@ -316,7 +316,7 @@ function simulation(width, height) {
     return d3.forceSimulation()
         .force("link", d3.forceLink().id(function(d) { return d.id; }))
         .force("charge", d3.forceManyBody().strength(-100))
-        .force("center", d3.forceCenter(width / 2, height / 2))
+        //.force("center", d3.forceCenter(width / 2, height / 2))
         .force("x", d3.forceX())
         .force("y", d3.forceY())
         .on("tick", ticked);
