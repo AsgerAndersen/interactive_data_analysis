@@ -81,7 +81,7 @@ function init() {
             //	community_init[String(node.id)]=getRandomInt(0,n_init_communities);
             //})            
 
-            updatePars()
+            calculateGraphs();
 
             svg.call(zooming);
             svg.call(zooming.transform, d3.zoomIdentity.translate(400, 400));
@@ -91,34 +91,16 @@ function init() {
 
 function updatePars() {
 
-    var threshold = document.getElementById("threshold_slider").valueAsNumber;
-    var binsize = document.getElementById("binsize_slider").valueAsNumber;
-    //var n_bins = Math.floor((params["end_time"] - params["start_time"])/ (binsize * 60));
-    var n_bins = document.getElementById("n_bins_slider").valueAsNumber;
+    //console.log(document.getElementById("threshold_slider"))
+    //console.log(document.getElementById("binsize_slider"))
+    var threshold = $("#threshold_slider").slider("option","value")
+    var binsize = ($("#binsize_slider").slider("option","value"))*60
+    var time_interval = $("#start_end_slider").slider("option","values")
+    //console.log(time_interval)
+    var n_bins = Math.floor( ( time_interval[1] - time_interval[0]) * 3600  / binsize );
+    //console.log(n_bins)
+    //var n_bins = document.getElementById("n_bins_slider").valueAsNumber;
     //console.log("n_bins", n_bins)
-
-    /*
-    d3.select("#threshold_value")
-      .html(threshold)
-    if (binsize<60) {
-        s = String(binsize) + " minutes"
-    }
-    else {
-        h = Math.floor(binsize / 60)
-        m = Math.floor(binsize % 60)
-        if (m < 10) {
-            m = "0"+String(m)
-        }
-        else {
-            m = String(m)
-        }
-        s = String(h) + ":" + m + " hours"    
-    }
-    d3.select("#binsize_value")
-      .html(s)
-    d3.select("#n_bins_value")
-      .html(n_bins)
-*/
 
     params.old_bin_size = params.bin_size;
     params.threshold = threshold;
@@ -275,7 +257,6 @@ function drawGraph(canvas, nodes, links, restart = true) {
     link.exit().remove();
     link = link.enter()
         .append("line")
-        //.style("opacity", 0)
         .classed("link", true)
         .merge(link);
 
@@ -285,7 +266,6 @@ function drawGraph(canvas, nodes, links, restart = true) {
         .append("circle")
         .attr("fill", "darkred")
         .attr("r", 5)
-        //.style("opacity", 0)
         .classed("node", true)
         .merge(node);
 
@@ -350,7 +330,6 @@ function viewBin(n, abs = false, trans = true) {
             .attr("x", x);
         drawGraph(g, nodes[n], links[n]);
     }
-
 }
 
 var scale = 1;
