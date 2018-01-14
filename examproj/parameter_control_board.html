@@ -9,6 +9,7 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="jquery-ui/external/jquery/jquery.js"></script>
 	<script src="jquery-ui/jquery-ui.min.js"></script>
+	<script src="https://d3js.org/d3.v4.min.js"></script>
 
 	<style type="text/css">
 
@@ -29,6 +30,25 @@
 	</style>
 
 	<script type="text/javascript">
+		var params = {
+		    "bin_size": 900,
+		    "start_time": 0,
+		    "end_time": 60*60*24,
+		    "bins": 96,
+		    "threshold": -90,
+		    "source": "user",
+		    "target": "user2",
+		    "statistics": [
+		        {name: "Average Degree", method: function(links, nodes) { return averageDegree(links);}},
+		        {name: "Number of isolated nodes", method: function(links, nodes) { return (data_props.nodes - nodes.length); }},
+		        //{name: "Network Density", method: function(links, nodes) {return networkDensity(links);}},
+		        {name: "Number of links", method: function(links, nodes) { return links.length; }}
+		    ],
+		    "old_bin_size": null
+		};
+	</script>
+
+	<script type="text/javascript">
 		$(function() {
 
 			var board_config = {
@@ -38,7 +58,7 @@
 			  		max: -25,
 			  		step: 1,
 			  		range_slider: false,
-			  		value: -90,
+			  		value: params.threshold,
 			  		format_output: function(threshold) {return String(threshold) + " dBm"}
 			  	},
 			  	binsize_slider: {
@@ -47,7 +67,7 @@
 			  		max: 60*4,
 			  		step: 5,
 			  		range_slider: false,
-			  		value: 15,
+			  		value: params.bin_size / 60,
 			  		format_output: function(binsize) {
   						if (binsize<60) {
 					        s = String(binsize) + " minutes"
@@ -72,7 +92,7 @@
 			  		max: 24*5,
 			  		step: 1,
 			  		range_slider: true,
-			  		value: [0,24],
+			  		value: [params.start_time / 3600, params.end_time / 3600],
 			  		format_output: function(hours) {
 			  			day = Math.floor(hours / 24) + 1
 			  			hour = hours % 24
@@ -145,11 +165,34 @@
 		      	value: config.value,
 		      	values: config.value,
 		      	create: createFunc,
-		      	slide: slideFunc
+		      	slide: slideFunc,
+		      	change: updatePars
 		      });
 
-		      });
-		    });
+	       });
+
+    	});
+    </script>
+
+    <script type="text/javascript">
+    	
+    	d3.select(window).on('load', updatePars());
+    	
+    	function updatePars() {
+
+    		var threshold = $("#threshold_slider").slider("option","value")
+
+    		console.log(threshold)
+
+    		canvas = d3.select("#canvas")
+
+    		canvas.selectAll("*")
+    		      .remove()
+
+    		canvas.append("rect")
+    		      .attr("height", 50)
+    		      .attr("width", Math.abs(threshold)*10)
+    	}
     </script>
 
 </head>
@@ -177,6 +220,8 @@
 		<div id="start_end_slider" class="slider"></div>
 	</div>
 </div>
+
+<svg id="canvas" height="1000" width="1000"></svg>
 
 </body>
 

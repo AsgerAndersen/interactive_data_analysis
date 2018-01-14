@@ -7,7 +7,7 @@ $(function() {
 	  		max: -25,
 	  		step: 1,
 	  		range_slider: false,
-	  		value: -90,
+	  		value: params.threshold,
 	  		format_output: function(threshold) {return String(threshold) + " dBm"}
 	  	},
 	  	binsize_slider: {
@@ -16,7 +16,7 @@ $(function() {
 	  		max: 60*4,
 	  		step: 5,
 	  		range_slider: false,
-	  		value: 15,
+	  		value: params.bin_size / 60,
 	  		format_output: function(binsize) {
 					if (binsize<60) {
 			        s = String(binsize) + " minutes"
@@ -41,7 +41,7 @@ $(function() {
 	  		max: 24*5,
 	  		step: 1,
 	  		range_slider: true,
-	  		value: [0,24],
+	  		value: [params.start_time / 3600, params.end_time / 3600],
 	  		format_output: function(hours) {
 	  			day = Math.floor(hours / 24) + 1
 	  			hour = hours % 24
@@ -106,16 +106,42 @@ $(function() {
 
 	      }
       
-      $( this ).slider({
-      	min: config.min,
-      	max: config.max,
-      	step: config.step,
-      	range: config.range_slider,
-      	value: config.value,
-      	values: config.value,
-      	create: createFunc,
-      	slide: slideFunc
-      });
+      	$( this ).slider({
+			min: config.min,
+			max: config.max,
+			step: config.step,
+			range: config.range_slider,
+			value: config.value,
+			values: config.value,
+			create: createFunc,
+			slide: slideFunc,
+			change: updatePars
+    	});
+	});
+});
+/*
+$(function() {
+	function updatePars() {
 
-      });
-    });
+	    //console.log(document.getElementById("threshold_slider"))
+	    //console.log(document.getElementById("binsize_slider"))
+	    var threshold = $("#threshold_slider").slider("option","value")
+	    var threshold = $("#binsize_slider").slider("option","value")
+	    //var threshold = document.getElementById("threshold_slider").valueAsNumber;
+	    //var binsize = document.getElementById("binsize_slider").valueAsNumber;
+	    console.log(threshold)
+	    console.log(binsize)
+	    //var n_bins = Math.floor((params["end_time"] - params["start_time"])/ (binsize * 60));
+	    //var n_bins = document.getElementById("n_bins_slider").valueAsNumber;
+	    //console.log("n_bins", n_bins)
+
+	    params.old_bin_size = params.bin_size;
+	    params.threshold = threshold;
+	    params.bin_size = binsize;
+	    //params.bins = n_bins;
+
+	    calculateGraphs();
+	    moveBetweenGraphs();
+	}
+})
+*/

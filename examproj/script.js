@@ -53,41 +53,24 @@ function init() {
             //	community_init[String(node.id)]=getRandomInt(0,n_init_communities);
             //})            
 
-            updatePars()
+            calculateGraphs();
+            moveBetweenGraphs();
         }
     )
 }
 
 function updatePars() {
 
-    var threshold = document.getElementById("threshold_slider").valueAsNumber;
-    var binsize = document.getElementById("binsize_slider").valueAsNumber;
-    //var n_bins = Math.floor((params["end_time"] - params["start_time"])/ (binsize * 60));
-    var n_bins = document.getElementById("n_bins_slider").valueAsNumber;
+    //console.log(document.getElementById("threshold_slider"))
+    //console.log(document.getElementById("binsize_slider"))
+    var threshold = $("#threshold_slider").slider("option","value")
+    var binsize = ($("#binsize_slider").slider("option","value"))*60
+    var time_interval = $("#start_end_slider").slider("option","values")
+    //console.log(time_interval)
+    var n_bins = Math.floor( ( time_interval[1] - time_interval[0]) * 3600  / binsize );
+    //console.log(n_bins)
+    //var n_bins = document.getElementById("n_bins_slider").valueAsNumber;
     //console.log("n_bins", n_bins)
-
-    /*
-    d3.select("#threshold_value")
-      .html(threshold)
-    if (binsize<60) {
-        s = String(binsize) + " minutes"
-    }
-    else {
-        h = Math.floor(binsize / 60)
-        m = Math.floor(binsize % 60)
-        if (m < 10) {
-            m = "0"+String(m)
-        }
-        else {
-            m = String(m)
-        }
-        s = String(h) + ":" + m + " hours"    
-    }
-    d3.select("#binsize_value")
-      .html(s)
-    d3.select("#n_bins_value")
-      .html(n_bins)
-*/
 
     params.old_bin_size = params.bin_size;
     params.threshold = threshold;
@@ -95,20 +78,23 @@ function updatePars() {
     params.bins = n_bins;
 
     calculateGraphs();
+    moveBetweenGraphs();
+}
 
+function moveBetweenGraphs() {
     d3.select("body")
-        .on("keydown", function() {
-            var sliderFocus = d3.select(document.activeElement).classed("parameterSlider");
-            if (sliderFocus) {
-                return;
-            }
-            if (d3.event.keyCode == 39) {
-                viewBin(1)
-            }
-            else if (d3.event.keyCode == 37) {
-                viewBin(-1)
-            }
-        });
+    .on("keydown", function() {
+        var sliderFocus = d3.select(document.activeElement).classed("parameterSlider");
+        if (sliderFocus) {
+            return;
+        }
+        if (d3.event.keyCode == 39) {
+            viewBin(1)
+        }
+        else if (d3.event.keyCode == 37) {
+            viewBin(-1)
+        }
+    });
 }
 
 //Loops through data returns list of all unique node IDs
