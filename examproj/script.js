@@ -61,16 +61,10 @@ function init() {
 
 function updatePars() {
 
-    //console.log(document.getElementById("threshold_slider"))
-    //console.log(document.getElementById("binsize_slider"))
     var threshold = $("#threshold_slider").slider("option","value")
     var binsize = ($("#binsize_slider").slider("option","value"))*60
     var time_interval = $("#start_end_slider").slider("option","values")
-    //console.log(time_interval)
     var n_bins = Math.floor( ( time_interval[1] - time_interval[0]) * 3600  / binsize );
-    //console.log(n_bins)
-    //var n_bins = document.getElementById("n_bins_slider").valueAsNumber;
-    //console.log("n_bins", n_bins)
 
     params.old_bin_size = params.bin_size;
     params.threshold = threshold;
