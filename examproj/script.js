@@ -13,8 +13,9 @@ var data_props = {
 
 var params = {
     "bin_size": 900,
-    "offset": 0,
-    "bins": 100,
+    "start_time": 0,
+    "end_time": 60*60*24,
+    "bins": 96,
     "threshold": -90,
     "source": "user",
     "target": "user2",
@@ -61,14 +62,32 @@ function updatePars() {
 
     var threshold = document.getElementById("threshold_slider").valueAsNumber;
     var binsize = document.getElementById("binsize_slider").valueAsNumber;
+    //var n_bins = Math.floor((params["end_time"] - params["start_time"])/ (binsize * 60));
     var n_bins = document.getElementById("n_bins_slider").valueAsNumber;
+    //console.log("n_bins", n_bins)
 
+    /*
     d3.select("#threshold_value")
       .html(threshold)
+    if (binsize<60) {
+        s = String(binsize) + " minutes"
+    }
+    else {
+        h = Math.floor(binsize / 60)
+        m = Math.floor(binsize % 60)
+        if (m < 10) {
+            m = "0"+String(m)
+        }
+        else {
+            m = String(m)
+        }
+        s = String(h) + ":" + m + " hours"    
+    }
     d3.select("#binsize_value")
-      .html(binsize)
+      .html(s)
     d3.select("#n_bins_value")
       .html(n_bins)
+*/
 
     params.old_bin_size = params.bin_size;
     params.threshold = threshold;
@@ -169,7 +188,7 @@ function calculateGraphs()
     for (var j = 0; j < params["statistics"].length; j++) {
         var canvas = d3.select("#stat" + j);
         var steps = calcGraphStatistics(links, nodes, params["statistics"][j].method);
-        console.log(steps.length);
+        //console.log(steps.length);
         drawStepChart(steps, canvas)
 
     }
@@ -433,7 +452,7 @@ function drawStepChart(steps, canvas) {
         .on("mousemove", handleStatHover);
 
     var x = d3.scaleLinear()
-        .domain([params.offset, params.bins * params.bin_size])
+        .domain([params.start_time, params.bins * params.bin_size])
         .range([0,width]);
 
     g.append("rect")
@@ -454,7 +473,7 @@ function drawStepChart(steps, canvas) {
         .range([height,0]);
 
     var xAxis = d3.axisBottom(x)
-        .tickValues(d3.range(params.offset, params.bin_size * params.bins, params.bin_size));
+        .tickValues(d3.range(params.start_time, params.bin_size * params.bins, params.bin_size));
 
     var yAxis = d3.axisLeft(y);
 

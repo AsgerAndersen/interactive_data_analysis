@@ -1,0 +1,13 @@
+#control_board {
+	width: 500px;
+	padding: 75px;
+}
+
+.slider {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.floaty {
+	float: left;
+}
