@@ -1,7 +1,9 @@
+/*
 body {
     background-color: #ccc;
     text-align: center;
 }
+*/
 
 div {
     text-align: left;
@@ -12,8 +14,8 @@ div {
     text-align: left;
     display:block;
     padding:30px;
-    box-shadow: -5px 0px 10px #333, 5px 0px 10px #333;
-    border-radius: 10px;
+    /*box-shadow: -5px 0px 10px #333, 5px 0px 10px #333;
+    border-radius: 10px;*/
 }
 
 #visualisation {

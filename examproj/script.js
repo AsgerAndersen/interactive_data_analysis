@@ -20,10 +20,34 @@ var params = {
     "source": "user",
     "target": "user2",
     "statistics": [
-        {name: "Average Degree", method: function(links, nodes) { return averageDegree(links);}},
-        {name: "Number of isolated nodes", method: function(links, nodes) { return (data_props.nodes - nodes.length); }},
-        //{name: "Network Density", method: function(links, nodes) {return networkDensity(links);}},
-        {name: "Number of links", method: function(links, nodes) { return links.length; }}
+        {name: "Average Degree", 
+         method: function(links, nodes, i) { return averageDegree(links[i]);},
+         line: null
+        },
+        {name: "Number of isolated nodes", 
+         method: function(links, nodes, i) { return (data_props.nodes - nodes[i].length); },
+         line: null
+        },
+        /*
+        {name: "Network Density", 
+         method: function(links, nodes) {return networkDensity(links);},
+         line: null
+        },
+        */
+        {name: "Link growth (absolute)", 
+         method: function(links, nodes, i) { 
+                    if (i==0) {return 0}
+                    else {return links[i].length - links[i-1].length}
+                 },
+         line: 0
+        },
+        {name: "Link growth (relative)", 
+         method: function(links, nodes, i) { 
+                    if (i==0) {return 0}
+                    else {return (((links[i].length / links[i-1].length) - 1) * 100)}
+                 },
+         line: 0
+        }
     ],
     "old_bin_size": null
 };
@@ -54,7 +78,6 @@ function init() {
             scale = d3.event.transform.k;
             transX = d3.event.transform.x;
             transY = d3.event.transform.y;
-            console.log(transX);
             //scale = scale + zoomStep;
             sim.restart();
         });
@@ -100,6 +123,8 @@ function updatePars() {
     params.threshold = threshold;
     params.bin_size = binsize;
     params.bins = n_bins;
+    params.start_time = time_interval[0]
+    params.end_time = time_interval[1]
 
     calculateGraphs();
 }
@@ -182,7 +207,7 @@ function calculateGraphs()
         var canvas = d3.select("#stat" + j);
         var steps = calcGraphStatistics(links, nodes, params["statistics"][j].method);
         //console.log(steps.length);
-        drawStepChart(steps, canvas)
+        drawStepChart(steps, canvas, params["statistics"][j].line)
 
     }
 
@@ -411,7 +436,7 @@ function drawNoLinksBar(n) {
 function calcGraphStatistics(links, nodes, statistic) {
     var statistics = [];
     for (var i=0; i<links.length; i++) {
-        var value = statistic(links[i], nodes[i]);
+        var value = statistic(links, nodes, i);
         var t = i*params.bin_size;
         if (i === 0) {
             statistics.push({t: t,
@@ -448,7 +473,7 @@ function networkDensity(links) {
 //---------------------------------------------------------------------
 //Visualize the descriptive graph statistics in a step chart
 
-function drawStepChart(steps, canvas) {
+function drawStepChart(steps, canvas, line) {
 
     var margin = {top: 50, right: 50, bottom: 50, left: 50};
     var width = +canvas.node().getBoundingClientRect().width - margin.left - margin.right;
@@ -511,7 +536,7 @@ function drawStepChart(steps, canvas) {
      .enter()
      .append("line")
      .classed("stepgraph-vline", true)
-     .attr("stroke", "grey")
+     .attr("stroke", "black")
      //.attr("stroke-dasharray", 4)
      .attr("x1", function(d) {return x(d.t)})
      .attr("y1", function(d) {return y(d.value)})
@@ -570,27 +595,17 @@ function drawStepChart(steps, canvas) {
         .attr("y", height+20)
         .attr("x", 0);
 
-
-
-    /*
-    g.selectAll(".stepgraph-circle")
-        .data(steps)
-        .enter()
-        .append("circle")
-        .classed("stepgraph-circle", true)
-        .attr("cx", function(d) {
-            return x(d.t) + "px";
-        })
-        .attr("cy", function(d) {
-            return y(d.value) + "px";
-        })
-        .attr("r", "3")
-        .attr("fill", function(d) {
-            if (d.left) {return "black";}
-            else {return "white";}
-        })
-        .attr("stroke", "black")
-    */
+    console.log(line)
+    if (!(line == null)) {
+        console.log("hello")
+        g.append("line")
+         .attr("stroke", "red")
+         .attr("stroke-dasharray", 3)
+         .attr("x1", x(params.start_time))
+         .attr("y1", y(line))
+         .attr("x2", x(params.bins * params.bin_size))
+         .attr("y2", y(line))
+    }
 } 
 //---------------------------------------------------------------------
 

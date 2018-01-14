@@ -38,7 +38,7 @@ $(function() {
 	  	start_end_slider: {
 	  		output_ids: ["#start_value", "#end_value"],
 	  		min: 0,
-	  		max: 24*5,
+	  		max: 24*5 - 2,
 	  		step: 1,
 	  		range_slider: true,
 	  		value: [params.start_time / 3600, params.end_time / 3600],
@@ -119,29 +119,3 @@ $(function() {
     	});
 	});
 });
-/*
-$(function() {
-	function updatePars() {
-
-	    //console.log(document.getElementById("threshold_slider"))
-	    //console.log(document.getElementById("binsize_slider"))
-	    var threshold = $("#threshold_slider").slider("option","value")
-	    var threshold = $("#binsize_slider").slider("option","value")
-	    //var threshold = document.getElementById("threshold_slider").valueAsNumber;
-	    //var binsize = document.getElementById("binsize_slider").valueAsNumber;
-	    console.log(threshold)
-	    console.log(binsize)
-	    //var n_bins = Math.floor((params["end_time"] - params["start_time"])/ (binsize * 60));
-	    //var n_bins = document.getElementById("n_bins_slider").valueAsNumber;
-	    //console.log("n_bins", n_bins)
-
-	    params.old_bin_size = params.bin_size;
-	    params.threshold = threshold;
-	    params.bin_size = binsize;
-	    //params.bins = n_bins;
-
-	    calculateGraphs();
-	    moveBetweenGraphs();
-	}
-})
-*/

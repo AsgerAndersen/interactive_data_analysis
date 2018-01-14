@@ -28,43 +28,9 @@
 
 <body>
 <div id="content">    
-    
-<h1>Project</h1>
-<h2>Visualization:</h2>
 <div id="visualisation" class="section">
 	<div id="visdiv">
-		<svg id = "vis" width="800" height="800"/>
-		<div id="toggle_communities_div">
-			Detect communities: <input type="checkbox" id="communities_checkbox" onchange="updatePars()">
-		</div>
-		<div id="n_communities_div">
-			Number of communities: <span id="n_communities"></span>
-		</div>
-		<div id="n_isolated_nodes_div">
-			Number of isolated nodes: <span id="n_nolinks"></span>
-		</div>
-		<!--
-		<table>
-			<tr>
-				<td>Threshold:
-					<span id="threshold_value"></span>
-					<input type="range" min="-100" max="-50" value="-100" id="threshold_slider" class="parameterSlider" onchange="updatePars()"/>
-				</td>
-			</tr>
-			<tr>
-				<td>Length of timebins:
-					<span id="binsize_value"></span>
-					<input type="range" min="300" max="86400" step="300" value="900" id="binsize_slider" class="parameterSlider" onchange="updatePars()"/>
-				</td>
-			</tr>
-			<tr>
-				<td>Number of timebins:
-					<span id="n_bins_value"></span>
-					<input type="range" min="1" max="288" value="96" id="n_bins_slider" class="parameterSlider" onchange="updatePars()"/>
-				</td>
-			</tr>
-		</table>
-		-->
+
 		<div id="control_board">
 			<div class="parameter_div">
 				<div class="parameter_description floaty"> Threshold signal strength: </div>
@@ -85,11 +51,24 @@
 				<div id="start_end_slider" class="slider"></div>
 			</div>
 		</div>
-	</div>
-    <div id="stats">
-    </div>
-</div>
+		<div id="toggle_communities_div">
+			Detect communities: <input type="checkbox" id="communities_checkbox" onchange="updatePars()">
+		</div>
 
+		<svg id = "vis" width="800" height="800"/>
+
+		<div id="n_communities_div">
+			Number of communities: <span id="n_communities"></span>
+		</div>
+		<div id="n_isolated_nodes_div">
+			Number of isolated nodes: <span id="n_nolinks"></span>
+		</div>
+
+	</div>
+
+    <div id="stats"></div>
+
+</div>
 </div>
 
 </body>
