@@ -35,9 +35,37 @@ function init() {
     width = +svg.node().getBoundingClientRect().width - margin.left - margin.right;
     height = +svg.node().getBoundingClientRect().height - margin.top - margin.bottom;
 
+    d3.select("body")
+        .on("keydown", function() {
+            var sliderFocus = d3.select(document.activeElement).classed("parameterSlider");
+            if (sliderFocus) {
+                return;
+            }
+            if (d3.event.keyCode == 39) {
+                viewBin(1)
+            }
+            else if (d3.event.keyCode == 37) {
+                viewBin(-1)
+            }
+        });
+
+    var zooming = d3.zoom()
+        .on("zoom", function(){
+            scale = d3.event.transform.k;
+            transX = d3.event.transform.x;
+            transY = d3.event.transform.y;
+            console.log(transX);
+            //scale = scale + zoomStep;
+            sim.restart();
+        });
+
+
+    //d3.zoom().transform(svg, d3.zoomIdentity);
+    d3.zoom().scaleBy(svg, 0.1);
+
     g = svg.append("g")
         .attr("transform",
-            "translate(" + width / 2+ "," + height / 2 + ")");
+            "translate(" + 0+ "," + 0 + ")");
 
     d3.csv(
         'data/sodas_data_cleaned.csv',
@@ -54,7 +82,9 @@ function init() {
             //})            
 
             calculateGraphs();
-            moveBetweenGraphs();
+
+            svg.call(zooming);
+            svg.call(zooming.transform, d3.zoomIdentity.translate(400, 400));
         }
     )
 }
@@ -72,23 +102,6 @@ function updatePars() {
     params.bins = n_bins;
 
     calculateGraphs();
-    moveBetweenGraphs();
-}
-
-function moveBetweenGraphs() {
-    d3.select("body")
-    .on("keydown", function() {
-        var sliderFocus = d3.select(document.activeElement).classed("parameterSlider");
-        if (sliderFocus) {
-            return;
-        }
-        if (d3.event.keyCode == 39) {
-            viewBin(1)
-        }
-        else if (d3.event.keyCode == 37) {
-            viewBin(-1)
-        }
-    });
 }
 
 //Loops through data returns list of all unique node IDs
@@ -230,7 +243,7 @@ function initGraph(canvas) {
 }
 
 //Draws the main visualisation
-function drawGraph(canvas, nodes, links, shuffle = true) {
+function drawGraph(canvas, nodes, links, restart = true) {
 
     //https://bl.ocks.org/mbostock/1095795
 
@@ -241,18 +254,17 @@ function drawGraph(canvas, nodes, links, shuffle = true) {
         .classed("link", true)
         .merge(link);
 
-
     node = node.data(nodes);
     node.exit().remove();
     node = node.enter()
         .append("circle")
         .attr("fill", "darkred")
         .attr("r", 5)
-        .attr("cx", width/2)
-        .attr("cy", height/2)
         .classed("node", true)
         .merge(node);
 
+    node.select("title")
+        .remove();
     node.append("title")
         .text(function(d) { return d.id; });
 
@@ -260,7 +272,11 @@ function drawGraph(canvas, nodes, links, shuffle = true) {
 
     sim.force("link").links(links);
 
-    sim.alpha(1).restart();
+    if (restart) {
+        sim.alpha(0.1).restart();
+    } else {
+        sim.restart();
+    }
 
     drawNoLinksBar(data_props.nodes - nodes.length)
 
@@ -306,9 +322,18 @@ function viewBin(n, abs = false, trans = true) {
         d3.selectAll(".statistic_svg g .tickText")
             .text(formatTime(n * params.bin_size * 1000) + " - " + formatTime((n+1) * params.bin_size * 1000))
             .attr("x", x);
-        drawGraph(g, nodes[n], links[n], false);
+        drawGraph(g, nodes[n], links[n]);
     }
+}
 
+var scale = 1;
+var transX = 0;
+var transY = 0;
+var zoomStep = 0.1;
+
+function zoom(n) {
+    scale = n;
+    drawGraph(g, nodes[data_props.current_bin], links[data_props.current_bin], false);
 }
 
 function simulation(width, height) {
@@ -318,19 +343,26 @@ function simulation(width, height) {
         //.force("center", d3.forceCenter(width / 2, height / 2))
         .force("x", d3.forceX())
         .force("y", d3.forceY())
+        .alphaDecay(0.01)
         .on("tick", ticked);
 }
 
 function ticked() {
     link
-        .attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; });
+        .attr("x1", function(d) { return d.source.x * scale + transX; })
+        .attr("y1", function(d) { return d.source.y * scale + transY; })
+        .attr("x2", function(d) { return d.target.x * scale + transX; })
+        .attr("y2", function(d) { return d.target.y * scale + transY; });
+        // .each(function(d, i){
+        //     var op = parseFloat(d3.select(this).style("opacity"));
+        //     d3.select(this).style("opacity", op < 1 ? op + 0.01 : 1)});
 
     node
-        .attr("cx", function(d) { return d.x; })
-        .attr("cy", function(d) { return d.y; });
+        .attr("cx", function(d) { return d.x * scale + transX; })
+        .attr("cy", function(d) { return d.y * scale + transY; });
+        // .each(function(d, i){
+        //     var op = parseFloat(d3.select(this).style("opacity"));
+        //     d3.select(this).style("opacity", op < 1 ? op + 0.01 : 1)});
 }
 
 //---------------------------------------------------------------------
