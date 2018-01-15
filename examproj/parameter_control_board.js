@@ -7,7 +7,7 @@ $(function() {
 	  		max: -25,
 	  		step: 1,
 	  		range_slider: false,
-	  		value: params.threshold,
+	  		value: graph_seq_params.threshold,
 	  		format_output: function(threshold) {return String(threshold) + " dBm"}
 	  	},
 	  	binsize_slider: {
@@ -16,7 +16,7 @@ $(function() {
 	  		max: 60*4,
 	  		step: 5,
 	  		range_slider: false,
-	  		value: params.bin_size / 60,
+	  		value: graph_seq_params.bin_size / 60,
 	  		format_output: function(binsize) {
 					if (binsize<60) {
 			        s = String(binsize) + " minutes"
@@ -41,7 +41,7 @@ $(function() {
 	  		max: 24*5 - 2,
 	  		step: 1,
 	  		range_slider: true,
-	  		value: [params.start_time / 3600, params.end_time / 3600],
+	  		value: [graph_seq_params.start_time / 3600, graph_seq_params.end_time / 3600],
 	  		format_output: function(hours) {
 	  			day = Math.floor(hours / 24) + 1
 	  			hour = hours % 24
@@ -116,4 +116,8 @@ $(function() {
 			change: updatePars
     	});
 	});
+
+	$('.checkbox').checkboxradio({
+		icon: false
+	})
 });

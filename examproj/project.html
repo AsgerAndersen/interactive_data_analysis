@@ -21,8 +21,19 @@
 	
 	<script type="text/javascript" src="jLouvain-master/jLouvain.js"></script>
     
-    <script type="text/javascript" src="script.js"></script>
+    <script type="text/javascript" src="calculate_graph_sequence.js"></script>
+    <script type="text/javascript" src="calculate_graph_functions.js"></script>
+    <script type="text/javascript" src="visualize_graph_seq.js"></script>
+    <script type="text/javascript" src="init.js"></script>
+    
+    <script type="text/javascript"> d3.select(window).on('load', init) </script>
+
+    <!--
+  	<script type="text/javascript" src="script.js"></script>
     <script type="text/javascript" src="parameter_control_board.js"></script>
+	-->
+
+    <title>Title</title>
 
 </head>
 
@@ -31,6 +42,7 @@
 <div id="visualisation" class="section">
 	<div id="visdiv">
 
+		<svg id = "vis" width="800" height="800"/>
 		<div id="control_board">
 			<div class="parameter_div">
 				<div class="parameter_description floaty"> Threshold signal strength: </div>
@@ -50,19 +62,18 @@
 				<div id="end_value"></div>
 				<div id="start_end_slider" class="slider"></div>
 			</div>
+			<div class="parameter_div">
+				<label for="communities_checkbox">Detect communities</label>
+				<input type="checkbox" id="communities_checkbox" class="checkbox" onchange="updatePars()">
+				<label for="init_part_checkbox">with initial partitions from last timebin</label>
+				<input type="checkbox" id="init_part_checkbox" class="checkbox" onchange="updatePars()">
+			</div>
 		</div>
+		<!--
 		<div id="toggle_communities_div">
-			Detect communities: <input type="checkbox" id="communities_checkbox" onchange="updatePars()">
+			Detect communities: <input type="checkbox" id="communities_checkbox" onchange="detectCommunities()">
 		</div>
-
-		<svg id = "vis" width="800" height="800"/>
-
-		<div id="n_communities_div">
-			Number of communities: <span id="n_communities"></span>
-		</div>
-		<div id="n_isolated_nodes_div">
-			Number of isolated nodes: <span id="n_nolinks"></span>
-		</div>
+		-->
 
 	</div>
 
