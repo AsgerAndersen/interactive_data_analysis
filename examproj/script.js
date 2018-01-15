@@ -12,6 +12,7 @@ var data_props = {
 
 var params = {
     "bin_size": 900,
+    "old_bin_size": 900,
     "start_time": 0,
     "end_time": 60*60*24,
     "bins": 96,
@@ -54,8 +55,7 @@ var params = {
          format: ".2%",
         tickFormat: ".0%"
         }
-    ],
-    "old_bin_size": null
+    ]
 };
 
 function init() {
@@ -81,7 +81,6 @@ function init() {
 
     zooming = d3.zoom()
         .on("zoom", function(){
-            console.log("lulz");
             scale = d3.event.transform.k;
             transX = d3.event.transform.x;
             transY = d3.event.transform.y;
@@ -98,6 +97,9 @@ function init() {
 
     d3.select("#reset_zoom_div")
         .on("click", resetZoom);
+
+    d3.select("#reheat_div")
+        .on("click", reheat);
 
 
     d3.csv(
@@ -161,6 +163,16 @@ function calculateGraphs()
     defineTimeFormat()
 
     var n_to_draw = 0;
+    if (params.old_bin_size === params.bin_size && params.bins > params.current_bin) {
+        n_to_draw = params.current_bin;
+    }
+    else {
+        var old_x = (params.current_bin + 0.5) * params.old_bin_size;
+        var new_bin = Math.floor(old_x / params.bin_size);
+        if (params.bins > new_bin) {
+            n_to_draw = new_bin;
+        }
+    }
     var i = 0;
     nodes = [];
     links = [];
@@ -182,9 +194,7 @@ function calculateGraphs()
         links[n] = graphdata["links"];
         //links[n] = simulateNodes()
         nodes[n] = graphdata["nodes"];
-        if (n === params.current_bin && params.old_bin_size === params.bin_size ||
-            n === 0 && params.old_bin_size !== params.bin_size){
-            n_to_draw = n;
+        if (n === n_to_draw){
             drawGraph(g, nodes[n], links[n]);
         }
 
@@ -387,6 +397,10 @@ function resetZoom() {
     svg.transition().duration(750).call(zooming.transform, d3.zoomIdentity.translate(400, 400));
 }
 
+function reheat() {
+    sim.alpha(0.2).restart();
+}
+
 function simulation(width, height) {
     return d3.forceSimulation()
         .force("link", d3.forceLink().id(function(d) { return d.id; }))
@@ -394,7 +408,8 @@ function simulation(width, height) {
         //.force("center", d3.forceCenter(width / 2, height / 2))
         .force("x", d3.forceX())
         .force("y", d3.forceY())
-        .alphaDecay(0.01)
+        .alphaMin(0.001)
+        .alphaDecay(0.012)
         .on("tick", ticked);
 }
 
@@ -503,7 +518,7 @@ function networkDensity(links) {
 
 function drawStepChart(steps, canvas, index, line) {
 
-    var margin = {top: 50, right: 50, bottom: 50, left: 50};
+    var margin = {top: 30, right: 100, bottom: 50, left: 100};
     var width = +canvas.node().getBoundingClientRect().width - margin.left - margin.right;
     var height = +canvas.node().getBoundingClientRect().height - margin.top - margin.bottom;
     if (!params.statistics[index].tickFormat) {
@@ -549,8 +564,14 @@ function drawStepChart(steps, canvas, index, line) {
         .domain(yDomain)
         .range([height,0]);
 
-    var xAxis = d3.axisBottom(x)
-        .tickValues(d3.range(params.start_time, params.bin_size * params.bins, params.bin_size));
+    var xAxis = d3.axisBottom(x);
+
+    var tickValues = d3.range(params.start_time, params.bin_size * params.bins, params.bin_size);
+    if (tickValues.length <= 120) {
+        xAxis.tickValues(tickValues);
+    } else {
+        xAxis.ticks(0);
+    }
 
     var yAxis = d3.axisLeft(y).tickFormat(d3.format(params.statistics[index].tickFormat)).ticks(7);
 
@@ -614,7 +635,7 @@ function drawStepChart(steps, canvas, index, line) {
         .attr("y", 0)
         .attr("x", 0)
         .attr("height", height)
-        .attr("width", line_size);
+        .attr("width", Math.max(line_size, 2));
 
     g.append("text")
         .classed("movingTickText", true)
@@ -633,7 +654,7 @@ function drawStepChart(steps, canvas, index, line) {
         .attr("y", 0)
         .attr("x", 0)
         .attr("height", height)
-        .attr("width", line_size);
+        .attr("width", Math.max(line_size, 2));
 
     g.append("text")
         .classed("tickText", true)

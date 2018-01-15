@@ -36,7 +36,7 @@ div {
     display:inline-block;
 }
 
-#toggle_communities_div, #reset_zoom_div {
+#toggle_communities_div, #reset_zoom_div, #reheat_div {
     background-color: dodgerblue;
     border-radius: 50%;
     width: 110px;
@@ -61,16 +61,32 @@ div {
 #reset_zoom_div {
     background-color: seagreen;
     left: auto;
-    right: 60px;
-    top: 60px;
+    right: 55px;
+    top: 55px;
     width: 150px;
     height: 150px;
     transform: rotate(45deg);
 }
 
+#reheat_div {
+    background-color: orangered;
+    top: auto;
+    left:auto;
+    right: 0px;
+    bottom: 150px;
+    width: 90px;
+    height: 90px;
+    transform: rotate(-61deg);
+}
+#reheat_div > span {
+    display: inline-block;
+    margin-top: 75px;
+    font-weight: Bold;
+}
+
 #toggle_communities_div:hover {
     transition: background-color, left, top;
-    transition-duration: 0.5s;
+    transition-duration: 0.3s;
     background-color: grey;
     left: 50px;
     top: 50px;
@@ -78,20 +94,28 @@ div {
 
 #toggle_communities_div.off:hover {
     transition: background-color, left, top;
-    transition-duration: 0.5s;
+    transition-duration: 0.3s;
     background-color: dodgerblue;
 }
 
 #reset_zoom_div:hover {
     transition: background-color, right, top;
-    transition-duration: 0.5s;
+    transition-duration: 0.3s;
     background-color: lightseagreen;
-    right: 50px;
-    top: 50px;
+    right: 45px;
+    top: 45px;
+}
+
+#reheat_div:hover {
+    transition: background-color, right, bottom;
+    transition-duration: 0.3s;
+    background-color: orange;
+    right: -12px;
+    bottom: 142px;
 }
 
 #vis {
-    border: 1px solid black;
+    border: 2px solid black;
     border-radius: 50%;
     display: inline-block;
     position:absolute;

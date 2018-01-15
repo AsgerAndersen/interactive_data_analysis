@@ -30,27 +30,6 @@
 <div id="content">    
 <div id="visualisation" class="section">
 	<div id="visdiv">
-
-		<div id="control_board">
-			<div class="parameter_div">
-				<div class="parameter_description floaty"> Threshold signal strength: </div>
-				<div id="threshold_value"></div>
-				<div id="threshold_slider" class="slider"></div>
-			</div>
-			<div class="parameter_div">
-				<div class="parameter_description floaty"> Length of each timebin: </div>
-				<div id="binsize_value"></div>
-				<div id="binsize_slider" class="slider"></div>
-			</div>
-			<div class="parameter_div">
-				<div class="parameter_description floaty">Period of time to visualize: &nbsp</div> 
-				<span class="floaty">From &nbsp</span> 
-				<div id="start_value" class="floaty"></div>
-				<span class="floaty"> &nbsp to &nbsp</span>
-				<div id="end_value"></div>
-				<div id="start_end_slider" class="slider"></div>
-			</div>
-		</div>
 		<div id="vis_wrap">
 			<div id="toggle_communities_div" class="off">
 				Coloring
@@ -58,6 +37,9 @@
 			<div id="reset_zoom_div">
 				Reset Zoom
 			</div>
+            <div id="reheat_div">
+                <span>Reheat</span>
+            </div>
 			<svg id = "vis" width="800" height="800"/>
 		</div>
 
@@ -67,6 +49,26 @@
 		<div id="n_isolated_nodes_div">
 			Number of isolated nodes: <span id="n_nolinks"></span>
 		</div>
+        <div id="control_board">
+            <div class="parameter_div">
+                <div class="parameter_description floaty"> Threshold signal strength: </div>
+                <div id="threshold_value"></div>
+                <div id="threshold_slider" class="slider"></div>
+            </div>
+            <div class="parameter_div">
+                <div class="parameter_description floaty"> Length of each timebin: </div>
+                <div id="binsize_value"></div>
+                <div id="binsize_slider" class="slider"></div>
+            </div>
+            <div class="parameter_div">
+                <div class="parameter_description floaty">Period of time to visualize: &nbsp</div>
+                <span class="floaty">From &nbsp</span>
+                <div id="start_value" class="floaty"></div>
+                <span class="floaty"> &nbsp to &nbsp</span>
+                <div id="end_value"></div>
+                <div id="start_end_slider" class="slider"></div>
+            </div>
+        </div>
 
 	</div>
 
