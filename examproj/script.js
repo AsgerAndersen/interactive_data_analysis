@@ -206,7 +206,6 @@ function calculateGraphs()
     for (var j = 0; j < params["statistics"].length; j++) {
         var canvas = d3.select("#stat" + j);
         var steps = calcGraphStatistics(links, nodes, params["statistics"][j].method);
-        //console.log(steps.length);
         drawStepChart(steps, canvas, params["statistics"][j].line)
 
     }
@@ -283,7 +282,6 @@ function drawGraph(canvas, nodes, links, restart = true) {
     node.exit().remove();
     node = node.enter()
         .append("circle")
-        .attr("fill", "darkred")
         .attr("r", 5)
         .classed("node", true)
         .merge(node);
@@ -595,9 +593,7 @@ function drawStepChart(steps, canvas, line) {
         .attr("y", height+20)
         .attr("x", 0);
 
-    console.log(line)
     if (!(line == null)) {
-        console.log("hello")
         g.append("line")
          .attr("stroke", "red")
          .attr("stroke-dasharray", 3)
@@ -714,7 +710,7 @@ function detectCommunities(nodes, links) {
     else {
         d3.selectAll('.node')
           .data(nodes)
-          .style('fill', 'darkred')
+          .style('fill', 'black')
     }
 }
 

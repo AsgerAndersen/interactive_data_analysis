@@ -40,8 +40,7 @@ div {
 }
 
 .node {
-    r: 5;
-    fill: darkred;
+    fill: black;
 }
 
 .text_box {

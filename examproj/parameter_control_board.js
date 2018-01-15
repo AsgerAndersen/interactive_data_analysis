@@ -65,10 +65,8 @@ $(function() {
 	      		var value_1 = $(this).slider("values")[0],
 	      			value_2 = $(this).slider("values")[1]
 
-	      		//console.log(value_1, value_2)
 	      		value_1 = board_config[this.id].format_output(value_1)
 	      		value_2 = board_config[this.id].format_output(value_2)
-	      		//console.log(value_1, value_2)
 	      		output_div_1.text(value_1)
 	      		output_div_2.text(value_2)
 	      	}
