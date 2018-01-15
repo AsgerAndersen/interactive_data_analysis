@@ -23,7 +23,8 @@ var params = {
         {name: "Average Degree", 
          method: function(links, nodes, i) { return averageDegree(links[i]);},
          format: ".3f",
-         line: null
+         tickFormat: ".1f",
+         line: 0
         },
         {name: "Number of isolated nodes", 
          method: function(links, nodes, i) { return (data_props.nodes - nodes[i].length); },
@@ -49,7 +50,8 @@ var params = {
                     else {return (((links[i].length / links[i-1].length) - 1))}
                  },
          line: 0,
-         format: "%"
+         format: ".2%",
+        tickFormat: ".0%"
         }
     ],
     "old_bin_size": null
@@ -315,6 +317,7 @@ function viewBin(n, abs = false, trans = true) {
     }
     if (n < 0 || n >= links.length) {return;}
     data_props.current_bin = n;
+
     /*nodes[n].forEach(function(d){
         delete d.x;
         delete d.y;
@@ -327,6 +330,7 @@ function viewBin(n, abs = false, trans = true) {
         delete d.y2;
         return d;
     });*/
+    var bin_width = xStatScale(params.bin_size);
     var x = xStatScale(n * params.bin_size);
     if (abs && trans) {
         d3.selectAll(".statistic_svg g .vTimeLine")
@@ -338,13 +342,13 @@ function viewBin(n, abs = false, trans = true) {
             .text(formatTime(n * params.bin_size * 1000) + " - " + formatTime((n+1) * params.bin_size * 1000))
             .transition()
             .attr("duration", 1000)
-            .attr("x", x);
+            .attr("x", x + bin_width / 2);
 
         d3.selectAll(".statistic_svg g .valueText")
-            .text(formatTime(n * params.bin_size * 1000) + " - " + formatTime((n+1) * params.bin_size * 1000))
+            .text(function(d, i) {return d3.format(params.statistics[i].format)(params.statistics[i].values[n*2].value);})
             .transition()
             .attr("duration", 1000)
-            .attr("x", x);
+            .attr("x", x + bin_width / 2);
 
         drawGraph(g, nodes[n], links[n]);
     } else {
@@ -352,13 +356,13 @@ function viewBin(n, abs = false, trans = true) {
             .attr("x", x);
 
         d3.selectAll(".statistic_svg g .tickText")
-            .text(formatTime(n * params.bin_size * 1000) + " - " + formatTime((n+1) * params.bin_size * 1000))
-            .attr("x", x);
-        drawGraph(g, nodes[n], links[n]);
+            .attr("x", x + bin_width / 2)
+            .text(formatTime(n * params.bin_size * 1000) + " - " + formatTime((n+1) * params.bin_size * 1000));
 
         d3.selectAll(".statistic_svg g .valueText")
-            .text(formatTime(n * params.bin_size * 1000) + " - " + formatTime((n+1) * params.bin_size * 1000))
-            .attr("x", x);
+            .attr("x", x + bin_width / 2)
+            .text(function(d, i) {return d3.format(params.statistics[i].format)(params.statistics[i].values[n*2].value);});
+
         drawGraph(g, nodes[n], links[n]);
     }
 }
@@ -492,6 +496,12 @@ function drawStepChart(steps, canvas, index, line) {
     var margin = {top: 50, right: 50, bottom: 50, left: 50};
     var width = +canvas.node().getBoundingClientRect().width - margin.left - margin.right;
     var height = +canvas.node().getBoundingClientRect().height - margin.top - margin.bottom;
+    if (!params.statistics[index].tickFormat) {
+        if (!params.statistics[index].format) {
+            params.statistics[index].format = "";
+        }
+        params.statistics[index].tickFormat = params.statistics[index].format;
+    }
 
     canvas.selectAll("*")
         .remove();
@@ -517,17 +527,22 @@ function drawStepChart(steps, canvas, index, line) {
     leftStatMargin = margin.left;
     statWidth = width;
 
+    var scalePadding = 10;
+    var yDomain = d3.extent(steps,
+        function(d){
+            return d.value;
+        });
+    var maxY = Math.max(Math.abs(yDomain[0]), Math.abs(yDomain[1]));
+    yDomain[0] = yDomain[0] - 0.1 * maxY;
+    yDomain[1] = yDomain[1] + 0.1 * maxY;
     var y = d3.scaleLinear()
-        .domain(d3.extent(steps,
-            function(d){
-                return d.value;
-            }))
+        .domain(yDomain)
         .range([height,0]);
 
     var xAxis = d3.axisBottom(x)
         .tickValues(d3.range(params.start_time, params.bin_size * params.bins, params.bin_size));
 
-    var yAxis = d3.axisLeft(y);
+    var yAxis = d3.axisLeft(y).tickFormat(d3.format(params.statistics[index].tickFormat)).ticks(7);
 
     g.selectAll(".stepgraph-hline")
      .data(steps.filter(function(d){

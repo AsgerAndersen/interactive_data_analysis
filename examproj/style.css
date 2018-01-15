@@ -107,12 +107,12 @@ rect:hover ~ .vTimeLineGhost, .vTimeLineGhost:hover  {
     /*transition-delay: 0.5s;*/
 }
 
-rect:hover ~ .movingTickText {
+svg *:hover ~ .movingTickText {
     opacity: 1;
     transition: opacity 0.5s;
 }
 
-rect:hover ~ .tickText {
+svg *:hover ~ .tickText {
     opacity: 0;
     transition: opacity 0.5s;
 }
@@ -129,12 +129,12 @@ rect:hover ~ .tickText {
     /*transition-delay: 0.5s;*/
 }
 
-rect:hover ~ .movingValueText {
+svg *:hover ~ .movingValueText {
     opacity: 1;
     transition: opacity 0.5s;
 }
 
-rect:hover ~ .valueText {
+svg *:hover ~ .valueText {
     opacity: 0;
     transition: opacity 0.5s;
 }
