@@ -31,6 +31,7 @@ div {
 
 #vis {
     border: 1px solid black;
+    border-radius: 50%;
 }
 
 .link {
@@ -112,6 +113,28 @@ rect:hover ~ .movingTickText {
 }
 
 rect:hover ~ .tickText {
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+.movingValueText{
+    opacity: 0;
+    transition: opacity 0.5s;
+    /*transition-delay: 0.5s;*/
+}
+
+.valueText{
+    opacity: 1;
+    transition: opacity 0.5s;
+    /*transition-delay: 0.5s;*/
+}
+
+rect:hover ~ .movingValueText {
+    opacity: 1;
+    transition: opacity 0.5s;
+}
+
+rect:hover ~ .valueText {
     opacity: 0;
     transition: opacity 0.5s;
 }

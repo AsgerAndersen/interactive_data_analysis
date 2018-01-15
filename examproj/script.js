@@ -22,10 +22,12 @@ var params = {
     "statistics": [
         {name: "Average Degree", 
          method: function(links, nodes, i) { return averageDegree(links[i]);},
+         format: ".3f",
          line: null
         },
         {name: "Number of isolated nodes", 
          method: function(links, nodes, i) { return (data_props.nodes - nodes[i].length); },
+         format: "",
          line: null
         },
         /*
@@ -44,9 +46,10 @@ var params = {
         {name: "Link growth (relative)", 
          method: function(links, nodes, i) { 
                     if (i==0) {return 0}
-                    else {return (((links[i].length / links[i-1].length) - 1) * 100)}
+                    else {return (((links[i].length / links[i-1].length) - 1))}
                  },
-         line: 0
+         line: 0,
+         format: "%"
         }
     ],
     "old_bin_size": null
@@ -205,8 +208,8 @@ function calculateGraphs()
 
     for (var j = 0; j < params["statistics"].length; j++) {
         var canvas = d3.select("#stat" + j);
-        var steps = calcGraphStatistics(links, nodes, params["statistics"][j].method);
-        drawStepChart(steps, canvas, params["statistics"][j].line)
+        var steps = calcGraphStatistics(links, nodes, params["statistics"][j]);
+        drawStepChart(steps, canvas, j, params["statistics"][j].line)
 
     }
 
@@ -337,12 +340,23 @@ function viewBin(n, abs = false, trans = true) {
             .attr("duration", 1000)
             .attr("x", x);
 
+        d3.selectAll(".statistic_svg g .valueText")
+            .text(formatTime(n * params.bin_size * 1000) + " - " + formatTime((n+1) * params.bin_size * 1000))
+            .transition()
+            .attr("duration", 1000)
+            .attr("x", x);
+
         drawGraph(g, nodes[n], links[n]);
     } else {
         d3.selectAll(".statistic_svg g .vTimeLine")
             .attr("x", x);
 
         d3.selectAll(".statistic_svg g .tickText")
+            .text(formatTime(n * params.bin_size * 1000) + " - " + formatTime((n+1) * params.bin_size * 1000))
+            .attr("x", x);
+        drawGraph(g, nodes[n], links[n]);
+
+        d3.selectAll(".statistic_svg g .valueText")
             .text(formatTime(n * params.bin_size * 1000) + " - " + formatTime((n+1) * params.bin_size * 1000))
             .attr("x", x);
         drawGraph(g, nodes[n], links[n]);
@@ -432,29 +446,31 @@ function drawNoLinksBar(n) {
 //Calculate the descriptive graph statistics, which should be visualized in the step charts
 
 function calcGraphStatistics(links, nodes, statistic) {
-    var statistics = [];
+    var values = [];
+    var method = statistic.method;
     for (var i=0; i<links.length; i++) {
-        var value = statistic(links, nodes, i);
+        var value = method(links, nodes, i);
         var t = i*params.bin_size;
         if (i === 0) {
-            statistics.push({t: t,
+            values.push({t: t,
                              value: value,
                              left: true})
         }
         else {
-            var last_value = statistics[2*i-2].value;
+            var last_value = values[2*i-2].value;
             var jump = value - last_value;
-            statistics.push({t: t,
+            values.push({t: t,
                              value: last_value,
                              left: false});
-            statistics.push({t: t,
+            values.push({t: t,
                              value: value,
                              left: true,
                              jump: jump})
         }
     }
-    //statistics.pop();
-    return statistics
+    //values.pop();
+    statistic.values = values;
+    return values
 }
 
 function averageDegree(links) {
@@ -471,7 +487,7 @@ function networkDensity(links) {
 //---------------------------------------------------------------------
 //Visualize the descriptive graph statistics in a step chart
 
-function drawStepChart(steps, canvas, line) {
+function drawStepChart(steps, canvas, index, line) {
 
     var margin = {top: 50, right: 50, bottom: 50, left: 50};
     var width = +canvas.node().getBoundingClientRect().width - margin.left - margin.right;
@@ -483,6 +499,7 @@ function drawStepChart(steps, canvas, line) {
     var g = canvas.append("g")
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")")
+        .attr("name", index)
         .on("click", handleStatClick)
         .on("mousemove", handleStatHover);
 
@@ -580,6 +597,12 @@ function drawStepChart(steps, canvas, line) {
         .attr("y", height+20)
         .attr("x", 0);
 
+    g.append("text")
+        .classed("movingValueText", true)
+        .attr("text-anchor", "middle")
+        .attr("y", -10)
+        .attr("x", 0);
+
     g.append("rect")
         .classed("vTimeLine", true)
         .attr("y", 0)
@@ -591,6 +614,12 @@ function drawStepChart(steps, canvas, line) {
         .classed("tickText", true)
         .attr("text-anchor", "middle")
         .attr("y", height+20)
+        .attr("x", 0);
+
+    g.append("text")
+        .classed("valueText", true)
+        .attr("text-anchor", "middle")
+        .attr("y", -10)
         .attr("x", 0);
 
     if (!(line == null)) {
@@ -649,17 +678,23 @@ function handleStatHover(d, i) {
     var x = d3.mouse(this)[0];
 
     var g = d3.select(this);
+    var index = parseInt(g.attr("name"));
     var line = g.select(".vTimeLineGhost");
 
     if (x > 0 && x < statWidth - 1) {
 
         var bin_width = xStatScale(params.bin_size);
         var n = Math.floor(x / bin_width);
+        var statistic = params.statistics[index];
         line.attr("x", n * bin_width);
 
         g.select(".movingTickText")
             .attr("x", (n+0.5) * bin_width)
             .text(formatTime(n * params.bin_size * 1000) + " - " + formatTime((n+1) * params.bin_size * 1000));
+
+        g.select(".movingValueText")
+            .attr("x", (n+0.5) * bin_width)
+            .text(d3.format(statistic.format)(statistic.values[n*2].value));
 
     }
 }
