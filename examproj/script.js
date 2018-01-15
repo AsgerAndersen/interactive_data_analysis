@@ -1,5 +1,5 @@
 d3.select(window).on('load', init);
-var data, sim, svg, g, width, height, xStatScale, leftStatMargin, statWidth, link, node;
+var data, sim, svg, g, zooming, width, height, xStatScale, leftStatMargin, statWidth, link, node;
 
 //var n_init_communities = 2;
 var nodes = [], links = [], all_nodes = [];//, community_init = {};
@@ -7,8 +7,7 @@ var nodes = [], links = [], all_nodes = [];//, community_init = {};
 var data_props = {
     "nodes": 589,
     "links": 0,
-    "rows": 0,
-    "current_bin": 0
+    "rows": 0
 };
 
 var params = {
@@ -19,6 +18,8 @@ var params = {
     "threshold": -90,
     "source": "user",
     "target": "user2",
+    "coloring": false,
+    "current_bin": 0,
     "statistics": [
         {name: "Average Degree", 
          method: function(links, nodes, i) { return averageDegree(links[i]);},
@@ -78,8 +79,9 @@ function init() {
             }
         });
 
-    var zooming = d3.zoom()
+    zooming = d3.zoom()
         .on("zoom", function(){
+            console.log("lulz");
             scale = d3.event.transform.k;
             transX = d3.event.transform.x;
             transY = d3.event.transform.y;
@@ -87,13 +89,16 @@ function init() {
             sim.restart();
         });
 
-
-    //d3.zoom().transform(svg, d3.zoomIdentity);
-    d3.zoom().scaleBy(svg, 0.1);
-
     g = svg.append("g")
         .attr("transform",
             "translate(" + 0+ "," + 0 + ")");
+
+    d3.select("#toggle_communities_div")
+        .on("click", toggleColoring);
+
+    d3.select("#reset_zoom_div")
+        .on("click", resetZoom);
+
 
     d3.csv(
         'data/sodas_data_cleaned.csv',
@@ -177,7 +182,7 @@ function calculateGraphs()
         links[n] = graphdata["links"];
         //links[n] = simulateNodes()
         nodes[n] = graphdata["nodes"];
-        if (n === data_props.current_bin && params.old_bin_size === params.bin_size ||
+        if (n === params.current_bin && params.old_bin_size === params.bin_size ||
             n === 0 && params.old_bin_size !== params.bin_size){
             n_to_draw = n;
             drawGraph(g, nodes[n], links[n]);
@@ -271,6 +276,11 @@ function initGraph(canvas) {
         .selectAll(".node");
 }
 
+function redrawGraph(restart = true) {
+    console.log("Hi");
+    drawGraph(g, nodes[params.current_bin], links[params.current_bin], restart);
+}
+
 //Draws the main visualisation
 function drawGraph(canvas, nodes, links, restart = true) {
 
@@ -309,14 +319,15 @@ function drawGraph(canvas, nodes, links, restart = true) {
     drawNoLinksBar(data_props.nodes - nodes.length)
 
     detectCommunities(nodes, links)
+
 }
 
 function viewBin(n, abs = false, trans = true) {
     if (!abs) {
-        n = data_props.current_bin + n;
+        n = params.current_bin + n;
     }
     if (n < 0 || n >= links.length) {return;}
-    data_props.current_bin = n;
+    params.current_bin = n;
 
     /*nodes[n].forEach(function(d){
         delete d.x;
@@ -372,9 +383,8 @@ var transX = 0;
 var transY = 0;
 var zoomStep = 0.1;
 
-function zoom(n) {
-    scale = n;
-    drawGraph(g, nodes[data_props.current_bin], links[data_props.current_bin], false);
+function resetZoom() {
+    svg.transition().duration(750).call(zooming.transform, d3.zoomIdentity.translate(400, 400));
 }
 
 function simulation(width, height) {
@@ -722,45 +732,58 @@ function getStatX(x) {
 //Detect and visualize communities
 
 function detectCommunities(nodes, links) {
-	
-    if (document.getElementById("communities_checkbox").checked) {
+
+    if (params.coloring) {
         var nodes_id_list = [], links_list = [], init_part = {};
 
-    	for (i=0; i<nodes.length; i++) {
-    		nodes_id_list.push(nodes[i].id)
-    		//init_part[nodes[i].id] = community_init[nodes[i].id]
-    	}
+        for (i=0; i<nodes.length; i++) {
+            nodes_id_list.push(nodes[i].id)
+            //init_part[nodes[i].id] = community_init[nodes[i].id]
+        }
 
         for (i=0; i<links.length; i++) {
             links_list.push({source: links[i].source.id, target: links[i].target.id, weight: 1.})
         }
 
-    	var community = jLouvain().nodes(nodes_id_list)
-                                  .edges(links_list)
-                                  //.partition_init(init_part);
-    	
+        var community = jLouvain().nodes(nodes_id_list)
+            .edges(links_list)
+        //.partition_init(init_part);
+
         var community_assignment = community();
 
         var max_community_number = 0;
 
-        nodes.forEach(function(node) {        
+        nodes.forEach(function(node) {
             node.community = community_assignment[node.id]
             max_community_number = max_community_number < community_assignment[node.id] ? community_assignment[node.id]: max_community_number;
         })
-        
+
         var color = d3.scaleOrdinal(d3.schemeCategory10).domain(d3.range([0, max_community_number]));
 
         d3.selectAll('.node')
-          .data(nodes)
-          .style('fill', function(d){ return color(d.community);})
+            .data(nodes)
+            .style('fill', function(d){ return color(d.community);})
 
         d3.select("#n_communities")
-          .html((max_community_number + 1))
+            .html((max_community_number + 1))
     }
     else {
         d3.selectAll('.node')
-          .data(nodes)
-          .style('fill', 'black')
+            .data(nodes)
+            .style('fill', 'black')
+    }
+}
+
+function toggleColoring(d, i) {
+    var button = d3.select(this);
+    if (button.classed("off")) {
+        button.classed("off", false);
+        params.coloring = true;
+        redrawGraph(false);
+    } else {
+        button.classed("off", true);
+        params.coloring = false;
+        redrawGraph(false);
     }
 }
 

@@ -51,11 +51,15 @@
 				<div id="start_end_slider" class="slider"></div>
 			</div>
 		</div>
-		<div id="toggle_communities_div">
-			Detect communities: <input type="checkbox" id="communities_checkbox" onchange="updatePars()">
+		<div id="vis_wrap">
+			<div id="toggle_communities_div" class="off">
+				Coloring
+			</div>
+			<div id="reset_zoom_div">
+				Reset Zoom
+			</div>
+			<svg id = "vis" width="800" height="800"/>
 		</div>
-
-		<svg id = "vis" width="800" height="800"/>
 
 		<div id="n_communities_div">
 			Number of communities: <span id="n_communities"></span>
