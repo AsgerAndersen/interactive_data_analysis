@@ -21,18 +21,20 @@
 	
 	<script type="text/javascript" src="jLouvain-master/jLouvain.js"></script>
     
-    <!--
+
     <script type="text/javascript" src="calculate_graph_sequence.js"></script>
     <script type="text/javascript" src="calculate_graph_functions.js"></script>
     <script type="text/javascript" src="visualize_graph_seq.js"></script>
+    <script type="text/javascript" src="visualize_graph_statistics.js"></script>
+    <script type="text/javascript" src="interact.js"></script>
+    <script type="text/javascript" src="parameter_control_board_2.js"></script>
     <script type="text/javascript" src="init.js"></script>
     
     <script type="text/javascript"> d3.select(window).on('load', init) </script>
-	-->
-    
-  	<script type="text/javascript" src="script.js"></script>
-    <script type="text/javascript" src="parameter_control_board.js"></script>
 
+    <!--    
+  	<script type="text/javascript" src="script.js"></script>
+    -->
     <title>Title</title>
 
 </head>
@@ -40,7 +42,9 @@
 <body>
 <div id="content">    
 <div id="visualisation" class="section">
-	<div id="visdiv">
+    <svg id = "vis" width="800" height="800"/>
+    <div id="visdiv">
+    
 		<div id="vis_wrap">
 			<div id="toggle_communities_div" class="off"></div>
 			<div id="reset_zoom_div">Reset Zoom</div>
@@ -48,13 +52,6 @@
                 <span>Reheat</span>
             </div>
 			<svg id = "vis" width="800" height="800"/>
-		</div>
-
-		<div id="n_communities_div">
-			Number of communities: <span id="n_communities"></span>
-		</div>
-		<div id="n_isolated_nodes_div">
-			Number of isolated nodes: <span id="n_nolinks"></span>
 		</div>
         
         <div id="control_board">
@@ -78,9 +75,7 @@
             </div>
         </div>
 	</div>
-
     <div id="stats"></div>
-
 </div>
 </div>
 

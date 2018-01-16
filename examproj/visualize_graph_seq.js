@@ -10,14 +10,7 @@ var zoom_props = {
 	transX: 0,
 	transY: 0,
 	zoomStep: 0.1
-} 
-
-/*
-function zoom(n) {
-    graph_vis.zoom_props.scale = n;
-    drawGraph(g, graph_seq.nodes[visualisation_params.current_bin], graph_seq.links[visualisation_params.current_bin], false);
 }
-*/
 
 function init_graph_vis() {
 
@@ -26,11 +19,8 @@ function init_graph_vis() {
     width = +svg.node().getBoundingClientRect().width - margin.left - margin.right;
     height = +svg.node().getBoundingClientRect().height - margin.top - margin.bottom;
     
-    graph_vis.canvas = svg.append("g").attr("transform","translate(" + 0+ "," + 0 + ")");
     graph_vis.sim = simulation(width, height);
-    graph_vis.link = graph_vis.canvas.append("g").selectAll(".link");
-    graph_vis.node = graph_vis.canvas.append("g").selectAll(".node");
-
+    
     var zooming = d3.zoom()
         .on("zoom", function(){
             zoom_props.scale = d3.event.transform.k;
@@ -40,16 +30,18 @@ function init_graph_vis() {
             graph_vis.sim.restart();
         });
 
+
+    graph_vis.canvas = svg.append("g").attr("transform","translate(" + 0+ "," + 0 + ")");
+    graph_vis.link = graph_vis.canvas.append("g").selectAll(".link");
+    graph_vis.node = graph_vis.canvas.append("g").selectAll(".node");
+
     svg.call(zooming); 
     svg.call(zooming.transform, d3.zoomIdentity.translate(400, 400));
 
-
-    //d3.zoom().transform(svg, d3.zoomIdentity);
-    //d3.zoom().scaleBy(svg, 0.1);
 }
 
 function ticked() {
-    graph_vis.link
+    link
         .attr("x1", function(d) { return d.source.x * zoom_props.scale + zoom_props.transX; })
         .attr("y1", function(d) { return d.source.y * zoom_props.scale + zoom_props.transY; })
         .attr("x2", function(d) { return d.target.x * zoom_props.scale + zoom_props.transX; })
@@ -58,7 +50,7 @@ function ticked() {
         //     var op = parseFloat(d3.select(this).style("opacity"));
         //     d3.select(this).style("opacity", op < 1 ? op + 0.01 : 1)});
 
-    graph_vis.node
+    node
         .attr("cx", function(d) { return d.x * zoom_props.scale + zoom_props.transX; })
         .attr("cy", function(d) { return d.y * zoom_props.scale + zoom_props.transY; });
         // .each(function(d, i){
@@ -78,21 +70,18 @@ function simulation(width, height) {
 }
 
 function drawGraph(restart = true) {
-
+    console.log("hi")
     //https://bl.ocks.org/mbostock/1095795
-    canvas = graph_vis.canvas
+
     nodes = graph_seq.nodes[graph_seq_params.current_bin]
     links = graph_seq.links[graph_seq_params.current_bin]
-    console.log(links)
-    console.log(nodes)
+    //console.log(links)
+    //console.log(nodes)
     link = graph_vis.link
     node = graph_vis.node
-    canvas = graph_vis.g 
     sim = graph_vis.sim 
-    //console.log(sim)
 
     link = link.data(links);
-    //console.log(link)
     link.exit().remove();
     link = link.enter()
         .append("line")
@@ -115,12 +104,11 @@ function drawGraph(restart = true) {
     sim.nodes(nodes);
 
     sim.force("link").links(links);
-    /*
+    
     if (restart) {
         sim.alpha(0.1).restart();
     } else {
         sim.restart();
     }
-    */
-
+    
 }

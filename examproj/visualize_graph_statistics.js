@@ -1,4 +1,72 @@
-var xStatScale, leftStatMargin, statWidth
+var xStatScale, leftStatMargin, statWidth, formatTime;
+
+function init_step_charts() {
+
+    d3.select("#stats")
+                .selectAll("*")
+                .remove();
+
+    for (var k = 0; k < graph_functions.statistics.length; k++) {
+        var divs = d3.select("#stats")
+            .append("div")
+            .classed("statistic_div", true)
+            .attr("id", "stat_div" + k);
+
+        divs.append("span")
+            .classed("statistic_span", true)
+            .text(graph_functions.statistics[k].name);
+
+        divs.append("br");
+
+        divs.append("svg")
+            .classed("statistic_svg", true)
+            .attr("width", "800")
+            .attr("height", "200")
+            .attr("id", "stat" + k);
+    }
+
+    defineTimeFormat();
+}
+
+function draw_statistics() {
+    for (var j = 0; j < graph_functions.statistics.length; j++) {
+        var canvas = d3.select("#stat" + j);
+        var steps = calcSteps(graph_functions.statistics[j].values);
+        drawStepChart(steps, canvas, graph_functions.statistics[j].line)
+
+    }
+}
+
+function calcSteps(values) {
+    //console.log(values)
+    steps = []
+
+    for (var i=0; i<values.length; i++) {
+
+        var t = i*graph_seq_params.bin_size;
+        if (i === 0) {
+            //console.log(values[i])
+            steps.push({t: t,
+                        value: values[i],
+                        left: true})
+        }
+        else {
+            var value = values[i]
+            //console.log(value)
+            var last_value = steps[2*i-2].value 
+            var jump = value - last_value;
+            steps.push({t: t,
+                        value: last_value,
+                        left: false});
+            steps.push({t: t,
+                        value: value,
+                        left: true,
+                        jump: jump})
+        }
+    }
+
+    return steps
+}
 
 //---------------------------------------------------------------------
 //Visualize the descriptive graph statistics in a step chart
@@ -139,9 +207,6 @@ function drawStepChart(steps, canvas, line) {
     }
 }
 
-
-var formatTime;
-
 function defineTimeFormat() {
 
     var orders = [" Day %e at ", " %H:%M", ":%S"];
@@ -176,7 +241,7 @@ function handleStatClick(d, i) {
 
     var n = Math.floor(xStatScale.invert(x) / graph_seq_params.bin_size);
 
-    document.getElementById("init_part_checkbox").checked = false;
+    //document.getElementById("init_part_checkbox").checked = false;
     viewBin(n, true);
 }
 

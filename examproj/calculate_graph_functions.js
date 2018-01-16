@@ -28,7 +28,7 @@ var graph_functions = {
         },
         {   
             name: "Link growth (relative)", 
-            method: function(links, nodes, i) {return linksGrowthAbs(links, i)},
+            method: function(links, nodes, i) {return linksGrowthRel(links, i)},
             values: [],
             line: 0
         }
@@ -50,15 +50,10 @@ var graph_functions = {
 //---------------------------------------------------------------------
 //Calculate the descriptive graph statistics, which should be visualized in the step charts
 //
-//Split op i 2: 
-//Først beregnes en sekvens af values vha en statistic. 
-//Herefter beregnes den konkrete step datastruktur.
-//Step datastruktur beregningen kan også udføres på andre værdi sekvenser, for eksempel en sekvens cluster antal.
 
 function calculateGraphFunctions() { //links, nodes, statistic
     
-    //detectCommunities() //Lav mere generelt, så der kan være flere clustering metoder    
-    //console.log(graph_functions.clustering[0])
+    detectCommunities() //Lav mere generelt, så der kan være flere clustering metoder    
 
     for (j=0; j<graph_functions.statistics.length; j++) {
         //console.log(j)
@@ -68,32 +63,6 @@ function calculateGraphFunctions() { //links, nodes, statistic
             statistic.values.push(statistic.method(graph_seq.links, graph_seq.nodes, i));
         }
     }
-
-    /* VISUAL
-    for (var i=0; i<links.length; i++) {
-        var value = statistic(links, nodes, i);
-        var t = i*graph_seq_params.bin_size;
-        if (i === 0) {
-            statistics.push({t: t,
-                             value: value,
-                             left: true})
-        }
-        else {
-            var last_value = statistics[2*i-2].value;
-            var jump = value - last_value;
-            statistics.push({t: t,
-                             value: last_value,
-                             left: false});
-            statistics.push({t: t,
-                             value: value,
-                             left: true,
-                             jump: jump})
-        }
-    }
-    */
-
-    //return statistics
-
 }
 
 //------------------------------------------------------------------------
@@ -127,46 +96,33 @@ function linksGrowthRel(links, i) {
 //Methods for calculating graph clusters
 
 function detectCommunities() {
-    //console.log("mowie")
 
     communities = graph_functions.clustering[0].clusters
     n_communities = graph_functions.clustering[0].statistic.values
 
     if (true) { //if (document.getElementById("communities_checkbox").checked) {
 
-        //console.log(nodes)
-
         for (n=0; n<graph_seq_params.bins; n++) {
-            
-            //console.log("miaauw")
-
+        
             bin_nodes = graph_seq.nodes[n]
             bin_links = graph_seq.links[n]
-            //console.log(bin_nodes)
-
-            //console.log("bin " + String(n))
-            //console.log("bin_nodes", bin_nodes)
-            //console.log("bin_links", bin_links)
 
             var nodes_id_list = [], links_list = [];
 
             for (i=0; i<bin_nodes.length; i++) {
                 nodes_id_list.push(bin_nodes[i].id)
             }
-            //console.log("node_ids", nodes_id_list)
 
             for (i=0; i<bin_links.length; i++) {
                 links_list.push({source: bin_links[i].source, target: bin_links[i].target, weight: 1.})
             }
-            //console.log("bin_ids", links_list)
 
             if (n==0 || true) { //!document.getElementById("init_part_checkbox").checked) {
-                //console.log("hi")
+
                 var community = jLouvain().nodes(nodes_id_list)
                                           .edges(links_list)           
             }
             else {
-                //console.log("heeelllo")
                 var community = jLouvain().nodes(nodes_id_list)
                                           .edges(links_list)
                                           .partition_init(visualisation_params.communities[n-1]);
@@ -187,9 +143,4 @@ function detectCommunities() {
         }
 
     }
-
-    //console.log(nodes)
-    //console.log(visualisation_params.communities)
-    //drawCommunities();
-
 }

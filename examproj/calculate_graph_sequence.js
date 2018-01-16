@@ -20,9 +20,6 @@ var graph_seq = {
 
 function calculateGraphs() {
 
-    //defineTimeFormat() VISUALISERING
-
-    //var n_to_draw = 0; VISUAL
     var i = 0;
     graph_seq.nodes = [];
     graph_seq.links = [];
@@ -41,56 +38,11 @@ function calculateGraphs() {
         var graphdata = calculateLinksNodes(bin, function(row){
                             return row.rssi > graph_seq_params.threshold;
                         });
-        //console.log(n,graphdata)
+
         graph_seq.links[n] = graphdata.links;
         graph_seq.nodes[n] = graphdata.nodes;
-        /* SÆT OVER I VISUALISERINGS FUNKTION 
-        if (n === visualisation_params.current_bin && graph_seq_params.old_bin_size === graph_seq_params.bin_size ||
-            n === 0 && graph_seq_params.old_bin_size !== graph_seq_params.bin_size){
-            n_to_draw = n;
-            //drawGraph(g, graph_seq.nodes[n], links[n]);
-        }
-        */
-        /* VISUALISERINGS FUNKTION
-        if (n === 0){
-            d3.select("#stats")
-                .selectAll("*")
-                .remove();
-            for (var k = 0; k < graph_functions_params.statistics.length; k++) {
-                var divs = d3.select("#stats")
-                    .append("div")
-                    .classed("statistic_div", true)
-                    .attr("id", "stat_div" + k);
-
-                divs.append("span")
-                    .classed("statistic_span", true)
-                    .text(graph_functions_params.statistics[k].name);
-
-                divs.append("br");
-
-                divs.append("svg")
-                    .classed("statistic_svg", true)
-                    .attr("width", "800")
-                    .attr("height", "200")
-                    .attr("id", "stat" + k);
-            }
-        }
-        */
     }
-    //console.log(graph_seq)
-    /*
-    for (var j = 0; j < graph_functions_params.statistics.length; j++) {
-        var canvas = d3.select("#stat" + j);
-        var steps = calcGraphStatistics(graph_seq.links, graph_seq.nodes, graph_functions_params.statistics[j].method);
-        drawStepChart(steps, canvas, graph_functions_params.statistics[j].line)
-
-    }
-    */
-    //detectCommunities();
-    //viewBin(n_to_draw, true, false);
     
-    //graph_seq.nodes_vis = graph_seq.nodes.slice(0)
-    //graph_seq.links_vis = graph_seq.links.slice(0)
 }
 
 //TODO: Add directed option, and options for minimum number of occurrences, etc.

@@ -29,8 +29,98 @@ div {
     vertical-align: top;
 }
 
+#vis_wrap {
+    position:relative;
+    height:800px;
+    width:800px;
+    display:inline-block;
+}
+
+#toggle_communities_div, #reset_zoom_div, #reheat_div {
+    background-color: dodgerblue;
+    border-radius: 50%;
+    width: 110px;
+    height: 110px;
+    left: 60px;
+    top: 60px;
+    display: inline-block;
+    position: absolute;
+    z-index:0;
+    transform: rotate(-45deg);
+    padding:20px;
+    text-align: center;
+    color: White;
+    font-weight: Bold;
+    cursor: pointer;
+}
+
+#toggle_communities_div.off {
+    background-color: grey;
+}
+
+#reset_zoom_div {
+    background-color: seagreen;
+    left: auto;
+    right: 55px;
+    top: 55px;
+    width: 150px;
+    height: 150px;
+    transform: rotate(45deg);
+}
+
+#reheat_div {
+    background-color: orangered;
+    top: auto;
+    left:auto;
+    right: 0px;
+    bottom: 150px;
+    width: 90px;
+    height: 90px;
+    transform: rotate(-61deg);
+}
+#reheat_div > span {
+    display: inline-block;
+    margin-top: 75px;
+    font-weight: Bold;
+}
+
+#toggle_communities_div:hover {
+    transition: background-color, left, top;
+    transition-duration: 0.3s;
+    background-color: grey;
+    left: 50px;
+    top: 50px;
+}
+
+#toggle_communities_div.off:hover {
+    transition: background-color, left, top;
+    transition-duration: 0.3s;
+    background-color: dodgerblue;
+}
+
+#reset_zoom_div:hover {
+    transition: background-color, right, top;
+    transition-duration: 0.3s;
+    background-color: lightseagreen;
+    right: 45px;
+    top: 45px;
+}
+
+#reheat_div:hover {
+    transition: background-color, right, bottom;
+    transition-duration: 0.3s;
+    background-color: orange;
+    right: -12px;
+    bottom: 142px;
+}
+
 #vis {
-    border: 1px solid black;
+    border: 2px solid black;
+    border-radius: 50%;
+    display: inline-block;
+    position:absolute;
+    z-index:100;
+    background-color: white;
 }
 
 .link {
@@ -106,12 +196,35 @@ rect:hover ~ .vTimeLineGhost, .vTimeLineGhost:hover  {
     /*transition-delay: 0.5s;*/
 }
 
-rect:hover ~ .movingTickText {
+svg *:hover ~ .movingTickText {
     opacity: 1;
     transition: opacity 0.5s;
 }
 
-rect:hover ~ .tickText {
+svg *:hover ~ .tickText {
     opacity: 0;
     transition: opacity 0.5s;
 }
+
+.movingValueText{
+    opacity: 0;
+    transition: opacity 0.5s;
+    /*transition-delay: 0.5s;*/
+}
+
+.valueText{
+    opacity: 1;
+    transition: opacity 0.5s;
+    /*transition-delay: 0.5s;*/
+}
+
+svg *:hover ~ .movingValueText {
+    opacity: 1;
+    transition: opacity 0.5s;
+}
+
+svg *:hover ~ .valueText {
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+

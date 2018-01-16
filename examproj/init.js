@@ -6,33 +6,37 @@ var data_props = {
 
 function init() {
 
-    /* VISUALISERING
-
-	*/
+    d3.select("body")
+        .on("keydown", function() {
+            var sliderFocus = d3.select(document.activeElement).classed("parameterSlider");
+            if (sliderFocus) {
+                return;
+            }
+            if (d3.event.keyCode == 39) {
+                viewBin(1)
+            }
+            else if (d3.event.keyCode == 37) {
+                viewBin(-1)
+            }
+        });
 
     d3.csv(
         'data/sodas_data_cleaned.csv',
         function (error, dat) {
             if (error) throw error;
-         
-            //sim = simulation(width, height); VISUALISERING
-            //initGraph(g); VISUALISERING
             data = dat;
             graph_seq.all_nodes = uniqueNodes(data)                  
-            
-            //svg.call(zooming); VISUAL
-            //svg.call(zooming.transform, d3.zoomIdentity.translate(400, 400)); VISUAL
         	
-        	calculateGraphs();
+            calculateGraphs();
         	calculateGraphFunctions();
-        	init_graph_vis();
-        	drawGraph();
+
+            init_step_charts();
+            draw_statistics();
+
+            init_graph_vis();
+            viewBin(0)
         }
     )
-    //beregn graf funktioner
-    //initialiser visualisering;
-    //visualiser;
-
 }
 
 //Loops through data returns list of all unique node IDs
