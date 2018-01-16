@@ -26,15 +26,22 @@ function init() {
             if (error) throw error;
             data = dat;
             graph_seq.all_nodes = uniqueNodes(data)                  
-        	
+
             calculateGraphs();
         	calculateGraphFunctions();
-
-            init_step_charts();
-            draw_statistics();
-
+            
             init_graph_vis();
+            init_communities_vis();
+            init_step_charts();
+
+            $('.checkbox').checkboxradio({
+                icon: false
+            })
+
+            drawStats();
             viewBin(0)
+
+            
         }
     )
 }

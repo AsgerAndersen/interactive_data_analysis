@@ -728,6 +728,7 @@ function handleStatHover(d, i) {
 
     var g = d3.select(this);
     var index = parseInt(g.attr("name"));
+    console.log(index)
     var line = g.select(".vTimeLineGhost");
 
     if (x > 0 && x < statWidth - 1) {

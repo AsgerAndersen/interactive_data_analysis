@@ -1,40 +1,47 @@
 //----------------------------------------------------------------------
 //Detect and visualize communities
 
+//
+
+function init_communities_vis() {
+    
+    d3.select("#toggle_communities_div")
+      .on("click", toggleColoring);
+
+}
+
 function drawCommunities() {
 
-    bin_nodes = graph_seq.nodes[visualisation_params.current_bin]
-
+    var bin_nodes = graph_seq.nodes[graph_seq_params.current_bin]
+    console.log("Draw comm current_bin", graph_seq_params.current_bin)
+    console.log("Is nodes to me", data_props.nodes - bin_nodes.length)
     if (document.getElementById("communities_checkbox").checked) {
+        console.log("I am IN!")
 
-        //console.log(data_props.current_bin)
-        //console.log(bin_nodes)
+        var max_community_number = graph_functions.clustering[0].statistic.values[graph_seq_params.current_bin]
 
-        community_assignment = visualisation_params.communities[visualisation_params.current_bin]
-
-        var max_community_number = 0;
-
-        bin_nodes.forEach(function(node) {        
-            node.community = community_assignment[node.id]
-            max_community_number = max_community_number < community_assignment[node.id] ? community_assignment[node.id]: max_community_number;
-        })
-        
         var color = d3.scaleOrdinal(d3.schemeCategory10).domain(d3.range([0, max_community_number]));
 
         d3.selectAll('.node')
           .data(bin_nodes)
           .style('fill', function(d){ return color(d.community);})
-
-        //d3.select("#n_communities")
-        //  .html((max_community_number + 1))
     }
     else {
-        
         d3.selectAll('.node')
           .data(bin_nodes)
           .style('fill', 'black')
+    }
+}
 
-        document.getElementById("init_part_checkbox").checked = false;
-
+function toggleColoring(d, i) {
+    var button = d3.select(this);
+    if (button.classed("off")) {
+        button.classed("off", false);
+        params.coloring = true;
+        redrawGraph(false);
+    } else {
+        button.classed("off", true);
+        params.coloring = false;
+        redrawGraph(false);
     }
 }

@@ -42,6 +42,9 @@ function calculateGraphs() {
         graph_seq.links[n] = graphdata.links;
         graph_seq.nodes[n] = graphdata.nodes;
     }
+
+    //console.log(graph_seq.nodes)
+    //console.log(graph_seq.links)
     
 }
 
