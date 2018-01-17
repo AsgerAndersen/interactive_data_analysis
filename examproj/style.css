@@ -36,7 +36,9 @@ div {
     display:inline-block;
 }
 
-#toggle_communities_div, #reset_zoom_div, #reheat_div {
+.vis_button {
+    transition: background-color, left, top;
+    transition-duration: 0.3s;
     background-color: dodgerblue;
     border-radius: 50%;
     width: 110px;
@@ -45,7 +47,7 @@ div {
     top: 60px;
     display: inline-block;
     position: absolute;
-    z-index:0;
+    z-index:50;
     transform: rotate(-45deg);
     padding:20px;
     text-align: center;
@@ -54,22 +56,101 @@ div {
     cursor: pointer;
 }
 
+#community_count_div {
+    background-color: deepskyblue;
+    width: auto;
+    height: auto;
+    left: auto;
+    right: 710px;
+    top: 140px;
+    z-index:40;
+    transform: rotate(0deg);
+    padding:0px;
+    cursor: default;
+}
+
+#isolated_count_div {
+    background-color: darkorchid;
+    width: auto;
+    height: auto;
+    left: auto;
+    right: 710px;
+    top: 620px;
+    z-index:40;
+    transform: rotate(0deg);
+    padding:0px;
+    cursor: default;
+}
+
+#community_text_div {
+    display: inline-block;
+    position: absolute;
+    border-radius: 10px;
+    color: white;
+    background-color: deepskyblue;
+    right: 400px;
+    top: 75px;
+    z-index:60;
+    transform: rotate(0deg);
+    padding:15px;
+    cursor: default;
+}
+
+#isolated_text_div {
+    display: inline-block;
+    position: absolute;
+    border-radius: 10px;
+    color: white;
+    background-color: darkorchid;
+    width: 120px;
+    height: auto;
+    left: auto;
+    right: 400px;
+    top: 675px;
+    z-index:50;
+    transform: rotate(0deg);
+    padding:15px;
+    cursor: default;
+    transition: right 0.5s;
+}
+
+#isolated_count_div:hover ~ #isolated_text_div {
+    right: 710px;
+    transition: right 0.5s;
+}
+
+#community_count_div:hover ~ #community_text_div {
+    right: 710px;
+    transition: right 0.5s;
+}
+
+
+#toggle_communities_div.off ~ #community_count_div {
+    display: none;
+
+}
+
 #toggle_communities_div.off {
     background-color: grey;
 }
 
 #reset_zoom_div {
+    transition: background-color, right, top;
+    transition-duration: 0.3s;
     background-color: seagreen;
     left: auto;
     right: 55px;
     top: 55px;
     width: 150px;
     height: 150px;
+    padding:20px;
     transform: rotate(45deg);
 }
 
 #reheat_div {
     background-color: orangered;
+    transition: background-color, right, bottom;
+    transition-duration: 0.3s;
     top: auto;
     left:auto;
     right: 0px;
@@ -78,10 +159,46 @@ div {
     height: 90px;
     transform: rotate(-61deg);
 }
-#reheat_div > span {
+
+.vis_button > span {
     display: inline-block;
+    transition: margin-top;
+    transition-duration: 0.3s;
+    margin-top: 0px;
+}
+
+.vis_button:hover > span{
+    transition: margin-top;
+    transition-duration: 0.3s;
+    margin-top:10px;
+}
+
+#community_count_div > span {
+    padding-right: 30px;
+    padding-left: 10px;
+    margin-top: 0px;
+    padding-top:35%;
+    padding-bottom:35%;
+}
+
+#isolated_count_div > span {
+    padding-right: 10px;
+    padding-left: 10px;
+    margin-top: 0px;
+    padding-top:35%;
+    padding-bottom:35%;
+}
+
+#reheat_div > span {
+    transition: margin-top;
+    transition-duration: 0.3s;
     margin-top: 75px;
-    font-weight: Bold;
+}
+
+#reheat_div:hover > span {
+    transition: margin-top;
+    transition-duration: 0.3s;
+    margin-top: 65px;
 }
 
 #toggle_communities_div:hover {
@@ -90,6 +207,7 @@ div {
     background-color: grey;
     left: 50px;
     top: 50px;
+
 }
 
 #toggle_communities_div.off:hover {
@@ -119,7 +237,7 @@ div {
     border-radius: 50%;
     display: inline-block;
     position:absolute;
-    /*z-index:100;*/
+    z-index:100;
     background-color: white;
 }
 

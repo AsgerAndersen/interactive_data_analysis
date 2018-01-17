@@ -411,8 +411,8 @@ function simulation(width, height) {
         //.force("center", d3.forceCenter(width / 2, height / 2))
         .force("x", d3.forceX())
         .force("y", d3.forceY())
-        .alphaMin(0.001)
-        .alphaDecay(0.012)
+        .alphaMin(0.01)
+        .alphaDecay(0.002)
         .on("tick", ticked);
 }
 
@@ -438,8 +438,8 @@ function ticked() {
 //Draw bar with number of nodes without any links
 function drawNoLinksBar(n) {
 
-    d3.select("#n_nolinks")
-      .html(n.toString())
+    d3.select("#isolated_count_div > span")
+      .text(n.toString())
 
     /*
     var canvas = d3.select("#nolinksbar")
@@ -779,7 +779,7 @@ function detectCommunities(nodes, links) {
         var max_community_number = 0;
 
         nodes.forEach(function(node) {
-            node.community = community_assignment[node.id]
+            node.community = community_assignment[node.id];
             max_community_number = max_community_number < community_assignment[node.id] ? community_assignment[node.id]: max_community_number;
         })
 
@@ -787,10 +787,10 @@ function detectCommunities(nodes, links) {
 
         d3.selectAll('.node')
             .data(nodes)
-            .style('fill', function(d){ return color(d.community);})
+            .style('fill', function(d){ return color(d.community);});
 
-        d3.select("#n_communities")
-            .html((max_community_number + 1))
+        d3.select("#community_count_div > span")
+            .text((max_community_number + 1));
     }
     else {
         d3.selectAll('.node')

@@ -42,19 +42,14 @@
 <div id="visualisation" class="section">
 	<div id="visdiv">
 		<div id="vis_wrap">
-			<div id="toggle_communities_div" class="off">Grouping</div>
-			<div id="reset_zoom_div">Reset Zoom</div>
-            <div id="reheat_div">
-                <span>Reheat</span>
-            </div>
-			<svg id = "vis" width="800" height="800"/>
-		</div>
-
-		<div id="n_communities_div">
-			Number of communities: <span id="n_communities"></span>
-		</div>
-		<div id="n_isolated_nodes_div">
-			Number of isolated nodes: <span id="n_nolinks"></span>
+            <div id="toggle_communities_div" class="vis_button off"><span>Grouping</span></div>
+            <div id="community_count_div" class="vis_button"><span></span></div>
+            <div id="community_text_div"><span>Unique groups</span></div>
+            <div id="isolated_count_div" class="vis_button"><span></span></div>
+            <div id="isolated_text_div"><span>Isolated and hidden nodes</span></div>
+            <div id="reset_zoom_div" class="vis_button"><span>Reset zoom</span></div>
+            <div id="reheat_div" class="vis_button"><span>Reheat</span></div>
+			<svg id="vis" width="800" height="800"/>
 		</div>
         
         <div id="control_board">
