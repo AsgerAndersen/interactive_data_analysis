@@ -233,12 +233,20 @@ div {
 }
 
 #vis {
+    display: inline-block;
+    position:relative;
+    z-index:100;
+    background-color: white;
+}
+
+#svg_wrapper {
     border: 2px solid black;
     border-radius: 50%;
     display: inline-block;
-    position:absolute;
+    position:relative;
     z-index:100;
     background-color: white;
+    overflow: hidden;
 }
 
 .link {
