@@ -35,6 +35,15 @@ $(function() {
 			return s 
 			}
 	  	},
+	  	n_scans_slider: {
+	  		output_id: "#n_scans_value",
+	  		min: 1,
+	  		max: 30,
+	  		step: 1,
+	  		range_slider: false,
+	  		value: params.n_scans,//graph_seq_params.threshold,
+	  		format_output: function(n) {return n}
+	  	},		
 	  	start_end_slider: {
 	  		output_ids: ["#start_value", "#end_value"],
 	  		min: 0,

@@ -17,28 +17,29 @@ var params = {
     "end_time": 60*60*24,
     "bins": 96,
     "threshold": -90,
+    "n_scans": 1,
     "source": "user",
     "target": "user2",
     "coloring": false,
     "current_bin": 0,
     "statistics": [
         {name: "Average Degree", 
-         method: function(links, nodes, i) { return averageDegree(links[i]);},
+         method: function(links, nodes, i) { return 2*links[i].length / data_props.nodes;;},
          format: ".3f",
          tickFormat: ".1f",
          line: 0
         },
+        /*{name: "Average Degree of connected nodes", 
+         method: function(links, nodes, i) { return 2*links[i].length / nodes[i].length;},
+         format: ".3f",
+         tickFormat: ".1f",
+         line: 0
+        },*/
         {name: "Number of isolated nodes", 
          method: function(links, nodes, i) { return (data_props.nodes - nodes[i].length); },
          format: "",
          line: null
         },
-        /*
-        {name: "Network Density", 
-         method: function(links, nodes) {return networkDensity(links);},
-         line: null
-        },
-        */
         {name: "Link growth (absolute)", 
          method: function(links, nodes, i) { 
                     if (i==0) {return 0}
@@ -127,14 +128,18 @@ function init() {
 
 function updatePars() {
 
-    var threshold = $("#threshold_slider").slider("option","value")
-    var binsize = ($("#binsize_slider").slider("option","value"))*60
-    var time_interval = $("#start_end_slider").slider("option","values")
-    var n_bins = Math.floor( ( time_interval[1] - time_interval[0]) * 3600  / binsize );
-
+    //console.log(params.n_scans)
     params.old_bin_size = params.bin_size;
-    params.threshold = threshold;
-    params.bin_size = binsize;
+    params.threshold = $("#threshold_slider").slider("option","value")
+    params.bin_size = ($("#binsize_slider").slider("option","value"))*60
+    params.n_scans = $("#n_scans_slider").slider("option","value")
+    //console.log(params.n_scans)
+    console.log("binsize", params.bin_size)
+
+    var time_interval = $("#start_end_slider").slider("option","values")
+    var n_bins = Math.floor( ( time_interval[1] - time_interval[0]) * 3600  / params.bin_size );
+    
+    //console.log("n bins", n_bins)
     params.bins = n_bins;
     params.start_time = time_interval[0]
     params.end_time = time_interval[1]
@@ -174,10 +179,12 @@ function calculateGraphs()
             n_to_draw = new_bin;
         }
     }
+    //console.log("hi")
     var i = 0;
     nodes = [];
     links = [];
     for (var n = 0; n < params.bins; n++) {
+        //console.log("hello")
         var bin = [];
         var looping = true;
         while (looping) {
@@ -192,6 +199,7 @@ function calculateGraphs()
         var graphdata = calculateLinksNodes(bin, function(row){
             return row["rssi"] > params['threshold'];
         });
+
         links[n] = graphdata["links"];
         //links[n] = simulateNodes()
         nodes[n] = graphdata["nodes"];
@@ -223,7 +231,8 @@ function calculateGraphs()
             }
         }
     }
-
+    //console.log("links", links)
+    //console.log("nodes", nodes)
     for (var j = 0; j < params["statistics"].length; j++) {
         var canvas = d3.select("#stat" + j);
         var steps = calcGraphStatistics(links, nodes, params["statistics"][j]);
@@ -238,34 +247,50 @@ function calculateGraphs()
 
 //TODO: Add directed option, and options for minimum number of occurrences, etc.
 function calculateLinksNodes(data, filter, count = false, directed = false) {
+    //console.log("hi")
     var node1key = params["source"];
     var node2key = params["target"];
 
-    var link_map = {};
+    var scan_counts = {};
     var node_map = {};
 
     for (var key in data) {
         var row = data[key];
         if (filter(row)) {
-            var source = row[node1key];
-            var target = row[node2key];
-            node_map[source] = true;
-            node_map[target] = true;
-            if (!link_map[source]) {
-                link_map[source] = {};
-            }
-            link_map[source][target] = true;
+            
+            var user_id_1 = row[node1key];
+            var user_id_2 = row[node2key];
 
-            if(link_map[target]) {
-                delete link_map[target][source]; //Not good if target == source
+            if (user_id_1 < user_id_2) {
+                var source = user_id_1
+                var target = user_id_2
+            } 
+            else {
+                var source = user_id_2
+                var target = user_id_1
+            }
+
+            if (!scan_counts[source]) {
+                scan_counts[source] = {};
+            }
+            if (!scan_counts[source][target]) {
+                scan_counts[source][target] = 1;
+            }
+            else {
+                scan_counts[source][target] += 1;    
             }
         }
     }
+    //console.log(scan_counts)
 
     var links = [];
-    for (var source in link_map) {
-        for (var target in link_map[source]) {
-            links.push({"source": source, "target": target, "value": 0});
+    for (var source in scan_counts) {
+        for (var target in scan_counts[source]) {
+            if (scan_counts[source][target] >= params.n_scans) {
+                node_map[source] = true;
+                node_map[target] = true;
+                links.push({"source": source, "target": target, "value": 0});
+            }
         }
     }
 
@@ -288,7 +313,7 @@ function initGraph(canvas) {
 }
 
 function redrawGraph(restart = true) {
-    console.log("Hi");
+    //console.log("Hi");
     drawGraph(g, nodes[params.current_bin], links[params.current_bin], restart);
 }
 
@@ -320,8 +345,8 @@ function drawGraph(canvas, nodes, links, restart = true) {
     sim.nodes(nodes);
 
     sim.force("link").links(links);
-    console.log(nodes)
-    console.log(links)
+    //console.log(nodes)
+    //console.log(links)
 
     if (restart) {
         sim.alpha(0.1).restart();
@@ -503,16 +528,6 @@ function calcGraphStatistics(links, nodes, statistic) {
     //values.pop();
     statistic.values = values;
     return values
-}
-
-function averageDegree(links) {
-    var n_nodes = data_props.nodes;
-    return 2*links.length / n_nodes;
-}
-
-function networkDensity(links) {
-    var n_nodes = data_props.nodes;
-    return 2*(links.length - n_nodes + 1) / (n_nodes * (n_nodes - 3) + 2);
 }
 //---------------------------------------------------------------------
 
@@ -728,7 +743,7 @@ function handleStatHover(d, i) {
 
     var g = d3.select(this);
     var index = parseInt(g.attr("name"));
-    console.log(index)
+    //console.log(index)
     var line = g.select(".vTimeLineGhost");
 
     if (x > 0 && x < statWidth - 1) {
