@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>Title</title>
+
+</head>
+
+<body>
+
+
+
+<div style="width: 800px">
+
+<h2>Slide 1</h2>
+
+<p>Here we see our visual exploration tool used on one randomly sampled week of the bluetooth scans dataset.</p>
+
+<h2>Slide 2</h2>
+
+<h3>Page event</h3>
+
+<p>The parameter control board is highligted - for instance by light yellow background color</p>
+
+<h3>Text</h3>
+
+<p>Right now, the threshold signal strength is set to -90 dbm, the length of each timebin is set to 15 minutes, and we want to explore the graph sequence between midnight day 1 and midnight day 2.</p>
+
+<h2>Slide 3</h2>
+
+<h3>Page event</h3>
+
+<p>The time markers on the statistics are highligted - for instance by light yellow background color</p>
+
+<h3>Text</h3>
+
+<p>Here we see that the visualized graph is covering the timebin from 00:00 to 00:15</p>
+
+<h2>Slide 4</h2>
+
+<h3>Page event</h3>
+
+<p>The graph visualization is highlighted - for instance by light yellow background color</p>
+
+<h3>Text</h3>
+
+<p>Here we therefore see a link between all users, where one of the user's phones have scanned the other user's phone at least one time with at least a signal strength of -90 during the time from 00:00 to 00:15 the night between sunday and monday.</p>
+
+<p>By stroking your mouse pad with two fingers you can zoom in and out on the graph.</p>
+
+<p>If you think the graph looks two messy, you can try and press the reheat button and see if this makes it look more structured. This is mostly relevant, if there are a lot of nodes and links.</p>
+
+<h3>Slide 4</h3>
+
+<h3>Page event</h3>
+
+<p>The number of isolated nodes on the site of the graph visualization and the statistic with number of isolated nodes are highlighted - for instance by light yellow background color</p>
+
+<h3>Text</h3>
+
+<p>We do not visualize all the user's with no links in this timebin. Instead, we write here how many of such user's the timebin has.</p>
+
+<h3>Slide 4</h3>
+
+<h3>Page event</h3>
+
+<p>Nothing is highlighted</p>
+
+<h3>Text</h3>
+
+<p>Try now to go through the sequence of graphs by using your left and right arrow keys</p>
+
+<h3>Slide 5</h3>
+
+<h3>Page event</h3>
+
+<p>The statistics are all highlighted</p>
+
+<h3>Text</h3>
+
+<p>You can also change the change timebin by hovering over any of the statistics to left and then clicking. Let yourself loose.</p>
+
+<h3>Slide 6</h3>
+
+<h3>Page event</h3>
+
+<p>The statistics are all highlighted</p>
+
+<h3>Text</h3>
+
+<p>These are stepcharts of the values of different descriptive statistics calculated on each graph in the graph sequence.</p>
+
+<h3>Slide 7</h3>
+
+<h3>Page event</h3>
+
+<p>The average degree statistic is highlighted</p>
+
+<h3>Text</h3>
+
+<p>This statistic is the average number of links of each user, when we include the users with no links. That is, the number of users is always taken to be XXXX</p>
+
+<h3>Slide 8</h3>
+
+<h3>Page event</h3>
+
+<p>The average degree of connected nodes statistic is highlighted</p>
+
+<h3>Text</h3>
+
+<p>This statistic is the average number of links of each user, when we exclude the user's with no links in the given timebin. That is, the number of users in a given timebin is equal to the number of visualized nodes in the graph visualization to the right.</p>
+
+<h3>Slide 9</h3>
+
+<h3>Page event</h3>
+
+<p>The number of isolated nodes statistic is highlighted</p>
+
+<h3>Text</h3>
+
+<p>This statistic is the number of users with no links in the given timebin.</p>
+
+<h3>Slide 10</h3>
+
+<h3>Page event</h3>
+
+<p>The link growth (absolute) statistic is highlighted</p>
+
+<h3>Text</h3>
+
+<p>This statistic is the number of links in the current timebin minus the number of links in the preceding timebin</p>
+
+<h3>Slide 11</h3>
+
+<h3>Page event</h3>
+
+<p>The link growth (relative) statistic is highlighted</p>
+
+<h3>Text</h3>
+
+<p>This statistic is the ratio between the number of links in the current timebin and the number of links in the preceding timebin, minus 1. If there are twice as many links in the current timebin than in the preceding, then the relative link growth will for instance be 100%</p>
+
+<h3>Slide 12</h3>
+
+<h3>Page event</h3>
+
+<p>The grouping button the graph visualization</p>
+
+<h3>Text</h3>
+
+<p>This button shows the clusters in the current graph according to the <a href="https://en.wikipedia.org/wiki/Louvain_Modularity"> Louvain Modularity clustering method</a>, which we have used <a href="https://github.com/upphiminn/jLouvain">this implementation</a> to calculate. This method works only on one static graph, not on sequence of graphs, which means that the clusters calculated in the current graph only depends on this graph and not on any other of the graphs in the sequence.
+
+<p> This functionality is not very relevant for the researchers at SODAS, since they are not interested in this particular way of clustering the graph. We included it anyway in this exam context to show a way of visualization clusters calculated on the graph sequence. This method can be used by the researchers with their own methods of graph clustering, if these methods are implemented in a way, so they fit into our program's implementation.</p>
+
+<p> We also have to note that the color based visualization of the clusters does not work very well, since there are too many clusters, so different clusters end up sharing colors, which is very problematic. We wanted to solve this by implementing that when the user hovers with the mouse over one cluster, then the color of all other clusters than this change to black. Unfortunately, we did not have the time to implement this feature.</p>
+
+<h3>Slide 13</h3>
+
+<h3>Page event</h3>
+
+<p>The number of unique groups is highlighted</p>
+
+<h3>Text</h3>
+
+<p>This statistic is the number of clusters in the graph</p>
+
+<h3>Slide 14</h3>
+
+<h3>Page event</h3>
+
+<p>Nothing is highlighted</p>
+
+<h3>Text</h3>
+
+<p>Now you try to change the parameters that define how the graph is calculated and explore how that changes the sequence. Go ahead and explore!</p>
+
+</body>
+
+</html>
+
