@@ -233,7 +233,7 @@ div {
 }
 
 #vis {
-    display: inline-block;
+    display: table-header-group; /* WEIRD HACK */
     position:relative;
     z-index:100;
     background-color: white;
