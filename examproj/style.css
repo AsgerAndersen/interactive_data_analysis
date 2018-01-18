@@ -23,7 +23,7 @@ div {
     text-align: center;
 }
 
-#visdiv, #stats{
+#visdiv, #secondary_vis {
     display: inline-block;
     width: 850px;
     vertical-align: top;
@@ -354,3 +354,15 @@ svg *:hover ~ .valueText {
     transition: opacity 0.5s;
 }
 
+.bar {
+  fill: LightGrey;
+}
+
+
+.barText {
+    opacity: 0;
+}
+
+.showBarText {
+    opacity: 1;
+}

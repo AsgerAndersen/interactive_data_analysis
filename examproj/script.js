@@ -2,7 +2,7 @@ d3.select(window).on('load', init);
 var data, sim, svg, g, zooming, width, height, xStatScale, leftStatMargin, statWidth, link, node;
 
 //var n_init_communities = 2;
-var nodes = [], links = [], all_nodes = [];//, community_init = {};
+var nodes = [], links = [], degrees_freq = [], all_nodes = [];//, community_init = {};
 
 var data_props = {
     "nodes": 589,
@@ -111,6 +111,7 @@ function init() {
          
             sim = simulation(width, height);
             data = dat;
+            //console.log(data)
             initGraph(g);
 
             all_nodes = uniqueNodes(dat);         
@@ -134,7 +135,7 @@ function updatePars() {
     params.bin_size = ($("#binsize_slider").slider("option","value"))*60
     params.n_scans = $("#n_scans_slider").slider("option","value")
     //console.log(params.n_scans)
-    console.log("binsize", params.bin_size)
+    //console.log("binsize", params.bin_size)
 
     var time_interval = $("#start_end_slider").slider("option","values")
     var n_bins = Math.floor( ( time_interval[1] - time_interval[0]) * 3600  / params.bin_size );
@@ -201,11 +202,11 @@ function calculateGraphs()
         });
 
         links[n] = graphdata["links"];
-        //links[n] = simulateNodes()
         nodes[n] = graphdata["nodes"];
-        if (n === n_to_draw){
-            drawGraph(g, nodes[n], links[n]);
-        }
+        degrees_freq[n] = graphdata["degrees_freq"];
+        //if (n === n_to_draw){
+        //    drawGraph(g, nodes[n], links[n]);
+        //}
 
         if (n === 0){
             d3.select("#stats")
@@ -231,7 +232,7 @@ function calculateGraphs()
             }
         }
     }
-    //console.log("links", links)
+    //console.log("link_count", link_count)
     //console.log("nodes", nodes)
     for (var j = 0; j < params["statistics"].length; j++) {
         var canvas = d3.select("#stat" + j);
@@ -239,7 +240,7 @@ function calculateGraphs()
         drawStepChart(steps, canvas, j, params["statistics"][j].line)
 
     }
-
+    
     viewBin(n_to_draw, true, false);
 }
 
@@ -252,6 +253,7 @@ function calculateLinksNodes(data, filter, count = false, directed = false) {
     var node2key = params["target"];
 
     var scan_counts = {};
+    var degrees_map = {};
     var node_map = {};
 
     for (var key in data) {
@@ -287,8 +289,23 @@ function calculateLinksNodes(data, filter, count = false, directed = false) {
     for (var source in scan_counts) {
         for (var target in scan_counts[source]) {
             if (scan_counts[source][target] >= params.n_scans) {
+                
                 node_map[source] = true;
                 node_map[target] = true;
+
+                if (!degrees_map[source]) {
+                    degrees_map[source] = 1
+                }
+                else {
+                    degrees_map[source] += 1    
+                }
+                if (!degrees_map[target]) {
+                    degrees_map[target] = 1
+                }
+                else {
+                    degrees_map[target] += 1    
+                }
+
                 links.push({"source": source, "target": target, "value": 0});
             }
         }
@@ -298,7 +315,28 @@ function calculateLinksNodes(data, filter, count = false, directed = false) {
     for (var key in node_map) {
         nodes.push(all_nodes[key]); //Uses references instead of new node objects
     }
-    return {"links": links, "nodes": nodes};
+
+    var degrees_freq = {};
+    for (var node in degrees_map) {
+        if (!degrees_freq[degrees_map[node]]) {
+            degrees_freq[degrees_map[node]] = 1
+        }
+        else {
+            degrees_freq[degrees_map[node]] += 1
+        }
+    }
+
+    for (var degree in degrees_freq) {
+        degrees_freq[degree] = degrees_freq[degree] / nodes.length
+    }
+    
+    var degrees_freq_list = []
+
+    for (var degree in degrees_freq) {
+        degrees_freq_list.push({degree: degree, frequency: degrees_freq[degree]})
+    }
+
+    return {"links": links, "nodes": nodes, "degrees_freq": degrees_freq_list};
 }
 
 function initGraph(canvas) {
@@ -399,7 +437,6 @@ function viewBin(n, abs = false, trans = true) {
             .attr("duration", 1000)
             .attr("x", x + bin_width / 2);
 
-        drawGraph(g, nodes[n], links[n]);
     } else {
         d3.selectAll(".statistic_svg g .vTimeLine")
             .attr("x", x);
@@ -412,8 +449,12 @@ function viewBin(n, abs = false, trans = true) {
             .attr("x", x + bin_width / 2)
             .text(function(d, i) {return d3.format(params.statistics[i].format)(params.statistics[i].values[n*2].value);});
 
-        drawGraph(g, nodes[n], links[n]);
     }
+
+    drawGraph(g, nodes[n], links[n]);
+    //console.log(link_count[n])
+    drawDegreeDist(degrees_freq[n])//link_count[n])
+
 }
 
 var scale = 1;
@@ -827,8 +868,82 @@ function toggleColoring(d, i) {
     }
 }
 
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+//-------------------------------------------------------------------------
+//Degree distribution
+
+
+function drawDegreeDist(data) {
+
+    //https://bl.ocks.org/mbostock/3885304
+
+    var div = d3.select("#degree_dist_div")
+
+    div.selectAll("*").remove()
+
+    div.append("span")
+      .classed("statistic_span", true)
+      .text("Distribution of node degrees");
+
+    div.append("br")
+
+    var svg = div.append("svg")
+                 .attr("width", 800)
+                 .attr("height", 300)
+
+    var margin = {top: 30, right: 100, bottom: 50, left: 100},
+        width = +svg.attr("width") - margin.left - margin.right,
+        height = +svg.attr("height") - margin.top - margin.bottom;
+
+    svg.selectAll("*").remove()
+
+    var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
+        y = d3.scaleLinear().rangeRound([height, 0]);
+
+    var g = svg.append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  x.domain(data.map(function(d) { return d.degree; }));
+  y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
+
+  g.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x));
+
+  g.selectAll(".bar")
+    .data(data)
+    .enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", function(d) { return x(d.degree); })
+      .attr("y", function(d) { 
+        console.log("hello")
+        return y(d.frequency); })
+      .attr("width", x.bandwidth())
+      .attr("height", function(d) { return height - y(d.frequency); })
+      .on("mouseover", function(d, i) {
+        console.log("hi")
+        d3.select("#barText"+i)
+          .classed("showBarText", true)
+      })
+      .on("mouseout", function(d, i) {
+        console.log("hello")
+        d3.select("#barText"+i)
+          .classed("showBarText", false)
+      })
+
+  g.selectAll(".barText")
+     .data(data)
+     .enter().append("text")
+     .classed("barText", true)
+     .attr("id", function(d, i) {return "barText" + i})
+     .attr("y", function(d) {return y(d.frequency) - 7})
+     .attr("x", function(d) { return x(d.degree); })
+     .text(function(d) {return Math.round(d.frequency * 10000) / 100 + "%"})
+  
+  svg.append("text")
+        .attr("x", margin.left + width / 2)
+        .attr("y", margin.top + height + 35)
+        .style("stroke", "black")
+        .html("Degree");
+
 }
