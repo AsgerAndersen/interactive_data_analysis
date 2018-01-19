@@ -1,6 +1,9 @@
 #control_board {
-	width: 500px;
+	display: inline-block;
+	position: relative;
 	padding: 50px;
+	overflow: hidden;
+	border-radius: 20px;
 }
 
 .slider {
