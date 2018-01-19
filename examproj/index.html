@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="jquery-ui/external/jquery/jquery.js"></script>
+  <script src="jquery-ui/jquery-ui.min.js"></script>
+
+<title>Description of our project</title>
+
+</head>
+
+<body>
+
+<div style="width: 1200px">
+
+<h3>Group members</h3>
+
+Christoffer Belhage & Asger Andersen
+
+<h3>Overview:</h3>
+<p>In our exam project, we have developed an interactive visualization tool of dynamic graph data to be used by researchers at <a href="http://sodas.ku.dk/dansk/" target="_blank">SODAS</a> in order to make more informed design decisions in their <a href="http://socialfabric.ku.dk/" target="_blank"> research on dynamic social networks among students at DTU</a>.
+</p>
+
+<h3>Detailed description:</h3>
+<p>The <a href="http://socialfabric.ku.dk/">Social Fabric</a> research project has collected two years of behavioral data from 1000 DTU students, who started their studies in the fall 2013 and was followed until the summer 2015. The behavioral data was collected through handed-out smart phones. Among other things, the phone of each participant was set to make a bluetooth scan every 5 minute, and if the phone of another participant was registered, the timestamp and rssi signal strength of this bluetooth link between the two participants can now be found in a dataset like this:
+</p> 
+
+<table border="1" class="dataframe" cellpadding="10px">
+  <thead>
+    <tr style="text-align: center;">
+      <th>user</th>
+      <th>user2</th>
+      <th>ts</th>
+      <th>rssi</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>780</td>
+      <td>325</td>
+      <td>4.0</td>
+      <td>-93</td>
+    </tr>
+    <tr>
+      <td>600</td>
+      <td>632</td>
+      <td>9.0</td>
+      <td>-97</td>
+    </tr>
+    <tr>
+      <td>47</td>
+      <td>448</td>
+      <td>12.0</td>
+      <td>-97</td>
+    </tr>
+    <tr>
+      <td>461</td>
+      <td>492</td>
+      <td>13.0</td>
+      <td>-87</td>
+    </tr>
+  </tbody>
+</table>
+
+<p> Some of the research projects at SODAS try to use this bluetooth scan data to study questions related to the dynamic social networks between the participants. To do this, they first use the data to build a discrete time sequence of graphs, whereafter they use this graph sequence as input to, for instance, algorithms for detecting dynamic community structures. The output of these algorithms is then used to explore different social network related research questions. Each graph in the graph sequence has all the participants in the experiment as nodes, and links somehow defined from the bluetooth scan dataset, as it is seen above. Our visualization tool will hopefully help the researchers inform their decisions on how to construct the links between the participants from the bluetooth scans.
+</p>
+
+<p>
+A quite simple construction is to have the researchers choose the value of three parameters, namely the amount of time t of each timebin, a threshold signal strength x and some number of scans n. Given the values of t, x and n, the graph sequence will be constructed as follows:
+<ol>
+  <li>The time of the entire two year experiment will be discretized into timebins of length t. If, for instance, t is set to 15 minutes, then the time of the experiment is discretized to the first 15 minute timebin of the experiment, the second 15 minute timebin of the experiment and so forth.</li>
+  <li>To each timebin, there corresponds a graph with all the participants as nodes. Two participants are linked in the graph, if and only if the participants' phones have scanned each other with a signal strength larger than x at least n times during the given timebin. If, for instance, t is set 15 minutes, x is set to -50 decibel miliwatts and n is set to 2, then two participants will be linked in the graph for to a given timebin of 15 minutes, if and only if their phones all in all have scanned each other at least 2 times with a signal strength larger than -50 decibel miliwatts during the 15 minutes of the given timebin.</li>
+</ol>
+It is not easy to choose these three parametres based on theory and the concrete research question alone, and therefore the researchers would like a visualization tool to help them develop their intuition for how different parameter choices affect the resulting graph sequence. Concretely, they would like to be able to load in a subset of the bluetooth scans dataset for some specific week during the two years of the course, experiment with different parameter choices and see a visualization of the resulting graph sequence. We have developed such a tool, and we will now show how it works on one randomly sampled week of the bluetooth scans dataset:</p>
+<a id="to_vis" href="project.html"><button>Go to the visualization </button> </a>
+</div>
+
+</body>
+
+</html>
+

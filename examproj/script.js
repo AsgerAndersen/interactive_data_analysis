@@ -124,10 +124,14 @@ function init() {
             svg.call(zooming);
             svg.call(zooming.transform, d3.zoomIdentity.translate(400, 400));
 
+            tutorial()
+
+            /*
             var tut = getQueryVariable("tutorial");
             if (tut) {
                 tutorial();
             }
+            */
         }
     )
 }

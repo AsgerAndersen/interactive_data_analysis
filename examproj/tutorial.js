@@ -22,9 +22,15 @@ function popUp(parent, target, hori, vert, title, text, highlight, animate, n) {
         .classed("popupPrevious", true)
         .text("Previous");
 
-    box.append("div")
+    var next_div = box.append("div")
         .classed("popupNext", true)
-        .text("Next");
+
+    if (slides[n+1]==null) {
+        next_div.text("Start exploration")
+    }
+    else {
+        next_div.text("Next")
+    }
 
     box.append("div")
         .classed("popupClose", true)
@@ -118,12 +124,12 @@ var slides = [
 
     {
         parent: "#visdiv",
-        target: "#visdiv",
+        target: "#svg_wrapper",
         hori: ["left", 520],
         vert: ["top", 0],
         title: "Navigation",
-        text: "Try now to go through the sequence of graphs by using your left and right arrow keys",
-        highlight: false,
+        text: "Now try to go through the sequence of graphs by using your left and right arrow keys",
+        highlight: true,
         animate: false,
         fun: function () {}
     },
@@ -210,7 +216,7 @@ var slides = [
         "This functionality is not very relevant for the researchers at SODAS, since they are not interested in this particular way of clustering the graph. We included it anyway in this exam context to show a way of visualization clusters calculated on the graph sequence. This method can be used by the researchers with their own methods of graph clustering, if these methods are implemented in a way, so they fit into our program's implementation.<br><br>" +
         "We also have to note that the color based visualization of the clusters does not work very well, since there are too many clusters, so different clusters end up sharing colors, which is very problematic. We wanted to solve this by implementing that when the user hovers with the mouse over one cluster, then the color of all other clusters than this change to black. Unfortunately, we did not have the time to implement this feature.",
         highlight: true,
-        animate: false,
+        animate: true,
         fun: function () {}
     },
 
@@ -220,9 +226,9 @@ var slides = [
         hori: ["right", 400],
         vert: ["top", 100],
         title: "Groups",
-        text: "This statistic is the number of clusters in the graph",
+        text: "This is the number of clusters in the graph according to the Louvain Modularity clustering method",
         highlight: true,
-        animate: false,
+        animate: true,
         fun: function () {
             var button = d3.select("#toggle_communities_div");
             button.classed("off", false);
@@ -239,6 +245,10 @@ var slides = [
         text: "Now you try to change the parameters that define how the graph is calculated and explore how that changes the sequence. Go ahead and explore!",
         highlight: true,
         animate: false,
-        fun: function () {}
+        fun: function () {
+            var button = d3.select("#toggle_communities_div");
+            button.classed("off", true);
+            params.coloring = false;
+            redrawGraph(false);}
     }
 ];
