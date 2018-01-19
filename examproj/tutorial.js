@@ -50,8 +50,8 @@ function closePopUp() {
 function tutorialStep(n) {
     var args = slides[n];
     args.fun();
-    popUp(args.parent, args.target, args.hori, args.vert, args.title, args.text, args.highlight, args.animate, n)
-    d3.select(".popup").node().scrollIntoView({block: "center", inline: "center", behavior: "smooth"});
+    popUp(args.parent, args.target, args.hori, args.vert, args.title, args.text, args.highlight, args.animate, n);
+    d3.select(args.scrollTarget).node().scrollIntoView({block: "center", inline: "center", behavior: "smooth"});
 }
 
 function tutorial() {
@@ -63,6 +63,7 @@ var slides = [
     {
         parent: "#visualisation",
         target: "#visualisation",
+        scrollTarget: "#visualisation",
         hori: ["left", 600],
         vert: ["top", 50],
         title: "Our Visual Tool",
@@ -75,6 +76,7 @@ var slides = [
     {
         parent: "#visdiv",
         target: "#control_board",
+        scrollTarget: "#control_board",
         hori: ["right", 30],
         vert: ["bottom", 200],
         title: "Parameter Control Board",
@@ -87,6 +89,7 @@ var slides = [
     {
         parent: "#secondary_vis",
         target: ".vTimeLine",
+        scrollTarget: "#stat_div0",
         hori: ["right", 300],
         vert: ["top", 500],
         title: "Time Bins",
@@ -99,6 +102,7 @@ var slides = [
     {
         parent: "#visdiv",
         target: "#svg_wrapper",
+        scrollTarget: "#visdiv",
         hori: ["right", 20],
         vert: ["top", 0],
         title: "Main Graph",
@@ -113,6 +117,7 @@ var slides = [
     {
         parent: "#visdiv",
         target: "#isolated_count_div",
+        scrollTarget: "#visdiv",
         hori: ["left", 200],
         vert: ["top", 500],
         title: "Isolated Nodes",
@@ -125,6 +130,7 @@ var slides = [
     {
         parent: "#visdiv",
         target: "#svg_wrapper",
+        scrollTarget: "#visualisation",
         hori: ["left", 520],
         vert: ["top", 0],
         title: "Navigation",
@@ -137,6 +143,7 @@ var slides = [
     {
         parent: "#secondary_vis",
         target: "#secondary_vis",
+        scrollTarget: "#secondary_vis",
         hori: ["left", 80],
         vert: ["top", 0],
         title: "Statistics",
@@ -149,6 +156,7 @@ var slides = [
     {
         parent: "#secondary_vis",
         target: "#degree_dist_div",
+        scrollTarget: "#degree_dist_div",
         hori: ["left", 30],
         vert: ["top", 300],
         title: "Degree Distribution",
@@ -161,6 +169,7 @@ var slides = [
     {
         parent: "#secondary_vis",
         target: "#stat_div0",
+        scrollTarget: "#secondary_vis",
         hori: ["left", 30],
         vert: ["top", 150],
         title: "Average Degree",
@@ -173,6 +182,7 @@ var slides = [
     {
         parent: "#secondary_vis",
         target: "#stat_div1",
+        scrollTarget: "#stat_div0",
         hori: ["left", 30],
         vert: ["top", 450],
         title: "Number of Isolated Nodes",
@@ -185,6 +195,7 @@ var slides = [
     {
         parent: "#secondary_vis",
         target: "#stat_div2",
+        scrollTarget: "#stat_div1",
         hori: ["left", 30],
         vert: ["top", 700],
         title: "Link Growth",
@@ -197,6 +208,7 @@ var slides = [
     {
         parent: "#secondary_vis",
         target: "#stat_div3",
+        scrollTarget: "#stat_div2",
         hori: ["left", 30],
         vert: ["top", 910],
         title: "Link Growth",
@@ -209,6 +221,7 @@ var slides = [
     {
         parent: "#visdiv",
         target: "#toggle_communities_div",
+        scrollTarget: "#visdiv",
         hori: ["right", 200],
         vert: ["top", 0],
         title: "Grouping",
@@ -223,6 +236,7 @@ var slides = [
     {
         parent: "#visdiv",
         target: "#community_count_div",
+        scrollTarget: "#visdiv",
         hori: ["right", 400],
         vert: ["top", 100],
         title: "Groups",
@@ -239,16 +253,13 @@ var slides = [
     {
         parent: "#visualisation",
         target: "#visualisation",
+        scrollTarget: "#visualisation",
         hori: ["left", 600],
         vert: ["top", 50],
         title: "Explore",
         text: "Now you try to change the parameters that define how the graph is calculated and explore how that changes the sequence. Go ahead and explore!",
         highlight: true,
         animate: false,
-        fun: function () {
-            var button = d3.select("#toggle_communities_div");
-            button.classed("off", true);
-            params.coloring = false;
-            redrawGraph(false);}
+        fun: function () {}
     }
 ];

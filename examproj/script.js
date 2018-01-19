@@ -885,25 +885,25 @@ function drawDegreeDist(data) {
 
     //https://bl.ocks.org/mbostock/3885304
 
-    var div = d3.select("#degree_dist_div")
+    var div = d3.select("#degree_dist_div");
 
-    div.selectAll("*").remove()
+    div.selectAll("*").remove();
 
     div.append("span")
       .classed("statistic_span", true)
       .text("Distribution of node degrees");
 
-    div.append("br")
+    div.append("br");
 
     var svg = div.append("svg")
                  .attr("width", 800)
-                 .attr("height", 300)
+                 .attr("height", 300);
 
     var margin = {top: 30, right: 100, bottom: 50, left: 100},
         width = +svg.attr("width") - margin.left - margin.right,
         height = +svg.attr("height") - margin.top - margin.bottom;
 
-    svg.selectAll("*").remove()
+    svg.selectAll("*").remove();
 
     var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
         y = d3.scaleLinear().rangeRound([height, 0]);
@@ -923,31 +923,25 @@ function drawDegreeDist(data) {
     .data(data)
     .enter().append("rect")
       .attr("class", "bar")
+      .attr("id", function(d, i) {return "bar" + i;})
       .attr("x", function(d) { return x(d.degree); })
       .attr("y", function(d) { 
         //console.log("hello")
         return y(d.frequency); })
       .attr("width", x.bandwidth())
-      .attr("height", function(d) { return height - y(d.frequency); })
-      .on("mouseover", function(d, i) {
-        //console.log("hi")
-        d3.select("#barText"+i)
-          .classed("showBarText", true)
-      })
-      .on("mouseout", function(d, i) {
-        console.log("hello")
-        d3.select("#barText"+i)
-          .classed("showBarText", false)
-      })
+      .attr("height", function(d) { return height - y(d.frequency); });
+
+
+  var barWidth = d3.select(".bar").attr("width");
 
   g.selectAll(".barText")
      .data(data)
-     .enter().append("text")
+     .enter().insert("text", function(d, i) {return d3.select("#bar" + i + " + *").node();})
      .classed("barText", true)
      .attr("id", function(d, i) {return "barText" + i})
      .attr("y", function(d) {return y(d.frequency) - 7})
-     .attr("x", function(d) { return x(d.degree); })
-     .text(function(d) {return Math.round(d.frequency * 10000) / 100 + "%"})
+     .attr("x", function(d) { return x(d.degree) + 0.5 * barWidth; })
+     .text(function(d) {return Math.round(d.frequency * 10000) / 100 + "%"});
   
   svg.append("text")
         .attr("x", margin.left + width / 2)

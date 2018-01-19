@@ -370,9 +370,10 @@ svg *:hover ~ .valueText {
 
 .barText {
     opacity: 0;
+    text-anchor: middle;
 }
 
-.showBarText {
+.bar:hover + .barText {
     opacity: 1;
 }
 
@@ -397,7 +398,7 @@ svg *:hover ~ .valueText {
     display: inline-block;
     float: left;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 22px;
     clear: both;
     margin-bottom: 5px;
     /*border: 1px solid black;*/
@@ -406,7 +407,7 @@ svg *:hover ~ .valueText {
 .popupDescription {
     display: inline-block;
     float: left;
-    font-size: 15px;
+    font-size: 18px;
     clear: both;
     /*border: 1px solid black;*/
 }
@@ -416,7 +417,7 @@ svg *:hover ~ .valueText {
     display: flex;
     float: right;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 22px;
     /*border: 1px solid black;*/
 }
 
@@ -425,7 +426,7 @@ svg *:hover ~ .valueText {
     display: flex;
     float:left;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 22px;
     clear: left;
     /*border: 1px solid black;*/
 }
@@ -486,4 +487,9 @@ rect.highlighted {
     animation-iteration-count: infinite;
     animation-direction: alternate;
     animation-timing-function: ease-in;
+}
+
+#degree_dist_div {
+    position: relative;
+    overflow: hidden;
 }
