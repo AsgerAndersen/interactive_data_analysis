@@ -434,7 +434,8 @@ function viewBin(n, abs = false, trans = true) {
             .text(formatTime(n * params.bin_size * 1000) + " - " + formatTime((n+1) * params.bin_size * 1000))
             .transition()
             .attr("duration", 1000)
-            .attr("x", x + bin_width / 2);
+            .attr("x", x + bin_width / 2)
+            .style("fill", "yellow")
 
         d3.selectAll(".statistic_svg g .valueText")
             .text(function(d, i) {return d3.format(params.statistics[i].format)(params.statistics[i].values[n*2].value);})
@@ -921,12 +922,12 @@ function drawDegreeDist(data) {
       .attr("class", "bar")
       .attr("x", function(d) { return x(d.degree); })
       .attr("y", function(d) { 
-        console.log("hello")
+        //console.log("hello")
         return y(d.frequency); })
       .attr("width", x.bandwidth())
       .attr("height", function(d) { return height - y(d.frequency); })
       .on("mouseover", function(d, i) {
-        console.log("hi")
+        //console.log("hi")
         d3.select("#barText"+i)
           .classed("showBarText", true)
       })

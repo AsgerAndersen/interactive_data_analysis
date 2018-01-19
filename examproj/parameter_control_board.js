@@ -13,7 +13,7 @@ $(function() {
 	  	binsize_slider: {
 	  		output_id: "#binsize_value",
 	  		min: 5,
-	  		max: 60*4,
+	  		max: 60*8,
 	  		step: 5,
 	  		range_slider: false,
 	  		value: params.bin_size / 60,
@@ -38,7 +38,7 @@ $(function() {
 	  	n_scans_slider: {
 	  		output_id: "#n_scans_value",
 	  		min: 1,
-	  		max: 30,
+	  		max: 100,
 	  		step: 1,
 	  		range_slider: false,
 	  		value: params.n_scans,//graph_seq_params.threshold,
