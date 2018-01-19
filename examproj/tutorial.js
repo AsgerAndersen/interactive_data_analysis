@@ -88,7 +88,7 @@ var slides = [
     {
         parent: "#visdiv",
         target: "#svg_wrapper",
-        hori: ["right", 0],
+        hori: ["right", 20],
         vert: ["top", 0],
         title: "Main Graph",
         text: "Here we therefore see a link between all users, where one of the user's phones have scanned the other user's phone at least one time with at least a signal strength of -90 during the time from 00:00 to 00:15 the night between sunday and monday.<br><br>" +
@@ -112,7 +112,7 @@ var slides = [
     {
         parent: "#visdiv",
         target: "#visdiv",
-        hori: ["left", 600],
+        hori: ["left", 550],
         vert: ["top", 0],
         title: "Navigation",
         text: "Try now to go through the sequence of graphs by using your left and right arrow keys",
@@ -123,7 +123,7 @@ var slides = [
     {
         parent: "#secondary_vis",
         target: "#secondary_vis",
-        hori: ["right", 30],
+        hori: ["left", 80],
         vert: ["top", 0],
         title: "Statistics",
         text: "These are charts of the values of different descriptive statistics calculated on each graph in the graph sequence.",
