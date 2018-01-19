@@ -67,7 +67,7 @@ function tutorialStep(n) {
     var args = slides[n];
     args.fun();
     popUp(args, n);
-    d3.select(args.scrollTarget).node().scrollIntoView({block: "top", inline: "center", behavior: "smooth"});
+    d3.select(args.scrollTarget).node().scrollIntoView({block: "start", inline: "nearest", behavior: "smooth"});
 }
 
 function tutorial() {
