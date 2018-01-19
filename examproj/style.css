@@ -525,6 +525,7 @@ rect.highlighted {
 
 #tutorial_button_div {
     position: absolute;
+    z-index: 2;
     top:20px;
     left: 20px;
 }
