@@ -112,7 +112,7 @@ var slides = [
     {
         parent: "#visdiv",
         target: "#visdiv",
-        hori: ["left", 550],
+        hori: ["left", 520],
         vert: ["top", 0],
         title: "Navigation",
         text: "Try now to go through the sequence of graphs by using your left and right arrow keys",
