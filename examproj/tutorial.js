@@ -206,7 +206,7 @@ var slides = [
     {
         parent: "#visdiv",
         target: "#visdiv",
-        hori: ["right", 0],
+        hori: ["right", 20],
         vert: ["top", 0],
         title: "Groups",
         text: "Now you try to change the parameters that define how the graph is calculated and explore how that changes the sequence. Go ahead and explore!",
