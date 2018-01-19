@@ -124,13 +124,11 @@ function init() {
             svg.call(zooming);
             svg.call(zooming.transform, d3.zoomIdentity.translate(400, 400));
 
-            /*
+
             var tut = getQueryVariable("tutorial");
             if (tut) {
                 tutorial();
             }
-            */
-            tutorial()
         }
     )
 }
@@ -437,8 +435,7 @@ function viewBin(n, abs = false, trans = true) {
             .text(formatTime(n * params.bin_size * 1000) + " - " + formatTime((n+1) * params.bin_size * 1000))
             .transition()
             .attr("duration", 1000)
-            .attr("x", x + bin_width / 2)
-            .style("fill", "yellow")
+            .attr("x", x + bin_width / 2);
 
         d3.selectAll(".statistic_svg g .valueText")
             .text(function(d, i) {return d3.format(params.statistics[i].format)(params.statistics[i].values[n*2].value);})
@@ -683,7 +680,8 @@ function drawStepChart(steps, canvas, index, line) {
     canvas.append("text")
         .attr("x", margin.left + width / 2)
         .attr("y", margin.top + height + 35)
-        .style("stroke", "black")
+        // .style("stroke", "black")
+        .classed("axisTitleText", true)
         .html("Time");
 
     canvas.append("g")
@@ -885,7 +883,7 @@ function drawDegreeDist(data) {
 
     //https://bl.ocks.org/mbostock/3885304
 
-    var div = d3.select("#degree_dist_div");
+    var div = d3.select("#degree_dist_div").classed("statistic_div", true);
 
     div.selectAll("*").remove();
 
@@ -946,7 +944,7 @@ function drawDegreeDist(data) {
   svg.append("text")
         .attr("x", margin.left + width / 2)
         .attr("y", margin.top + height + 35)
-        .style("stroke", "black")
+        .classed("axisTitleText", true)
         .html("Degree");
 
 }

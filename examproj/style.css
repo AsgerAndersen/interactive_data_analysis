@@ -1,3 +1,21 @@
+@import url('https://fonts.googleapis.com/css?family=Raleway');
+@import url('https://fonts.googleapis.com/css?family=PT+Sans');
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+@import url('https://fonts.googleapis.com/css?family=Ubuntu');
+@import url('https://fonts.googleapis.com/css?family=Varela+Round');
+
+*{
+    font-family: Varela Round, sans-serif;
+}
+
+.axisTitleText {
+    font-family: Roboto, sans-serif;
+}
+
+.popup > * {
+    font-family: PT Sans, sans-serif;
+}
+
 div {
     text-align: left;
 }
@@ -172,6 +190,7 @@ div {
     transition: margin-top;
     transition-duration: 0.3s;
     margin-top: 0px;
+    font-weight: bold;
 }
 
 .vis_button:hover > span{
@@ -288,6 +307,11 @@ div {
 .statistic_span {
     display: inline-block;
     font-size: 20px;
+    font-weight: bold;
+}
+
+.axisTitleText {
+    text-anchor: middle;
     font-weight: bold;
 }
 
@@ -410,6 +434,7 @@ svg *:hover ~ .valueText {
     font-size: 18px;
     clear: both;
     /*border: 1px solid black;*/
+    margin-bottom: 5px;
 }
 
 .popupNext {
@@ -431,23 +456,27 @@ svg *:hover ~ .valueText {
     /*border: 1px solid black;*/
 }
 
-.popupPrevious:hover, .popupNext:hover {
-    cursor: pointer;
-}
-
 .popupClose {
     position:absolute;
-    padding: 3px;
+    margin: 3px;
     right: 0px;
     top: 0px;
-    font-size: 20px;
+    font-size: 30px;
     border-radius: 10px;
     /*border: 1px solid black;*/
 }
 
-.popupClose:hover {
+.popupPrevious:hover, .popupNext:hover, .popupClose:hover {
     cursor: pointer;
+    color: palegoldenrod;
 }
+
+
+.popup a {
+    color: palegoldenrod;
+}
+
+
 
 @keyframes opacity {
     from {opacity: 0;}
@@ -492,4 +521,10 @@ rect.highlighted {
 #degree_dist_div {
     position: relative;
     overflow: hidden;
+}
+
+#tutorial_button_div {
+    position: absolute;
+    top:20px;
+    left: 20px;
 }
